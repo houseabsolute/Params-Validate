@@ -1,6 +1,67 @@
-use ExtUtils::MakeMaker;
+# The perl/C checking voodoo is stolen from Graham Barr's
+# Scalar-List-Utils distribution.
 
-print <<'EOF';
+use strict;
+
+use ExtUtils::MakeMaker;
+use Config qw(%Config);
+
+my $no_xs;
+for (@ARGV)
+{
+    /^--pm/ and $no_xs = 1;
+    /^--xs/ and $no_xs = 0;
+}
+
+if ( $] < 5.006_01 )
+{
+    open TYPEMAP, ">typemap"
+        or die "Cannot write to typemap: $!";
+
+    print TYPEMAP <<'EOF';
+NV                      T_NV
+UV                      T_UV
+
+INPUT
+T_NV
+	$var = ($type)SvNV($arg)
+T_UV
+	$var = ($type)SvUV($arg)
+
+OUTPUT
+T_NV
+	sv_setnv($arg, (NV)$var);
+T_UV
+	sv_setuv($arg, (UV)$var);
+
+EOF
+
+    close TYPEMAP;
+}
+
+write_makefile();
+
+exit if defined $no_xs;
+
+print "Testing if you have a C compiler\n";
+
+unless ( open F,">test.c" )
+{
+    warn "Cannot write test.c, skipping test compilation and install pure Perl version.\n";
+    no_cc();
+}
+
+print F <<'EOF';
+int main() { return 0; }
+EOF
+
+close F or no_cc();
+
+system("make test$Config{obj_ext}") and no_cc();
+
+sub write_makefile
+{
+    print <<'EOF';
 
 *** NOTE ***
 
@@ -11,12 +72,45 @@ CHECK/INIT blocks'.
 
 EOF
 
-WriteMakefile( 'NAME'		=> 'Params::Validate',
-	       'VERSION_FROM'	=> 'lib/Params/Validate.pm',
-	       'PREREQ_PM'	=> $] >= 5.006 ? { 'Attribute::Handlers' => 0 } : {},
-	       ( $] >= 5.005 ?
-		 ( ABSTRACT_FROM => 'lib/Params/Validate.pm', # retrieve abstract from module
-		   AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
-		 ()
-	       ),
-	     );
+    WriteMakefile( VERSION_FROM    => "lib/Params/Validate.pm",
+                   NAME            => "Params::Validate",
+                   PREREQ_PM       => $] >= 5.006 ? { 'Attribute::Handlers' => 0 } : {},
+                   CONFIGURE       => \&init,
+                   clean           => { FILES => 'test.c typemap' },
+                   ( $] >= 5.005 ?
+                     ( ABSTRACT_FROM => 'lib/Params/Validate.pm',
+                       AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
+                     ()
+                   ),
+                 );
+}
+
+sub init
+{
+    my $hash = $_[1];
+
+    if ($no_xs)
+    {
+        @{ $hash }{ 'XS', 'C' } = ( {}, [] );
+    }
+
+    $hash;
+}
+
+sub no_cc
+{
+    $no_xs = 1;
+    print <<'EOF';
+
+ I cannot determine if you have a C compiler
+ so I will install a perl-only implementation
+
+ You can force installation of the XS version with
+
+    perl Makefile.PL --xs
+
+EOF
+
+    write_makefile();
+    exit;
+}
