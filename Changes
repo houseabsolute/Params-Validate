@@ -6,7 +6,8 @@ This only happened with the XS version of the code.  Reported by Ken
 Williams.
 
 The end result is that the version of the XS code that is used with
-Perl 5.6.0 and 5.6.1 is slower than that used with 5.00503 or 5.8.0.
+Perl 5.6.0 and 5.6.1 is slightly slower than that used with 5.00503 or
+5.8.0, as it requires an additional Perl-level wrapper.
 
 - Use XSLoader in preference to Dynaloader with Perl 5.6.0+.
 
