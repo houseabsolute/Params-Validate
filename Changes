@@ -1,3 +1,9 @@
+0.77
+
+- Neither --xs or --pm worked with the Makefile.PL the way they were
+supposed to.  Reported by Doug Treder.
+
+
 0.76 Nov 13, 2004 (The "Cancan some more" release)
 
 - Make sure that both the XS and Perl versions give the same error

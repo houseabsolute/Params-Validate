@@ -8,31 +8,40 @@ use Config qw(%Config);
 use File::Spec;
 
 my $no_xs;
+my $force_xs;
 for (@ARGV)
 {
     /^--pm/ and $no_xs = 1;
-    /^--xs/ and $no_xs = 0;
+    /^--xs/ and $force_xs = 1;
 }
 
-exit if defined $no_xs;
-
-print "Testing if you have a C compiler\n";
-
-unless ( open F, ">test.c" )
+if ($no_xs)
 {
-    warn "Cannot write test.c, skipping test compilation and install pure Perl version.\n";
-    no_cc();
+    write_makefile();
+    exit;
 }
 
-print F <<'EOF';
+my @clean;
+unless ($force_xs)
+{
+    print "Testing if you have a C compiler\n";
+
+    unless ( open F, ">test.c" )
+    {
+        warn "Cannot write test.c, skipping test compilation and install pure Perl version.\n";
+        no_cc();
+    }
+
+    print F <<'EOF';
 int main() { return 0; }
 EOF
 
-close F or no_cc();
+    close F or no_cc();
 
-system("$Config{make} test$Config{obj_ext}") and no_cc();
+    system("$Config{make} test$Config{obj_ext}") and no_cc();
 
-my @clean;
+}
+
 if ( -d 'CVS' )
 {
     local *DIR;
