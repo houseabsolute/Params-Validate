@@ -122,6 +122,8 @@ use vars qw(@expect);
 
 	   q|^The 'foo' parameter to .* was an 'arrayref'.*|,
 	   0,
+
+           0,
 	  );
 
 require 'tests.pl';

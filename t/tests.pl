@@ -2,7 +2,7 @@ use strict;
 
 use Params::Validate qw(:all);
 
-print "1..79\n";
+print "1..80\n";
 
 sub run_tests
 {
@@ -332,6 +332,9 @@ sub run_tests
     check();
     eval { sub22( foo => bless [1], 'object' ) };
     check();
+
+    eval { sub23( '1 element' ) };
+    check();
 }
 
 sub sub1
@@ -542,6 +545,11 @@ sub sub21
 sub sub22
 {
     validate( @_, { foo => { type => OBJECT } } );
+}
+
+sub sub23
+{
+    validate_pos( @_, 1 );
 }
 
 sub ok
