@@ -1,3 +1,7 @@
+0.52
+
+- Added regex validation option.
+
 0.51 Jan 14, 2003
 
 - Added copyright info to each source file.  Added LICENSE file to
