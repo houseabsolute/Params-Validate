@@ -807,7 +807,8 @@ The default is to simply use the Carp module's C<confess()> function.
 This tells Params::Validate how many stack frames to skip when finding
 a subroutine name to use in error messages.  By default, it looks one
 frame back, at the immediate caller to C<validate> or C<validate_pos>.
-If this option is, then the given number of frames are skipped instead.
+If this option is set, then the given number of frames are skipped
+instead.
 
 =back
 
