@@ -9,3 +9,7 @@ handled in callbacks for example.
 
 - add a transformation callback feature, to be called before
 validating a value, which can be used to normalize values
+
+
+- make it possible to explicitly not use the XS version in a non-hacky
+way.
