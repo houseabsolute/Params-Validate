@@ -10,5 +10,3 @@ BEGIN
 use lib '.', './t';
 
 require 'defaults.pl';
-
-print "1..20\n";

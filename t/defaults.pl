@@ -1,3 +1,5 @@
+print "1..20\n";
+
 {
     my %def = eval { foo() };
 
