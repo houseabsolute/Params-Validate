@@ -1,3 +1,9 @@
+0.76 Nov 13, 2004 (The "Cancan some more" release)
+
+- Make sure that both the XS and Perl versions give the same error
+when checking "can" for an undefined value.
+
+
 0.75 Nov 13, 2004 (The "Cancan" release)
 
 - When checking if a parameter has a method, P::V now calls the ->can

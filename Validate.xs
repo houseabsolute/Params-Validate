@@ -390,7 +390,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
   char* name;
   IV ok = 1;
 
-  {
+  if (SvTRUE(value)) {
     dSP;
 
     SV* ret;
@@ -420,6 +420,8 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
     PUTBACK;
     FREETMPS;
     LEAVE;
+  } else {
+    ok = 0;
   }
   
   if (! ok) {

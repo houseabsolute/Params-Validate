@@ -3,7 +3,7 @@
 use strict;
 
 use Params::Validate qw(validate);
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 {
     my @p = ( foo => 'ClassCan' );
@@ -25,6 +25,18 @@ use Test::More tests => 2;
     };
 
     like( $@, qr/does not have the method: 'thingy'/ );
+}
+
+{
+    my @p = ( foo => undef );
+    eval
+    {
+        validate( @p,
+                  { foo => { can => 'baz' } },
+                );
+    };
+
+    like( $@, qr/does not have the method: 'baz'/ );
 }
 
 

@@ -16,7 +16,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.75';
+    $VERSION = '0.76';
 
     my %tags =
         ( types =>
