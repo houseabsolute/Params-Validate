@@ -17,11 +17,14 @@ BEGIN
 
     sub HANDLE    () { 16 | 32 }
     sub BOOLEAN   () { 1 | 256 }
+
+    my $val = $ENV{PERL_NO_VALIDATION} ? 1 : 0;
+    eval "sub NO_VALIDATE () { $val }";
 }
 
 require Exporter;
 
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $called $options);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options);
 @ISA = qw(Exporter);
 
 my %tags =
@@ -46,14 +49,14 @@ $VERSION = '0.18';
 # reference.  Everything after is the parameters for validation.
 sub validate_pos (\@@)
 {
-    my $p = shift;
+    return if NO_VALIDATE && ! defined wantarray;
 
-    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+    my $p = shift;
 
     my @specs = @_;
 
     my @p = @$p;
-    if ( $ENV{PERL_NO_VALIDATION} )
+    if ( NO_VALIDATE )
     {
 	foreach my $x (0..$#specs)
 	{
@@ -69,14 +72,17 @@ sub validate_pos (\@@)
     }
 
     # I'm too lazy to pass these around all over the place.
-    local $options ||= _get_options( (caller(0))[0] ) unless defined $options;
-    local $called  = (caller( $options->{stack_skip} ))[3] unless defined $called;
+    local $options ||= _get_options( (caller(0))[0] )
+        unless defined $options;
 
     my $min = 0;
 
     while (1)
     {
-	last if _is_optional( $specs[$min] );
+        last unless ( ref $specs[$min] ?
+                      ! ( exists $specs[$min]->{default} || $specs[$min]->{optional} ) :
+                      $specs[$min] );
+
 	$min++;
     }
 
@@ -92,6 +98,12 @@ sub validate_pos (\@@)
 
 	my $val = $options->{allow_extra} ? $min : $max;
 	$minmax .= $val != 1 ? ' were' : ' was';
+
+        my $called =
+            ( exists $options->{called} ?
+              $options->{called} :
+              (caller( $options->{stack_skip} + 1 ))[3]
+            );
 
 	$options->{on_fail}->
             ( "$actual parameter" .
@@ -121,58 +133,73 @@ sub validate_pos (\@@)
 
 sub validate (\@$)
 {
-    my $p = shift;
+    return if NO_VALIDATE && ! defined wantarray;
 
-    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+    my $p = $_[0];
 
-    my %specs = %{ shift() };
+    my $specs = $_[1];
 
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
     my %p;
-    if ( defined $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
+    unless ( NO_VALIDATE )
     {
-	# Make a copy so we don't alter the hash reference for the
-	# caller.
-	%p = %{ $p->[0] };
+        if ( defined $p->[0] && ref $p->[0] )
+        {
+            # Make a copy so we don't alter the hash reference for the
+            # caller.
+            %p = %{ $p->[0] };
+        }
+        else
+        {
+            if ( @$p % 2 )
+            {
+                my $called =
+                    ( exists $options->{called} ?
+                      exists $options->{called} :
+                      (caller( $options->{stack_skip} ))[3]
+                    );
+
+                $options->{on_fail}->
+                    ( "Odd number of parameters in call to $called " .
+                      "when named parameters were expected\n" );
+            }
+
+            # This is to hashify the list.  Also has the side effect of
+            # copying the values so we can play with it however we want
+            # without actually changing @_.
+            %p = @$p;
+        }
     }
-    else
-    {
-	$options->{on_fail}->
-            ( "Odd number of parameters in call to $called " .
-              "when named parameters were expected\n" )
-                if @$p % 2;
-
-	# This is to hashify the list.  Also has the side effect of
-	# copying the values so we can play with it however we want
-	# without actually changing @_.
-	%p = @$p;
-    }
-
-    if ( $ENV{PERL_NO_VALIDATION} )
-    {
-	while ( my ($key, $spec) = each %specs )
-	{
-	    if ( ! exists $p{$key} && ref $spec && exists $spec->{default} )
-	    {
-		$p{$key} = $spec->{default};
-	    }
-	}
-
-	return %p;
-    }
-
-    local $called = (caller( $options->{stack_skip} ))[3] unless defined $called;
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
-	%specs = _normalize_named(%specs);
-	%p = _normalize_named(%p);
+	$specs = _normalize_named($specs);
+	%p = %{ _normalize_named(\%p) };
+    }
+
+    if ( NO_VALIDATE )
+    {
+        return ( ( map { $_ => $specs->{$_}->{default} }
+                   grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
+                   keys %$specs
+                 ),
+                 ( defined $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) ?
+                   %{ $p->[0] } :
+                   @$p
+                 )
+               );
     }
 
     unless ( $options->{allow_extra} )
     {
-	if ( my @unmentioned = grep { ! exists $specs{$_} } keys %p )
+        my $called =
+            ( exists $options->{called} ?
+              $options->{called} :
+              (caller( $options->{stack_skip} ))[3]
+            );
+
+	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %p )
 	{
 	    $options->{on_fail}->
                 ( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
@@ -183,32 +210,47 @@ sub validate (\@$)
     }
 
     my @missing;
-    while ( my ( $key, $spec ) = each %specs )
+ OUTER:
+    while ( my ($key, $spec) = each %$specs )
     {
-	unless ( exists $p{$key} )
-	{
-	    unless ( _is_optional($spec) )
-	    {
-		push @missing, $key;
-		next;
-	    }
+	if ( ! exists $p{$key} &&
+             ( ref $spec ?
+               ! ( do
+                   {
+                       $spec->{optional} && next OUTER
+                   }
+                   ||
+                   do
+                   {
+                       exists $spec->{default}
+                           &&
+                       ($p{$key} = $spec->{default})
+                           &&
+                       next OUTER;
+                   }
+                 ) :
+               $spec )
+           )
+        {
+            push @missing, $key;
 	}
+        else
+        {
+            # Can't validate a non hashref spec beyond presence/absence of the parameter.
+            next unless ref $spec;
 
-	# Can't validate a non hashref spec beyond presence/absence of the parameter.
-	next unless ref $spec;
-
-	if ( exists $p{$key} )
-	{
 	    _validate_one_param( $p{$key}, $spec, "The '$key' parameter" );
-	}
-	else
-	{
-	    $p{$key} = $spec->{default} if exists $spec->{default};
 	}
     }
 
     if (@missing)
     {
+        my $called =
+            ( exists $options->{called} ?
+              $options->{called} :
+              (caller( $options->{stack_skip} ))[3]
+            );
+
 	my $missing = join ', ', map {"'$_'"} @missing;
 	$options->{on_fail}->
             ( "Mandatory parameter" .
@@ -221,61 +263,60 @@ sub validate (\@$)
 
 sub validate_with
 {
-    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+    return if NO_VALIDATE && ! defined wantarray;
 
     my %p = validate( @_,
                       { params => { type => ARRAYREF | HASHREF },
                         spec   => { type => ARRAYREF | HASHREF },
+
                         called =>
-                        { type => SCALAR, default => undef },
+                        { type => SCALAR, optional => 1 },
+
                         ignore_case =>
                         { type => BOOLEAN, optional => 1 },
+
                         strip_leading =>
                         { type => BOOLEAN, optional => 1 },
+
                         allow_extra =>
                         { type => BOOLEAN, optional => 1 },
+
                         on_fail =>
                         { type => CODEREF, optional => 1 },
+
                         stack_skip =>
                         { type => SCALAR, optional => 1 },
                       }
                     );
 
-    local $options = _get_options( (caller(0))[0] );
-    foreach my $k ( keys %$options )
-    {
-        $options->{$k} = $p{$k} if exists $p{$k};
-    }
+    local $options = _get_options( (caller(0))[0], %p );
 
-    local $called = $p{called} if defined $p{called};
+    unless ( NO_VALIDATE )
+    {
+        unless ( exists $options->{called} )
+        {
+            $options->{called} = (caller( $options->{stack_skip} ))[3];
+        }
+
+    }
 
     if ( UNIVERSAL::isa( $p{spec}, 'ARRAY' ) )
     {
-	return validate_pos @{ $p{params} }, @{ $p{spec} };
+	return validate_pos( @{ $p{params} }, @{ $p{spec} } );
     }
     else
     {
-	my $params =
-            UNIVERSAL::isa( $p{params}, 'ARRAY' ) ? $p{params} : [ %{ $p{params} } ];
+        $p{params} = [ %{ $p{params} } ]
+            unless UNIVERSAL::isa( $p{params}, 'ARRAY' );
 
-	return validate @$params, $p{spec};
+	return validate( @{ $p{params} }, $p{spec} );
     }
-}
-
-sub _is_optional
-{
-    my $spec = shift;
-
-    # foo => 1  used to mark mandatory argument with no other validation
-    return ! $spec unless ref $spec;
-
-    # If it has a default it has to be optional
-    return exists $spec->{optional} ? $spec->{optional} : exists $spec->{default};
 }
 
 sub _normalize_named
 {
-    my %h = @_;
+    # intentional copy so we don't destroy original
+    my %h = %{ $_[0] };
 
     if ( $options->{ignore_case} )
     {
@@ -295,23 +336,28 @@ sub _normalize_named
 	}
     }
 
-    return %h;
+    return \%h;
 }
 
 sub _validate_one_param
 {
-    my $value = shift;
-    my %spec = %{ shift() };
-    my $id = shift;
+    my ($value, $spec, $id) = @_;
 
-    if ( exists $spec{type} )
+    if ( exists $spec->{type} )
     {
-	my $type = _get_type($value);
-	unless ( $type & $spec{type} )
+	unless ( _get_type($value) & $spec->{type} )
 	{
+            my $type = _get_type($value);
+
 	    my @is = _typemask_to_strings($type);
-	    my @allowed = _typemask_to_strings($spec{type});
+	    my @allowed = _typemask_to_strings($spec->{type});
 	    my $article = $is[0] =~ /^[aeiou]/i ? 'an' : 'a';
+
+            my $called =
+                ( exists $options->{called} ?
+                  exists $options->{called} :
+                  (caller( $options->{stack_skip} + 1 ))[3]
+                );
 
 	    $options->{on_fail}->
                 ( "$id to $called was $article '@is', which " .
@@ -319,15 +365,24 @@ sub _validate_one_param
 	}
     }
 
-    if ( exists $spec{isa} )
+    # short-circuit for common case
+    return unless $spec->{isa} || $spec->{can} || $spec->{callbacks};
+
+    if ( exists $spec->{isa} )
     {
-	foreach ( ref $spec{isa} ? @{ $spec{isa} } : $spec{isa} )
+	foreach ( ref $spec->{isa} ? @{ $spec->{isa} } : $spec->{isa} )
 	{
 	    unless ( UNIVERSAL::isa( $value, $_ ) )
 	    {
 		my $is = ref $value ? ref $value : 'plain scalar';
 		my $article1 = $_ =~ /^[aeiou]/i ? 'an' : 'a';
 		my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
+
+                my $called =
+                    ( exists $options->{called} ?
+                      exists $options->{called} :
+                      (caller( $options->{stack_skip} + 1 ))[3]
+                    );
 
 		$options->{on_fail}->
                     ( "$id to $called was not $article1 '$_' " .
@@ -336,28 +391,61 @@ sub _validate_one_param
 	}
     }
 
-    if ( exists $spec{can} )
+    if ( exists $spec->{can} )
     {
-	foreach ( ref $spec{can} ? @{ $spec{can} } : $spec{can} )
+	foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} )
 	{
-	    $options->{on_fail}->( "$id to $called does not have the method: '$_'\n" )
-		unless UNIVERSAL::can( $value, $_ );
+            unless ( UNIVERSAL::can( $value, $_ ) )
+            {
+                my $called =
+                    ( exists $options->{called} ?
+                      exists $options->{called} :
+                      (caller( $options->{stack_skip} + 1 ))[3]
+                    );
+
+                $options->{on_fail}->( "$id to $called does not have the method: '$_'\n" );
+            }
 	}
     }
 
-    if ( $spec{callbacks} )
+    if ( $spec->{callbacks} )
     {
-	$options->{on_fail}->
-            ( "'callbacks' validation parameter for $called must be a hash reference\n" )
-                unless UNIVERSAL::isa( $spec{callbacks}, 'HASH' );
+        unless ( UNIVERSAL::isa( $spec->{callbacks}, 'HASH' ) )
+        {
+            my $called =
+                ( exists $options->{called} ?
+                  exists $options->{called} :
+                  (caller( $options->{stack_skip} + 1 ))[3]
+                );
 
-	foreach ( keys %{ $spec{callbacks} } )
+            $options->{on_fail}->
+                ( "'callbacks' validation parameter for $called must be a hash reference\n" );
+        }
+
+
+	foreach ( keys %{ $spec->{callbacks} } )
 	{
-	    $options->{on_fail}->( "callback '$_' for $called is not a subroutine reference\n" )
-		unless UNIVERSAL::isa( $spec{callbacks}{$_}, 'CODE' );
+            unless ( UNIVERSAL::isa( $spec->{callbacks}{$_}, 'CODE' ) )
+            {
+                my $called =
+                    ( exists $options->{called} ?
+                      exists $options->{called} :
+                      (caller( $options->{stack_skip} + 1 ))[3]
+                    );
 
-	    $options->{on_fail}->( "$id to $called did not pass the '$_' callback\n" )
-		unless $spec{callbacks}{$_}->($value);
+                $options->{on_fail}->( "callback '$_' for $called is not a subroutine reference\n" );
+            }
+
+            unless ( $spec->{callbacks}{$_}->($value) )
+            {
+                my $called =
+                    ( exists $options->{called} ?
+                      exists $options->{called} :
+                      (caller( $options->{stack_skip} + 1 ))[3]
+                    );
+
+                $options->{on_fail}->( "$id to $called did not pass the '$_' callback\n" );
+            }
 	}
     }
 }
@@ -375,15 +463,13 @@ sub _validate_one_param
 
     sub _get_type
     {
-	my $value = shift;
+	return UNDEF unless defined $_[0];
 
-	return UNDEF unless defined $value;
-
-	my $ref = ref $value;
+	my $ref = ref $_[0];
 	unless ($ref)
 	{
 	    # catches things like:  my $fh = do { local *FH; };
-	    return GLOB if UNIVERSAL::isa( \$value, 'GLOB' );
+	    return GLOB if UNIVERSAL::isa( \$_[0], 'GLOB' );
 	    return SCALAR;
 	}
 
@@ -391,7 +477,7 @@ sub _validate_one_param
 
 	foreach ( keys %isas )
 	{
-	    return $isas{$_} | OBJECT if UNIVERSAL::isa( $value, $_ );
+	    return $isas{$_} | OBJECT if UNIVERSAL::isa( $_[0], $_ );
 	}
 
 	# I really hope this never happens.
@@ -452,8 +538,24 @@ sub _validate_one_param
 
     sub _get_options
     {
-	my $caller = shift;
-	return exists $OPTIONS{$caller} ? $OPTIONS{$caller} : \%defaults;
+	my ( $caller, %override ) = @_;
+
+        if ( %override )
+        {
+            return
+                ( $OPTIONS{$caller} ?
+                  { %{ $OPTIONS{$caller} },
+                    %override } :
+                  { %defaults, %override }
+                );
+        }
+        else
+        {
+            return
+                ( exists $OPTIONS{$caller} ?
+                  $OPTIONS{$caller} :
+                  \%defaults );
+        }
     }
 }
 
@@ -957,6 +1059,9 @@ development but don't want the speed hit during production.
 
 The only error that will be caught will be when an odd number of
 parameters are passed into a function/method that expects a hash.
+
+This environment value is checked B<only> when the module is first
+loaded.  You cannot change it after the module has loaded.
 
 =head1 LIMITATIONS
 
