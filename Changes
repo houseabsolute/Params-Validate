@@ -1,10 +1,10 @@
-0.68
+0.68 Oct 21, 2003
 
 - Added spiffy new parameter dependency feature.  Implemented by
 Daisuke Mai.
 
 
-0.67
+0.67 Oct 10, 2003
 
 - The test count for 06-option.t was off.  Reported by Christian
 Schaffner.
@@ -17,7 +17,7 @@ calling validate_pos() with an undef value in the parameter array.
 This was introduced in 0.66.
 
 
-0.66
+0.66 Oct 08, 2003
 
 - Skip a few more tests under Perl 5.6.0.  Patch from Christian
 Schaffner.
