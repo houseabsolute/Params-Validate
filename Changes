@@ -1,3 +1,13 @@
+0.07
+
+- Fix problem with CPAN shell's 'r' command that
+Attribute::Params::Validate was causing with older Perl's.  Reported
+by Rob BloodGood.
+
+- Add ability to specify defaults for parameters and get a new
+hash/array back from validate or validate_pos.  Partial patch
+submitted by Ken Williams.
+
 0.06
 
 - Require Attribute::Handlers if using Perl 5.6.0+.
