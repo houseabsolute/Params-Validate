@@ -24,16 +24,22 @@ require Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $called $options);
 @ISA = qw(Exporter);
 
-my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
-	   );
+my %tags =
+    ( types =>
+      [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
+            SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
+    );
 
-%EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos validation_options ), map { @{ $tags{$_} } } keys %tags ],
-		 %tags,
-	       );
+%EXPORT_TAGS =
+    ( 'all' => [ qw( validate validate_pos validation_options validate_with ),
+                 map { @{ $tags{$_} } } keys %tags ],
+      %tags,
+    );
+
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
@@ -50,7 +56,9 @@ sub validate_pos (\@@)
 	{
 	    if ( $x > $#p )
 	    {
-		$p[$x] = $specs[$x]->{default} if ref $specs[$x] && exists $specs[$x]->{default};
+		$p[$x] =
+                    $specs[$x]->{default}
+                        if ref $specs[$x] && exists $specs[$x]->{default};
 	    }
 	}
 
@@ -58,8 +66,8 @@ sub validate_pos (\@@)
     }
 
     # I'm too lazy to pass these around all over the place.
-    local $options = _get_options( (caller(0))[0] );
-    local $called = (caller( $options->{stack_skip} ))[3];
+    local $options ||= _get_options( (caller(0))[0] ) unless defined $options;
+    local $called  = (caller( $options->{stack_skip} ))[3] unless defined $called;
 
     my $min = 0;
 
@@ -74,10 +82,20 @@ sub validate_pos (\@@)
     my $actual = scalar @p;
     unless ($actual >= $min && ( $options->{allow_extra} || $actual <= $max ) )
     {
-	my $minmax = $options->{allow_extra} ? "at least $min" : ( $min != $max ? "$min - $max" : $max );
+	my $minmax =
+            ( $options->{allow_extra} ?
+              "at least $min" :
+              ( $min != $max ? "$min - $max" : $max ) );
+
 	my $val = $options->{allow_extra} ? $min : $max;
 	$minmax .= $val != 1 ? ' were' : ' was';
-	$options->{on_fail}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
+
+	$options->{on_fail}->
+            ( "$actual parameter" .
+              ($actual != 1 ? 's' : '') .
+              " " .
+              ($actual != 1 ? 'were' : 'was' ) .
+              " passed to $called but $minmax expected\n" );
     }
 
     my $bigger = $#p > $#specs ? $#p : $#specs;
@@ -103,7 +121,7 @@ sub validate (\@$)
     my $p = shift;
     my %specs = %{ shift() };
 
-    local $options = _get_options( (caller(0))[0] );
+    local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
     my %p;
     if ( defined $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
@@ -114,8 +132,10 @@ sub validate (\@$)
     }
     else
     {
-	$options->{on_fail}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
-	    if @$p % 2;
+	$options->{on_fail}->
+            ( "Odd number of parameters in call to $called " .
+              "when named parameters were expected\n" )
+                if @$p % 2;
 
 	# This is to hashify the list.  Also has the side effect of
 	# copying the values so we can play with it however we want
@@ -136,7 +156,7 @@ sub validate (\@$)
 	return %p;
     }
 
-    local $called = (caller( $options->{stack_skip} ))[3];
+    local $called = (caller( $options->{stack_skip} ))[3] unless defined $called;
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
@@ -148,10 +168,11 @@ sub validate (\@$)
     {
 	if ( my @unmentioned = grep { ! exists $specs{$_} } keys %p )
 	{
-	    $options->{on_fail}->( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
-				   " passed in the call to $called but " .
-				   (@unmentioned > 1 ? 'were' : 'was') .
-				   " not listed in the validation options: @unmentioned\n" );
+	    $options->{on_fail}->
+                ( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
+                  " passed in the call to $called but " .
+                  (@unmentioned > 1 ? 'were' : 'was') .
+                  " not listed in the validation options: @unmentioned\n" );
 	}
     }
 
@@ -183,10 +204,54 @@ sub validate (\@$)
     if (@missing)
     {
 	my $missing = join ', ', map {"'$_'"} @missing;
-	$options->{on_fail}->( "Mandatory parameter" . (@missing > 1 ? 's': '') . " $missing missing in call to $called\n" );
+	$options->{on_fail}->
+            ( "Mandatory parameter" .
+              (@missing > 1 ? 's': '') .
+              " $missing missing in call to $called\n" );
     }
 
     return %p if wantarray;
+}
+
+sub validate_with
+{
+    my %p = validate( @_,
+                      { params => { type => ARRAYREF | HASHREF },
+                        spec   => { type => ARRAYREF | HASHREF },
+                        called =>
+                        { type => SCALAR, default => undef },
+                        ignore_case =>
+                        { type => BOOLEAN, optional => 1 },
+                        strip_leading =>
+                        { type => BOOLEAN, optional => 1 },
+                        allow_extra =>
+                        { type => BOOLEAN, optional => 1 },
+                        on_fail =>
+                        { type => CODEREF, optional => 1 },
+                        stack_skip =>
+                        { type => SCALAR, optional => 1 },
+                      }
+                    );
+
+    local $options = _get_options( (caller(0))[0] );
+    foreach my $k ( keys %$options )
+    {
+        $options->{$k} = $p{$k} if exists $p{$k};
+    }
+
+    local $called = $p{called} if defined $p{called};
+
+    if ( UNIVERSAL::isa( $p{spec}, 'ARRAY' ) )
+    {
+	return validate_pos @{ $p{params} }, @{ $p{spec} };
+    }
+    else
+    {
+	my $params =
+            UNIVERSAL::isa( $p{params}, 'ARRAY' ) ? $p{params} : [ %{ $p{params} } ];
+
+	return validate @$params, $p{spec};
+    }
 }
 
 sub _is_optional
@@ -239,7 +304,10 @@ sub _validate_one_param
 	    my @is = _typemask_to_strings($type);
 	    my @allowed = _typemask_to_strings($spec{type});
 	    my $article = $is[0] =~ /^[aeiou]/i ? 'an' : 'a';
-	    $options->{on_fail}->( "$id to $called was $article '@is', which is not one of the allowed types: @allowed\n" );
+
+	    $options->{on_fail}->
+                ( "$id to $called was $article '@is', which " .
+                  "is not one of the allowed types: @allowed\n" );
 	}
     }
 
@@ -252,7 +320,10 @@ sub _validate_one_param
 		my $is = ref $value ? ref $value : 'plain scalar';
 		my $article1 = $_ =~ /^[aeiou]/i ? 'an' : 'a';
 		my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
-		$options->{on_fail}->( "$id to $called was not $article1 '$_' (it is $article2 $is)\n" );
+
+		$options->{on_fail}->
+                    ( "$id to $called was not $article1 '$_' " .
+                      "(it is $article2 $is)\n" );
 	    }
 	}
     }
@@ -268,8 +339,9 @@ sub _validate_one_param
 
     if ( $spec{callbacks} )
     {
-	$options->{on_fail}->( "'callbacks' validation parameter for $called must be a hash reference\n" )
-	    unless UNIVERSAL::isa( $spec{callbacks}, 'HASH' );
+	$options->{on_fail}->
+            ( "'callbacks' validation parameter for $called must be a hash reference\n" )
+                unless UNIVERSAL::isa( $spec{callbacks}, 'HASH' );
 
 	foreach ( keys %{ $spec{callbacks} } )
 	{
@@ -337,7 +409,8 @@ sub _validate_one_param
 	my $mask = shift;
 
 	my @types;
-	foreach ( SCALAR, ARRAYREF, HASHREF, CODEREF, GLOB, GLOBREF, SCALARREF, UNDEF, OBJECT, UNKNOWN )
+	foreach ( SCALAR, ARRAYREF, HASHREF, CODEREF, GLOB, GLOBREF,
+                  SCALARREF, UNDEF, OBJECT, UNKNOWN )
 	{
 	    push @types, $type_to_string{$_} if $mask & $_;
 	}
@@ -349,7 +422,8 @@ sub _validate_one_param
     my %defaults = ( ignore_case   => 0,
 		     strip_leading => 0,
 		     allow_extra   => 0,
-		     on_fail       => sub { require Carp;  Carp::confess(shift()) },
+		     on_fail       => sub { require Carp;
+                                            Carp::confess($_[0]) },
 		     stack_skip    => 1,
 		   );
 
@@ -441,6 +515,16 @@ Params::Validate - Validate method/function parameters
        my @p = validate( @_, 1, { default => 99 } );
   }
 
+  sub sets_options_on_call
+  {
+       my %p = validate_with
+                   ( params => \@_,
+                     spec   => { foo => { type SCALAR, default => 2 } },
+                     ignore_case   => 1,
+                     strip_leading => '-',
+                   );
+  }
+
 =head1 DESCRIPTION
 
 The Params::Validate module allows you to validate method or function
@@ -457,6 +541,10 @@ arguments.
 
 The module always exports the C<validate> and C<validate_pos>
 functions.
+
+It also has an additional function available for export,
+C<validate_with>, which can be used to validate any type of
+parameters, and set various options on a per-invocation basis.
 
 In addition, it can export the following constants, which are used as
 part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
@@ -638,8 +726,8 @@ probably better to specify what methods you expect an object to
 have rather than what class it should be of (or a child of).  This
 will make your API much more flexible.
 
-With that said, if you want to verify that an incoming parameter
-belongs to a class (or child class) or classes, do:
+With that said, if you want to validate_with that an incoming
+parameter belongs to a class (or child class) or classes, do:
 
  validate( @_,
            { foo =>
@@ -811,6 +899,46 @@ If this option is set, then the given number of frames are skipped
 instead.
 
 =back
+
+=head1 PER-INVOCATION OPTIONS
+
+The C<validate_with> function can be used to set the options listed above on
+a per-invocation basis.  For example:
+
+  my %p =
+      validate_with
+          ( params => \@_,
+            spec   => { foo => { type => SCALAR },
+                        bar => { default => 10 } },
+            allow_extra => 1,
+          );
+
+In addition to the options listed above, it is also possible to set
+the option C<called>, which should be a string.  This string will be
+used in any error messages caused by a failure to meet the validation
+spec.
+
+This subroutine will validate named parameters as a hash if the
+C<spec> parameter is a hash reference.  If it is an array reference,
+the parameters are assumed to be positional.
+
+  my %p =
+      validate_with
+          ( params => \@_,
+            spec   => { foo => { type => SCALAR },
+                        bar => { default => 10 } },
+            allow_extra => 1,
+            called => 'The Quux::Baz class constructor',
+          );
+
+  my @p =
+      validate_with
+          ( params => \@_,
+            spec   => [ { type => SCALAR },
+                        { default => 10 } ],
+            allow_extra => 1,
+            called => 'The Quux::Baz class constructor',
+          );
 
 =head1 DISABLING VALIDATION
 
