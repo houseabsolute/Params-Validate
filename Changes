@@ -1,3 +1,7 @@
+0.62 Jun 25, 2003
+
+- Remove a warn() statement left in from debugging.
+
 0.61 Jun 23, 2003
 
 - The last release had some debugging code left in which tried to load
