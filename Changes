@@ -1,4 +1,4 @@
-0.73
+0.73 Mar 28, 2004
 
 - The minimum number of arguments required was reported incorrectly by
 the XS code when a call to validate_pos() failed because too few
