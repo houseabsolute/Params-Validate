@@ -6,8 +6,16 @@
 
 /* not defined in 5.00503 _or_ ppport.h! */
 #ifndef SvPV_nolen
-#define SvPV_nolen(sv) SvPV(sv, PL_na)
+#  define SvPV_nolen(sv) SvPV(sv, PL_na)
 #endif
+#ifndef CopSTASHPV
+#  ifdef USE_ITHREADS
+#    define CopSTASHPV(c)         ((c)->cop_stashpv)
+#  else
+#    define CopSTASH(c)           ((c)->cop_stash)
+#    define CopSTASHPV(c)         (CopSTASH(c) ? HvNAME(CopSTASH(c)) : Nullch)
+#  endif /* USE_ITHREADS */
+#endif /* CopSTASHPV */
 
 /* type constants */
 #define SCALAR    1
@@ -112,7 +120,7 @@ typemask_to_string(IV mask)
         empty = 0;
     }
     if(mask & ARRAYREF) {
-        sv_catpv(buffer, empty ? "arrayref" : " arrayre");
+        sv_catpv(buffer, empty ? "arrayref" : " arrayref");
         empty = 0;
     }
     if(mask & HASHREF) {
@@ -264,8 +272,8 @@ validation_failure(SV* message, HV* options)
 
     /* by default resort to Carp::confess for error reporting */
     {
-        perl_require_pv("Carp.pm");
         dSP;
+        perl_require_pv("Carp.pm");
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
@@ -562,12 +570,8 @@ get_options(HV* options)
 
     /* gets caller's package name */
 
-#if (PERL_VERSION >= 6) /* Perl 5.6.0+ */
     pkg = CopSTASHPV(PL_curcop);
-#else
-    pkg = HvNAME(PL_curcop->cop_stash);
-#endif
-    if(!pkg) {
+    if(pkg == Nullch) {
         pkg = "main";
     }
 
