@@ -8,6 +8,9 @@ data integrity.
 The module has been designed to work equally well with positional or
 named parameters (via a hash or hash reference).
 
+It includes both a fast XS implementation, and a slower pure Perl
+implementation that it can fall back on.
+
 INSTALLATION
 
 To install this module type the following:
@@ -20,14 +23,12 @@ To install this module type the following:
 BUGS/ISSUES
 
 Trying to run the test suite with Perl 5.6.0 on my machine caused
-repeated core dumps, though 5.00405 and 5.00503 were both fine.  In
-addition, 5.6.1-trial1 did not core dump so I can only presume that
-the problem is Perl's, not this module's.  I do not know if the
-problem is caused by the test code or the module itself.
+repeated core dumps, though 5.00503 is fine.  Perl 5.6.0 is known to
+be buggy, and upgrading to 5.6.1 is strongly recommended.
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2000-2002 Dave Rolsky
+Copyright (c) 2000-2003 Dave Rolsky
 All rights reserved.
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

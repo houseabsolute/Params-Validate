@@ -1,9 +1,13 @@
 Changes
 MANIFEST			This list of files
 Makefile.PL
+ppport.h
 README
+Validate.xs
 lib/Attribute/Params/Validate.pm
 lib/Params/Validate.pm
+lib/Params/ValidatePP.pm
+lib/Params/ValidateXS.pm
 t/01-validate.t
 t/02-noop.t
 t/03-attribute.t

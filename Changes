@@ -1,3 +1,13 @@
+0.50
+
+- Added an XS implementation, written by Ilya Martynov.  The pure Perl
+implementation is still included as a fallback for users who do not
+have a compiler handy.  The XS implementation is anywhere from between
+1.5x to 4x times as fast, depending on the validation being done.
+
+This XS code is known to work Perl 5.00503+, but it may or may not
+work with earlier versions of Perl.
+
 0.24
 
 - Fix Attribute::Params::Validate docs to show that attribute
