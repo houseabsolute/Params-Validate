@@ -129,8 +129,9 @@ if ( $] == 5.006 )
     warn <<'EOF';
 
 Skipping tests for Perl 5.6.0.  5.6.0 core dumps all over during the
-tests.  This has to do with the test code rather than the module
-itself.  5.6.1-trial1 worked fine when I tested it.
+tests.  This may just have to do with the test code rather than the
+module itself.  5.6.1 works fine when I tested it.  5.6.0 is buggy.
+You are encouraged to upgrade.
 EOF
 
     print "ok $_\n" for 1..77;

@@ -12,6 +12,8 @@ use Params::Validate qw(:all);
 
 require Exporter;
 
+use vars qw($VERSION);
+
 our @ISA = qw(Exporter);
 
 my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
@@ -22,7 +24,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } }
 		   );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 
-our $VERSION = sprintf '%2d.%02d', q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf '%2d.%02d', q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
