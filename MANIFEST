@@ -1,5 +1,5 @@
 Changes
-MANIFEST
+MANIFEST			This list of files
 Makefile.PL
 README
 lib/Attribute/Params/Validate.pm
@@ -11,6 +11,7 @@ t/04-defaults.t
 t/05-noop_default.t
 t/06-options.t
 t/07-with.t
-t/08-with_nop.t
+t/08-noop_with.t
+t/defaults.pl
 t/tests.pl
 t/with.pl
