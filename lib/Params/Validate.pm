@@ -233,7 +233,7 @@ An array reference such as C<[1, 2, 3]> or C<\@foo>.
 
 =item * HASHREF
 
-A hash reference such as C<{ a => 1, b => 2 }> or C<\%bar>.
+A hash reference such as C<< { a => 1, b => 2 } >> or C<\%bar>.
 
 =item * CODEREF
 
@@ -277,7 +277,7 @@ This is a special option, and is just a shortcut for C<UNDEF | SCALAR>.
 This option is also special, and is just a shortcut for C<GLOB |
 GLOBREF>.  However, it seems likely that most people interested in
 either globs or glob references are likely to really be interested in
-whether the parameter in questoin could be a valid file or directory
+whether the parameter in question could be a valid file or directory
 handle.
 
 =back
