@@ -27,3 +27,4 @@ t/defaults.pl
 t/regex.pl
 t/tests.pl
 t/with.pl
+META.yml                                Module meta-data in YAML
