@@ -2,7 +2,6 @@ Changes
 LICENSE
 MANIFEST			This list of files
 Makefile.PL
-ppport.h
 README
 TODO
 Validate.xs
@@ -10,6 +9,7 @@ lib/Attribute/Params/Validate.pm
 lib/Params/Validate.pm
 lib/Params/ValidatePP.pm
 lib/Params/ValidateXS.pm
+ppport.h
 t/01-validate.t
 t/02-noop.t
 t/03-attribute.t
@@ -20,6 +20,9 @@ t/07-with.t
 t/08-noop_with.t
 t/09-regex.t
 t/10-noop_regex.t
+t/11-cb.t
+t/12-noop_cb.t
+t/callbacks.pl
 t/defaults.pl
 t/regex.pl
 t/tests.pl
