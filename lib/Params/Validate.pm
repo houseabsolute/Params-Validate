@@ -40,6 +40,9 @@ BEGIN
     {
         # suppress a subroutine redefined warning
         undef &Params::Validate::validation_options;
+        undef &Params::Validate::validate;
+        undef &Params::Validate::validate_pos;
+        undef &Params::Validate::validate_with;
         require Params::ValidatePP;
     }
 }
