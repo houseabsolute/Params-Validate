@@ -342,7 +342,7 @@ sub _normalize_named
 	foreach my $key (keys %h)
 	{
 	    my $new;
-	    ($new = $key) =~ s/^\Q$options->{strip_leading}//;
+	    ($new = $key) =~ s/^\Q$options->{strip_leading}\E//;
 	    $h{$new} = delete $h{$key};
 	}
     }
