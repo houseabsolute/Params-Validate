@@ -66,3 +66,4 @@ like( $@, qr/normalize_keys.+a defined value/ );
 
 eval { sub5( foo => 5, bar => 5 ) };
 like( $@, qr/normalize_keys.+already exists/ );
+

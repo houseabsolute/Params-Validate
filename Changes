@@ -1,3 +1,18 @@
+0.72 Dec 3, 2003
+
+- If a normalize_keys callback returns the same normalized key for two
+different inputs, Params::Validate will die.
+
+- The pure Perl implementation had a bug where if the same hash
+reference was used for the spec in multiple calls to validate(), then
+any call made after a parameter failed a validation check could
+exhibit strange behaviors (like parameters passing that shouldn't,
+etc.).  This was due to the fact that the Perl implementation uses
+each() internally, and was leaving the hash's iterator partially
+iterated.  Reported via an apparent problem with DateTime.pm by Jost
+Krieger.
+
+
 0.71 Dec 2, 2003
 
 - Suppressed some annoying "subroutine redefined" warnings if the pure

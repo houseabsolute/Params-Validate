@@ -725,39 +725,40 @@ get_options(HV* options)
 static SV*
 normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case)
 {
-  SV* ret;
+  SV* copy;
   STRLEN len_sl;
   STRLEN len;
   char *rawstr_sl;
   char *rawstr;
 
-  ret = sv_2mortal(newSVsv(key));
+  copy = sv_2mortal(newSVsv(key));
 
   /* if normalize_func is provided, ignore the other options */
   if (normalize_func) {
     dSP;
 
-    SV* key;
+    SV* normalized;
 
     PUSHMARK(SP);
-    XPUSHs(ret);
+    XPUSHs(copy);
     PUTBACK;
     if (! perl_call_sv(SvRV(normalize_func), G_SCALAR)) {
       croak("The normalize_keys callback did not return anything");
     }
     SPAGAIN;
-    key = POPs;
+    normalized = POPs;
     PUTBACK;
 
-    if (! SvOK(key))
-      croak("The normalize_keys callback did not return a defined value");
+    if (! SvOK(normalized)) {
+      croak("The normalize_keys callback did not return a defined value when normalizing the key '%s'", SvPV_nolen(copy));
+    }
 
-    return key;
+    return normalized;
   } else if (ignore_case || strip_leading) {
     if (ignore_case) {
       STRLEN i;
 
-      rawstr = SvPV(ret, len);
+      rawstr = SvPV(copy, len);
       for (i = 0; i < len; i++) {
         /* should this account for UTF8 strings? */
         *(rawstr + i) = toLOWER(*(rawstr + i));
@@ -766,15 +767,15 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
 
     if (strip_leading) {
       rawstr_sl = SvPV(strip_leading, len_sl);
-      rawstr = SvPV(ret, len);
+      rawstr = SvPV(copy, len);
 
       if (len > len_sl && strnEQ(rawstr_sl, rawstr, len_sl)) {
-        ret = sv_2mortal(newSVpvn(rawstr + len_sl, len - len_sl));
+        copy = sv_2mortal(newSVpvn(rawstr + len_sl, len - len_sl));
       }
     }
   }
 
-  return ret;
+  return copy;
 }
 
 static HV*
@@ -793,6 +794,10 @@ normalize_hash_keys(HV* p, SV* normalize_func, SV* strip_leading, IV ignore_case
   while (he = hv_iternext(p)) {
     normalized =
       normalize_one_key(HeSVKEY_force(he), normalize_func, strip_leading, ignore_case);
+
+    if (hv_fetch_ent(norm_p, normalized, 0, 0))
+      croak("The normalize_keys callback returned a key that already exists, '%s', when normalizing the key '%s'",
+            SvPV_nolen(normalized), SvPV_nolen(HeSVKEY_force(he)));
 
     if (! hv_store_ent(norm_p, normalized, SvREFCNT_inc(HeVAL(he)), 0)) {
       SvREFCNT_dec(HeVAL(he));

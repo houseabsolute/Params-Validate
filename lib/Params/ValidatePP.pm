@@ -201,7 +201,6 @@ sub validate (\@$)
     my $p = $_[0];
 
     my $specs = $_[1];
-
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
     unless ( $NO_VALIDATION )
@@ -240,11 +239,7 @@ sub validate (\@$)
 	$p = _normalize_named($p);
     }
 
-
-    if (!$NO_VALIDATION) {
-        _validate_named_depends($p, $specs);
-    }
-    else
+    if ($NO_VALIDATION)
     {
         return
             ( wantarray ?
@@ -254,8 +249,6 @@ sub validate (\@$)
                  grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
                  keys %$specs
                ),
-               # this recapitulates the login seen above in order to
-               # derefence our parameters properly
                ( ref $p eq 'ARRAY' ?
                  ( ref $p->[0] ?
                    %{ $p->[0] } :
@@ -285,6 +278,8 @@ sub validate (\@$)
             );
     }
 
+    _validate_named_depends($p, $specs);
+
     unless ( $options->{allow_extra} )
     {
         my $called = _get_called();
@@ -300,32 +295,38 @@ sub validate (\@$)
     }
 
     my @missing;
+
+    # the iterator needs to be reset in case the same hashref is being
+    # passed to validate() on successive calls, because we may not go
+    # through all the hash's elements
+    keys %$specs;
  OUTER:
     while ( my ($key, $spec) = each %$specs )
     {
 	if ( ! exists $p->{$key} &&
-             ( ref $spec ?
-               ! (
-                  do
-                  {
-                      # we want to short circuit the loop here if we
-                      # can assign a default, because there's no need
-                      # check anything else at all.
-                      if ( exists $spec->{default} )
-                      {
-                          $p->{$key} = $spec->{default};
-                          next OUTER;
-                      }
-                  }
-                  ||
-                  do
-                  {
-                      # Similarly, an optional parameter that is
-                      # missing needs no additional processing.
-                      $spec->{optional} && next OUTER
-                  }
-                 ) :
-               $spec )
+             ( ref $spec
+               ? ! (
+                    do
+                    {
+                        # we want to short circuit the loop here if we
+                        # can assign a default, because there's no need
+                        # check anything else at all.
+                        if ( exists $spec->{default} )
+                        {
+                            $p->{$key} = $spec->{default};
+                            next OUTER;
+                        }
+                    }
+                    ||
+                    do
+                    {
+                        # Similarly, an optional parameter that is
+                        # missing needs no additional processing.
+                        next OUTER if $spec->{optional};
+                    }
+                   )
+               : $spec
+             )
            )
         {
             push @missing, $key;
@@ -395,8 +396,14 @@ sub _normalize_callback
 
         unless ( defined $new_key )
         {
-            die "The normalize_keys callback did not return a defined value";
+            die "The normalize_keys callback did not return a defined value when normalizing the key '$key'";
         }
+
+        if ( exists $new{$new_key} )
+        {
+            die "The normalize_keys callback returned a key that already exists, '$new_key', when normalizing the key '$key'";
+        }
+
         $new{$new_key} = $p->{ $key };
     }
 
