@@ -1,3 +1,8 @@
+0.51
+
+- Added copyright info to each source file.  Added LICENSE file to
+distro.
+
 0.50
 
 - Added an XS implementation, written by Ilya Martynov.  The pure Perl
