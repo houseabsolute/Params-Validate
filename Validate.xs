@@ -1066,7 +1066,10 @@ validate_pos(p, ...)
         specs = (AV*) sv_2mortal((SV*) newAV());
         av_extend(specs, items);
         for(i = 1; i < items; i ++) {
-            av_store(specs, i - 1, SvREFCNT_inc(ST(i)));
+            if(!av_store(specs, i - 1, SvREFCNT_inc(ST(i)))) {
+                SvREFCNT_dec(ST(i));
+                croak("Cannot store value in array");
+            }
         }
 
         ret = validate_pos((AV*) SvRV(p), specs, get_options(NULL));
