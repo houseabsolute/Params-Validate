@@ -80,7 +80,7 @@
     } STMT_END
 
 /* These macros are used because Perl 5.6.1 (and presumably 5.6.0)
-   have problems if we try to do directly from XS code.  So instead,
+   have problems if we try to die directly from XS code.  So instead,
    we just set some global variables and return 0.  For 5.6.0,
    validate(), validate_pos(), and validate_with() are thin Perl level
    wrappers which localize these globals, call the XS sub, and then
@@ -799,27 +799,28 @@ validate_pos_depends(AV* p, AV* specs, HV* options)
   SV* buffer;
   SV* temp;
 
-  for(p_idx = 0; p_idx <= av_len(p); p_idx++) {
+  for (p_idx = 0; p_idx <= av_len(p); p_idx++) {
     p_spec = av_fetch(specs, p_idx, 0);
+
     if (p_spec != NULL && SvROK(*p_spec) &&
         SvTYPE(SvRV(*p_spec)) == SVt_PVHV) {
 
       depends = hv_fetch((HV*) SvRV(*p_spec), "depends", 7, 0);
 
-      if (depends != NULL) {
-        if (SvROK(*depends)) {
-          croak("Arguments to 'depends' for validate_pos() must be a scalar");
-        }
+      if (! depends) return 1;
 
-        if (av_len(p) < SvIV(*depends) -1) {
+      if (SvROK(*depends)) {
+        croak("Arguments to 'depends' for validate_pos() must be a scalar");
+      }
 
-          buffer = sv_2mortal(newSVpvf(
-                                       "Parameter #%d depends on parameter #%d, which was not given",
-                                       (int) p_idx + 1,
-                                       (int) SvIV(*depends)));
+      if (av_len(p) < SvIV(*depends) -1) {
 
-          FAIL(buffer, options);
-        }
+        buffer =
+          sv_2mortal(newSVpvf("Parameter #%d depends on parameter #%d, which was not given",
+                              (int) p_idx + 1,
+                              (int) SvIV(*depends)));
+
+        FAIL(buffer, options);
       }
     }
   }
@@ -852,63 +853,56 @@ validate_named_depends(HV* p, HV* specs, HV* options)
         SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
 
       if (hv_exists((HV*) SvRV(HeVAL(he1)), "depends", 7)) {
-        depends_value = hv_fetch((HV*) SvRV(HeVAL(he1)),
-                                 "depends", 7, 0);
-                    
-        /* check if the depends spec exists, and if it does, make sure
-         * it's an arrayre (if it's a scalar, convert it to an array)
-         */
-        if (depends_value != NULL) {
-          if (!SvROK(*depends_value)) {
-            depends_list = (AV*) sv_2mortal((SV*) newAV());
-            temp = sv_2mortal(newSVsv(*depends_value));
-            av_push(depends_list,SvREFCNT_inc(temp));
-          } else if (SvTYPE(SvRV(*depends_value)) == SVt_PVAV) {
-            depends_list = (AV*) SvRV(*depends_value);
-          } else {
-            /* if we're given a reference that's not arrayref,
-             * complain that we only accept scalar or arrayrefs
-             */
-            croak("Arguments to 'depends' must be a scalar or arrayref");
-          }
-    
-          for (d_idx =0; d_idx <= av_len(depends_list); d_idx++) {
 
-            depend_name = *av_fetch(depends_list, d_idx, 0);
-            /* first check if the parameter to which this
-             * depends on was given to us
+        depends_value = hv_fetch((HV*) SvRV(HeVAL(he1)), "depends", 7, 0);
+
+        if (! depends_value) return 1;
+
+        if (! SvROK(*depends_value)) {
+          depends_list = (AV*) sv_2mortal((SV*) newAV());
+          temp = sv_2mortal(newSVsv(*depends_value));
+          av_push(depends_list,SvREFCNT_inc(temp));
+        } else if (SvTYPE(SvRV(*depends_value)) == SVt_PVAV) {
+          depends_list = (AV*) SvRV(*depends_value);
+        } else {
+          croak("Arguments to 'depends' must be a scalar or arrayref");
+        }
+    
+        for (d_idx =0; d_idx <= av_len(depends_list); d_idx++) {
+
+          depend_name = *av_fetch(depends_list, d_idx, 0);
+
+          /* first check if the parameter to which this
+           * depends on was given to us
+           */
+          if (!hv_exists(p, SvPV_nolen(depend_name),
+                         SvCUR(depend_name))) {
+            /* oh-oh, the parameter that this parameter
+             * depends on is not available. Let's first check
+             * if this is even valid in the spec (i.e., the
+             * spec actually contains a spec for such parameter)
              */
-            if (!hv_exists(p, SvPV_nolen(depend_name),
+            if (!hv_exists(specs, SvPV_nolen(depend_name),
                            SvCUR(depend_name))) {
-              /* oh-oh, the parameter that this parameter
-               * depends on is not available. Let's first check
-               * if this is even valid in the spec (i.e., the
-               * spec actually contains a spec for such parameter)
-               */
-              if (!hv_exists(specs, SvPV_nolen(depend_name),
-                             SvCUR(depend_name))) {
 
-                buffer =
-                  sv_2mortal(newSVpv(
-                                     "Following parameter specified in depends for '",
-                                     0));
+              buffer =
+                sv_2mortal(newSVpv("Following parameter specified in depends for '", 0));
 
-                sv_catsv(buffer, HeSVKEY_force(he1));
-                sv_catpv(buffer, "' does not exist in spec: ");
-                sv_catsv(buffer, depend_name);
-    
-                croak(SvPV_nolen(buffer));
-              } 
-              /* if we got here, the spec was correct. we just
-               * need to issue a regular validation failure
-               */
-              buffer = sv_2mortal(newSVpv( "Parameter '", 0));
               sv_catsv(buffer, HeSVKEY_force(he1));
-              sv_catpv(buffer, "' depends on parameter '");
+              sv_catpv(buffer, "' does not exist in spec: ");
               sv_catsv(buffer, depend_name);
-              sv_catpv(buffer, "', which was not given");
-              FAIL(buffer, options);
-            }
+                
+              croak(SvPV_nolen(buffer));
+            } 
+            /* if we got here, the spec was correct. we just
+             * need to issue a regular validation failure
+             */
+            buffer = sv_2mortal(newSVpv( "Parameter '", 0));
+            sv_catsv(buffer, HeSVKEY_force(he1));
+            sv_catpv(buffer, "' depends on parameter '");
+            sv_catsv(buffer, depend_name);
+            sv_catpv(buffer, "', which was not given");
+            FAIL(buffer, options);
           }
         }
       }
@@ -1055,7 +1049,8 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
   validate_named_depends(p, specs, options);
 
   /* find missing parameters */
-  if (!no_validation()) missing = (AV*) sv_2mortal((SV*) newAV());
+  if (! no_validation()) missing = (AV*) sv_2mortal((SV*) newAV());
+
   hv_iterinit(specs);
   while (he = hv_iternext(specs)) {
     HV* spec;
@@ -1092,7 +1087,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     }
 
     /* find if missing parameter is mandatory */
-    if (!no_validation()) {
+    if (! no_validation()) {
       SV** temp;
 
       if (spec) {
@@ -1107,7 +1102,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     }
   }
 
-  if (!no_validation() && av_len(missing) > -1) {
+  if (! no_validation() && av_len(missing) > -1) {
     SV* buffer;
     IV i;
 
@@ -1188,7 +1183,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
 
   /* iterate through all parameters and validate them */
   min = -1;
-  for(i = 0; i <= av_len(specs); i ++) {
+  for (i = 0; i <= av_len(specs); i ++) {
     spec = *av_fetch(specs, i, 1);
     SvGETMAGIC(spec);
     complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
