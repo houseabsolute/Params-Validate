@@ -1,9 +1,9 @@
 0.70 Nov 23, 2003
 
-- Any validation call that used a callback leaked memory.  This was
-introduced in 0.67, when callbacks started receiving a reference to
-the parameters as a second argument.  Reported by Eugene van der
-Pijll.
+- Any validation call that used a callback leaked memory when using
+the XS version.  This was introduced in 0.67, when callbacks started
+receiving a reference to the parameters as a second argument.
+Reported by Eugene van der Pijll.
 
 
 0.69 Nov 3, 2003
