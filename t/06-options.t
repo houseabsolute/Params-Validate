@@ -8,7 +8,7 @@ BEGIN
 }
 
 use Test;
-BEGIN { plan test => 7 }
+plan test => $] == 5.006 ? 4 : 7;
 
 Params::Validate::validation_options( stack_skip => 2 );
 
@@ -33,10 +33,13 @@ eval { baz() };
 ok( $@ );
 ok( $@ =~ /mandatory.*missing.*call to main::baz/i );
 
-Params::Validate::validation_options( on_fail => sub { die { hash => 'ref' } } );
+unless ( $] == 5.006 )
+{
+    Params::Validate::validation_options( on_fail => sub { die { hash => 'ref' } } );
 
-eval { baz() };
+    eval { baz() };
 
-ok( $@ );
-ok( ref $@ eq 'HASH' );
-ok( $@->{hash} eq 'ref' );
+    ok( $@ );
+    ok( ref $@ eq 'HASH' );
+    ok( $@->{hash} eq 'ref' );
+}
