@@ -11,9 +11,6 @@
 #include "ppport.h"
 
 /* not defined in 5.00503 _or_ ppport.h! */
-#ifndef SvPV_nolen
-#  define SvPV_nolen(sv)          SvPV(sv, PL_na)
-#endif
 #ifndef CopSTASHPV
 #  ifdef USE_ITHREADS
 #    define CopSTASHPV(c)         ((c)->cop_stashpv)
