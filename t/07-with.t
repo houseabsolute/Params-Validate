@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use strict;
 
 $ENV{PERL_NO_VALIDATION} = 0;
