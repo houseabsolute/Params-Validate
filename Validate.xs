@@ -1075,9 +1075,15 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
             value = *av_fetch(p, i, 1);
             SvGETMAGIC(value);
             if (!no_validation() && complex_spec) {
-                buffer = sv_2mortal(newSVpvf("Parameter #%d (\"", (int) i + 1));
-                sv_catpv(buffer, SvPV_nolen(value));
-                sv_catpv(buffer, "\")");
+                buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
+                if (SvOK(value)) {
+                  sv_catpv(buffer, "\"");
+                  sv_catpv(buffer, SvPV_nolen(value));
+                  sv_catpv(buffer, "\"");
+                } else {
+                  sv_catpv(buffer, "undef");
+                }
+                sv_catpv(buffer, ")");
 
                 if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec), buffer, options))
                     return 0;
@@ -1136,7 +1142,9 @@ void
 _validate(p, specs)
         SV* p
         SV* specs
+
     PROTOTYPE: \@$
+
     PPCODE:
         HV* ret;
         AV* pa;
@@ -1186,7 +1194,9 @@ _validate(p, specs)
 void
 _validate_pos(p, ...)
         SV* p
+
     PROTOTYPE: \@@
+
     PPCODE:
         AV* specs;
         AV* ret;
@@ -1214,6 +1224,7 @@ _validate_pos(p, ...)
 
 void
 _validate_with(...)
+
     PPCODE:
         HV* p;
         SV* params;
