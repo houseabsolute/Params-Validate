@@ -47,7 +47,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 1;
 
@@ -100,6 +100,19 @@ Params::Validate - Validate method/function parameters
 		  }
 		}
 	      );
+  }
+
+  sub with_defaults
+  {
+       my %p = validate( @_, { foo => 1, # required
+                               # $p{bar} will be 99 if bar is not
+                               # given.  bar is now optional.
+                               bar => { default => 99 } } );
+  }
+
+  sub pos_with_defaults
+  {
+       my @p = validate( @_, 1, { default => 99 } );
   }
 
 =head1 DESCRIPTION
@@ -187,6 +200,9 @@ Please note that this:
 
 makes absolutely no sense, so don't do it.  Any zeros must come at the
 end of the validation specification.
+
+In addition, if you specify that a parameter can have a default, then
+it is considered optional.
 
 =head2 Type Validation
 
@@ -288,7 +304,7 @@ methods, we can do the following:
 =head2 Class Validation
 
 A word of warning.  When constructing your external interfaces, it is
-probably better to specify what you methods you expect an object to
+probably better to specify what methods you expect an object to
 have rather than what class it should be of (or a child of).  This
 will make your API much more flexible.
 
@@ -319,7 +335,7 @@ in error messages) and the value is a subroutine reference, such as:
              callbacks =>
              { 'smaller than a breadbox' => sub { shift() < $breadbox },
                'green or blue' =>
-                sub { my $val = shift; $val eq 'green' || $val eq 'blue' } } } );
+                sub { $_[0] eq 'green' || $_[0] eq 'blue' } } } );
 
 On a side note, I would highly recommend taking a look at Damian
 Conway's Regexp::Common module, which could greatly simply the
@@ -343,6 +359,25 @@ or this for positional parameters:
 By default, parameters are assumed to be mandatory unless specified as
 optional.
 
+=head2 Specifying defaults
+
+If the C<validate> or C<validate_pos> functions are called in a list
+context, they will return an array or hash containing the original
+parameters plus defaults as indicated by the validation spec.
+
+If the function is not called in a list context, providing a default
+in the validation spec still indicates that the parameter is optional.
+
+The hash or array returned from the function will always be a copy of
+the original parameters, in order to leave C<@_> untouched for the
+calling function.
+
+Simple examples of defaults would be:
+
+ my %p = validate( @_, { foo => 1, bar => { default => 99 } } );
+
+ my @p = validate( @_, 1, { default => 99 } );
+
 =head1 USAGE NOTES
 
 =head2 Method calls
@@ -361,8 +396,8 @@ something like this:
  sub method
  {
      my $self = shift;
-     validate( @_, { foo => 1, bar => { type => ARRAYREF } } );
-     my %params = @_;
+
+     my %params = validate( @_, { foo => 1, bar => { type => ARRAYREF } } );
  }
 
 =head1 "GLOBAL" OPTIONS

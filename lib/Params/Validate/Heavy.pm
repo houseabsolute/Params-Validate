@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.11 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -21,10 +21,10 @@ sub _validate_pos (\@@)
     local $options = _get_options( (caller(0))[0] );
 
     my $min = 0;
+
     while (1)
     {
-	last if ( ( ref $specs[$min] && $specs[$min]{optional} ) ||
-		  ! $specs[$min] );
+	last if _is_optional( $specs[$min] );
 	$min++;
     }
 
@@ -44,6 +44,22 @@ sub _validate_pos (\@@)
 	_validate_one_param( $p->[$_], $specs[$_], "Parameter #" . ($_ + 1) )
 	    if ref $specs[$_];
     }
+
+    return unless wantarray;
+
+    # Make a copy so we don't alter @_ for the caller.
+    my @p = @$p;
+
+    # Add defaults to existing parameters if called in list context
+    foreach (0..$#specs)
+    {
+	next unless ref $specs[$_];
+	next if $specs[$_]->{optional} || ! exists $specs[$_]->{default};
+
+	$p[$_] = $specs[$_]->{default};
+    }
+
+    return @p;
 }
 
 sub _validate (\@$)
@@ -56,12 +72,21 @@ sub _validate (\@$)
 
     if ( ref $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
     {
-	$p = [ %{ $p->[0] } ];
+	# Make a copy so we don't alter the hash reference for the
+	# caller.
+	$p = { %{ $p->[0] } };
     }
-    $options->{on_fail}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
-	if @$p % 2;
+    else
+    {
+	$options->{on_fail}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
+	    if @$p % 2;
 
-    $p = {@$p};
+	# This is to hashify the list.  Also has the side effect of
+	# copying the values so we can play with it however we want
+	# without actually changing @_.
+	$p = {@$p};
+    }
+
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
@@ -83,12 +108,8 @@ sub _validate (\@$)
     my @missing;
     foreach (keys %$specs)
     {
-	# foo => 1  used to mark mandatory argument with no other validation
-	if ( ( ! ref $specs->{$_} && $specs->{$_} ) ||
-	     ( ref $specs->{$_} && ! $specs->{$_}{optional} ) )
-	{
-	    push @missing, $_ unless exists $p->{$_};
-	}
+	next if exists $p->{$_};
+	push @missing, $_ unless _is_optional($specs->{$_});
     }
 
     if (@missing)
@@ -102,6 +123,30 @@ sub _validate (\@$)
 	_validate_one_param( $p->{$_}, $specs->{$_}, "The '$_' parameter" )
 	    if ref $specs->{$_} && exists $p->{$_};
     }
+
+    return unless wantarray;
+
+    # Add defaults to existing parameters if called in list context
+    while (my ($key, $spec) = each %$specs)
+    {
+	next if exists $p->{$key} || ! exists $spec->{default};
+
+	$p->{$key} = $spec->{default};
+    }
+    return %$p;
+}
+
+sub _is_optional
+{
+    my $spec = shift;
+
+    # foo => 1  used to mark mandatory argument with no other validation
+    return ! $spec unless ref $spec;
+
+    return $spec->{optional} if exists $spec->{optional};
+
+    # If it has a default it has to be optional
+    return exists $spec->{default};
 }
 
 sub _normalize_named
@@ -212,7 +257,7 @@ sub _validate_one_param
 	}
 
 	my $or = 0;
-	if ( ! grep { ref $value eq $_ } qw( SCALAR ARRAY HASH CODE GLOB ) )
+	if ( ! grep { ref $value eq $_ } keys %isas )
 	{
 	    $or = OBJECT;
 	}
