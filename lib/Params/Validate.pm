@@ -16,6 +16,7 @@ BEGIN
     sub OBJECT    () { 512 }
 
     sub HANDLE    () { 16 | 32 }
+    sub BOOLEAN   () { 1 | 256 }
 }
 
 require Exporter;
@@ -23,7 +24,7 @@ require Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $called $options);
 @ISA = qw(Exporter);
 
-my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
+my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
 	   );
 
 %EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos validation_options ), map { @{ $tags{$_} } } keys %tags ],
@@ -309,11 +310,7 @@ sub _validate_one_param
 	    return SCALAR;
 	}
 
-	my $or = 0;
-	unless ( $simple_refs{$ref} )
-	{
-	    $or = OBJECT;
-	}
+	my $or = $simple_refs{$ref} ? 0 : OBJECT;
 
 	foreach ( keys %isas )
 	{
@@ -466,8 +463,8 @@ functions.
 In addition, it can export the following constants, which are used as
 part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
 C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>,
-C<UNDEF>, C<OBJECT>, and C<HANDLE>.  These are explained in the
-section on L<Type Validation|Params::Validate/Type Validation>.
+C<UNDEF>, C<OBJECT>, C<BOOLEAN>, and C<HANDLE>.  These are explained
+in the section on L<Type Validation|Params::Validate/Type Validation>.
 
 The constants are available via the export tag C<:types>.  There is
 also an C<:all> tag which includes all of the constants as well as the
@@ -590,12 +587,16 @@ An undefined value
 
 A blessed reference.
 
+=item * BOOLEAN
+
+This is a special option, and is just a shortcut for C<UNDEF | SCALAR>.
+
 =item * HANDLE
 
-This option is special, in that it is just a shortcut for C<GLOB |
+This option is also special, and is just a shortcut for C<GLOB |
 GLOBREF>.  However, it seems likely that most people interested in
 either globs or glob references are likely to really be interested in
-whether what is being in is a potentially valid file or directory
+whether the parameter in questoin could be a valid file or directory
 handle.
 
 =back

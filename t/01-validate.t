@@ -33,6 +33,9 @@ use vars qw(@expect);
 	   0,
 	   q|^The 'foo' parameter to main::sub4a was an 'arrayref'.* types: glob globref|,
 
+	   0,
+	   0,
+
 	   # wasa
 	   0,
 	   0,
