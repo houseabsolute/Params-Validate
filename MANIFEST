@@ -9,4 +9,5 @@ t/02-noop.t
 t/03-attribute.t
 t/04-defaults.t
 t/05-noop_default.t
+t/06-options.t
 t/tests.pl
