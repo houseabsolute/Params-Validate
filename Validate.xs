@@ -329,7 +329,7 @@ get_called(HV* options)
             sv_setpv(caller, "N/A");
         }
 
-        return caller;
+        return sv_2mortal(caller);
     }
 }
 
