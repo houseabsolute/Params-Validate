@@ -6,6 +6,10 @@ Schaffner.
 - Validation callbacks now receive a reference to the (normalized)
 parameter hash/array as their second argument.
 
+- Shut up an "unitialized value in subroutine entry" warning caused by
+calling validate_pos() with an undef value in the parameter array.
+This was introduced in 0.66.
+
 
 0.66
 
