@@ -434,8 +434,8 @@ module must include a call to C<Params::Validate::validation_options>>.
 =item * ignore_case => $boolean
 
 This is only relevant when dealing with named parameters.  If it is
-true, then the validation code will ignore the case of parameters.
-Defaults to false.
+true, then the validation code will ignore the case of parameter
+names.  Defaults to false.
 
 =item * strip_leading => $characters
 
