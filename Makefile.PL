@@ -5,6 +5,7 @@ use strict;
 
 use ExtUtils::MakeMaker;
 use Config qw(%Config);
+use File::Spec;
 
 my $no_xs;
 for (@ARGV)
@@ -34,6 +35,33 @@ close F or no_cc();
 my $make = $^O =~ /win32/i ? 'nmake' : 'make';
 system("$make test$Config{obj_ext}") and no_cc();
 
+if ( -d 'CVS' )
+{
+    local *DIR;
+    opendir DIR, "t" or die "Cannot read t: $!";
+
+    foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
+    {
+        my $real_file = File::Spec->catfile( 't', $file );
+
+        local *F;
+        open F, "<$real_file" or die "Cannot read $real_file: $!";
+
+        my $test = do { local $/; <F> };
+
+        close F;
+
+        $test = "#!/usr/bin/perl -w\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
+
+        my $new_file = File::Spec->catfile( 't', "zz_$file" );
+        open F, ">$new_file" or die "Cannot write $new_file: $!";
+
+        print F $test;
+
+        close F;
+    }
+}
+
 sub write_makefile
 {
     print <<'EOF';
@@ -47,11 +75,13 @@ CHECK/INIT blocks'.
 
 EOF
 
+    my $zz = join ' ', glob File::Spec->catfile( 't', 'zz_*.t' );
+
     WriteMakefile( VERSION_FROM    => "lib/Params/Validate.pm",
                    NAME            => "Params::Validate",
                    PREREQ_PM       => $] >= 5.006 ? { 'Attribute::Handlers' => 0 } : {},
                    CONFIGURE       => \&init,
-                   clean           => { FILES => 'test.c' },
+                   clean           => { FILES => "test.c test.o $zz" },
                    ( $] >= 5.005 ?
                      ( ABSTRACT_FROM => 'lib/Params/Validate.pm',
                        AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
