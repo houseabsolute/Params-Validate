@@ -3,6 +3,7 @@ MANIFEST
 Makefile.PL
 README
 lib/Params/Validate.pm
+lib/Params/Validate/Heavy.pm
 t/01-validate.t
 t/02-noop.t
 t/tests.pl
