@@ -435,9 +435,10 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
 
 /* validates specific parameter using supplied parameter specification */
 static IV
-validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
+validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* untaint)
 {
   SV** temp;
+  IV   i;
 
   /* check type */
   if (temp = hv_fetch(spec, "type", 4, 0)) {
@@ -471,7 +472,6 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
     SvGETMAGIC(*temp);
 
     if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVAV) {
-      IV i;
       AV* array = (AV*) SvRV(*temp);
 
       for(i = 0; i <= av_len(array); i++) {
@@ -492,7 +492,6 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
   if (temp = hv_fetch(spec, "can", 3, 0)) {
     SvGETMAGIC(*temp);
     if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVAV) {
-      IV i;
       AV* array = (AV*) SvRV(*temp);
 
       for(i = 0; i <= av_len(array); i++) {
@@ -628,6 +627,11 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
       sv_catpv(buffer, " did not pass regex check\n");
       FAIL(buffer, options);
     }
+  }
+
+  if (temp = hv_fetch(spec, "untaint", 7, 0)) {
+    if (SvTRUE(*temp))
+      *untaint = 1;
   }
 
   return 1;
@@ -940,6 +944,8 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
   IV allow_extra;
   SV** temp;
   SV* normalize_func;
+  AV* untaint_keys = (AV*) sv_2mortal((SV*) newAV());
+  IV i;
 
   if (temp = hv_fetch(options, "ignore_case", 11, 0)) {
     SvGETMAGIC(*temp);
@@ -1008,6 +1014,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
           SV* buffer;
           HV* spec;
           char* value;
+          IV untaint = 0;
 
           spec = (HV*) SvRV(HeVAL(he1));
           buffer = sv_2mortal(newSVpv("The '", 0));
@@ -1024,8 +1031,14 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
           }
           sv_catpv(buffer, ")");
 
-          if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options))
+          if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options, &untaint))
             return 0;
+
+          /* The value stored here is meaningless, we're just tracking
+             keys to untaint later */
+          if (untaint){
+            av_push(untaint_keys, SvREFCNT_inc(HeSVKEY_force(he1)));
+          }
         }
       } else if (! allow_extra) {
         av_push(unmentioned, SvREFCNT_inc(HeSVKEY_force(he)));
@@ -1034,7 +1047,6 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
 
     if (!no_validation() && av_len(unmentioned) > -1) {
       SV* buffer;
-      IV i;
 
       buffer = sv_2mortal(newSVpv("The following parameter", 0));
       if (av_len(unmentioned) != 0) {
@@ -1066,7 +1078,8 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
   validate_named_depends(p, specs, options);
 
   /* find missing parameters */
-  if (! no_validation()) missing = (AV*) sv_2mortal((SV*) newAV());
+  if (! no_validation())
+    missing = (AV*) sv_2mortal((SV*) newAV());
 
   hv_iterinit(specs);
   while (he = hv_iternext(specs)) {
@@ -1079,7 +1092,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
       spec = NULL;
     }
 
-    /* test for parameter existance  */
+    /* test for parameter existence  */
     if (hv_exists_ent(p, HeSVKEY_force(he), HeHASH(he))) {
       continue;
     }
@@ -1110,6 +1123,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
       if (spec) {
         if (temp = hv_fetch(spec, "optional", 8, 0)) {
           SvGETMAGIC(*temp);
+
           if (SvTRUE(*temp)) continue;
         }
       } else if (!SvTRUE(HeVAL(he))) {
@@ -1121,7 +1135,6 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
 
   if (! no_validation() && av_len(missing) > -1) {
     SV* buffer;
-    IV i;
 
     buffer = sv_2mortal(newSVpv("Mandatory parameter", 0));
     if (av_len(missing) > 0) {
@@ -1141,6 +1154,11 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     sv_catpv(buffer, "\n");
 
     FAIL(buffer, options);
+  }
+
+  if (GIMME_V != G_VOID) {
+    for (i = 0; i <= av_len(untaint_keys); i++)
+      SvTAINTED_off(HeVAL(hv_fetch_ent(p, *av_fetch(untaint_keys, i, 0), 0, 0)));
   }
 
   return 1;
@@ -1222,6 +1240,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
   /* Index of highest-indexed required parameter known so far, or -1
      if no required parameters are known yet.  */
   IV min = -1;
+  AV* untaint_indexes = (AV*) sv_2mortal((SV*) newAV());
 
   /* iterate through all parameters and validate them */
   for (i = 0; i <= av_len(specs); i++) {
@@ -1239,7 +1258,10 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
     if (i <= av_len(p)) {
       value = *av_fetch(p, i, 1);
       SvGETMAGIC(value);
+
       if (! no_validation() && complex_spec) {
+        IV untaint = 0;
+
         buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
         if (SvOK(value)) {
           sv_catpv(buffer, "\"");
@@ -1250,14 +1272,24 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
         }
         sv_catpv(buffer, ")");
 
-        if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec), buffer, options))
+        if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec),
+                                 buffer, options, &untaint))
           return 0;
+
+        if (untaint)
+          av_push(untaint_indexes, newSViv(i));
       }
-      if (GIMME_V != G_VOID) av_push(ret, SvREFCNT_inc(value));
+
+      if (GIMME_V != G_VOID)
+        av_push(ret, SvREFCNT_inc(value));
+
     } else if (complex_spec &&
                (temp = hv_fetch((HV*) SvRV(spec), "default", 7, 0))) {
       SvGETMAGIC(*temp);
-      if (GIMME_V != G_VOID) av_push(ret, SvREFCNT_inc(*temp));
+
+      if (GIMME_V != G_VOID)
+        av_push(ret, SvREFCNT_inc(*temp));
+
     } else {
       if (i == min) {
 	/* We don't have as many arguments as the arg spec requires.  */
@@ -1300,6 +1332,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
         for(i = av_len(specs) + 1; i <= av_len(p); i++) {
           value = *av_fetch(p, i, 1);
           SvGETMAGIC(value);
+
           av_push(ret, SvREFCNT_inc(value));
         }
       }
@@ -1310,6 +1343,11 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
 
       FAIL(buffer, options);
     }
+  }
+
+  if (GIMME_V != G_VOID) {
+    for (i = 0; i <= av_len(untaint_indexes); i++)
+      SvTAINTED_off(*av_fetch(p, SvIV(*av_fetch(untaint_indexes, i, 0)), 0));
   }
 
   return 1;
@@ -1368,7 +1406,8 @@ _validate(p, specs)
     }
 
         
-    if (GIMME_V != G_VOID) ret = (HV*) sv_2mortal((SV*) newHV());
+    if (GIMME_V != G_VOID)
+      ret = (HV*) sv_2mortal((SV*) newHV());
     if (! validate(ph, (HV*) SvRV(specs), options, ret))
       XSRETURN(0);
 

@@ -4,6 +4,9 @@
 the XS code when a call to validate_pos() failed because too few
 parameters were given.  Patch from Britton Kerin.
 
+- Add a new untaint key to the validation spec, which untaints a value
+if it passes its validation checks.
+
 
 0.72 Dec 3, 2003
 

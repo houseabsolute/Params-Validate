@@ -128,6 +128,13 @@ sub validate_pos (\@@)
 
     _validate_pos_depends(\@p, \@specs);
 
+    foreach ( grep { defined $p[$_] && ! ref $p[$_]
+                     && ref $specs[$_] && $specs[$_]{untaint} }
+              0..$bigger )
+    {
+        ($p[$_]) = $p[$_] =~ /(.+)/;
+    }
+
     return wantarray ? @p : \@p;
 }
 
@@ -351,6 +358,14 @@ sub validate (\@$)
               " $missing missing in call to $called\n" );
     }
 
+    # do untainting after we know everything passed
+    foreach my $key ( grep { defined $p->{$_} && ! ref $p->{$_}
+                             && ref $specs->{$_} && $specs->{$_}{untaint} }
+                      keys %$p )
+    {
+        ($p->{$key}) = $p->{$key} =~ /(.+)/;
+    }
+
     return wantarray ? %$p : $p;
 }
 
@@ -417,10 +432,7 @@ sub _normalize_named
 
     if ( $options->{ignore_case} )
     {
-	foreach (keys %h)
-	{
-	    $h{ lc $_ } = delete $h{$_};
-	}
+        $h{ lc $_ } = delete $h{$_} for keys %h;
     }
 
     if ( $options->{strip_leading} )

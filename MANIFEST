@@ -28,6 +28,7 @@ t/15-case.t
 t/16-normalize.t
 t/17-callbacks.t
 t/18-depends.t
+t/19-untaint.t
 t/callbacks.pl
 t/defaults.pl
 t/regex.pl

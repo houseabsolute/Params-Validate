@@ -15,7 +15,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.72';
+    $VERSION = '0.73';
 
     my %tags =
         ( types =>
@@ -373,6 +373,26 @@ reference, such as:
            { foo =>
              callbacks =>
              { 'bigger than baz' => sub { $_[0] > $_[1]->{baz} } } } );
+
+=head2 Untainting
+
+If you want values untainted, set the "untaint" key in a spec hashref
+to a true value, like this:
+
+ my %p =
+   validate( @_, { foo =>
+                   { type => SCALAR, untaint => 1 },
+                   bar =>
+                   { type => ARRAYREF } } );
+
+This will untaint the "foo" parameter if the parameters are valid.
+
+Note that untainting is only done if I<all parameters> are valid.
+Also, only the return values are untainted, not the original values
+passed into the validation function.
+
+Asking for untainting of a reference value will not do anything, as
+C<Params::Validate> will only attempt to untaint the reference itself.
 
 =head2 Mandatory/Optional Revisited
 
