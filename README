@@ -1,16 +1,12 @@
-Param/Validate version 0.01
-===========================
+The Params::Validate module provides a flexible system for validation
+method/function call parameters.  The validation can be as simple as
+checking for the presence of required parameters or as complex as
+validating object classes (via isa) or capabilities (via can),
+checking parameter types, and using customized callbacks to ensure
+data integrity.
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
-
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+The module has been designed to work equally well with positional or
+named parameters (via a hash or hash reference).
 
 INSTALLATION
 
@@ -21,15 +17,10 @@ To install this module type the following:
    make test
    make install
 
-DEPENDENCIES
-
-This module requires these other modules and libraries:
-
-  blah blah blah
-
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
-
-Copyright (C) 2001 A. U. Thor blah blah blah
+Copyright (c) 2000-2001 Dave Rolsky
+All rights reserved.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
