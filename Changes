@@ -82,13 +82,13 @@ by Rob BloodGood.
 hash/array back from validate or validate_pos.  Partial patch
 submitted by Ken Williams.
 
-0.06
+0.06 Aug 23, 2001
 
 - Require Attribute::Handlers if using Perl 5.6.0+.
 
 - fix doc nits.
 
-0.05
+0.05 Aug 23, 2001
 
 - Added Attribute::Params::Validate - do validation via attributes!
 
@@ -97,11 +97,11 @@ safely and is included in the :all export tag.  set_options is
 deprecated and will be removed in a future release.  Thanks to Jon
 Swartz for the suggestion.
 
-0.04
+0.04 Apr 14, 2001
 
 - tweaks to make the code work under 5.00404
 
-0.03 
+0.03 Mar 17, 2001
 
 - make sure all error messages contain the name of the subroutine that
 was called.
@@ -112,11 +112,11 @@ spec has been improved.
 - use Carp::confess by default when dying with an error.  This
 produces a more useful error message.
 
-0.02  Tue Mar 06 18:30 2001
+0.02 Mar 6, 2001
 
 - fix a bug in the test suite that caused failures in 5.6.0.
 
-0.01  Sun Feb 11 16:10 2001
+0.01 Feb 16, 2001
 
 - Original release
 
