@@ -17,19 +17,29 @@ our @ISA = qw(Exporter);
 my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
 	   );
 
-our %EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos validation_options ), map { @{ $tags{$_} } } keys %tags ],
+our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } } keys %tags ],
 		     %tags,
 		   );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-our @EXPORT = qw( validate validate_pos validation_options );
+our @EXPORT = qw( validation_options );
 
 
-our $VERSION = sprintf '%2d.%02d', q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+our $VERSION = sprintf '%2d.%02d', q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
 {
-    my ($package, $symbol, $referent, $attr, $params) = @_;
+    _wrap_sub(@_, 'named');
+}
+
+sub UNIVERSAL::ValidatePos : ATTR(CODE, INIT)
+{
+    _wrap_sub(@_, 'positional');
+}
+
+sub _wrap_sub
+{
+    my ($package, $symbol, $referent, $attr, $params, $type) = @_;
 
     $params = {@$params};
 
@@ -54,7 +64,8 @@ EOF
 
 	$code .= "    my \$object = shift;\n" if $is_method;
 
-	$code .= "    Params::Validate::validate(\@_, \$params);\n";
+	my $function = $type eq 'named' ? 'validate' : 'validate_pos';
+	$code .= "    Params::Validate::$function(\@_, \$params);\n";
 
 	$code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
 
@@ -67,10 +78,100 @@ EOF
 	die $@ if $@;
 
 	*{$subname} = $sub;
-#	use B::Deparse;
-#	print B::Deparse->new->coderef2text($sub), "\n\n";
     }
 }
 
-
 1;
+
+
+=head1 NAME
+
+Attribute::Params::Validate - Validate method/function parameters using attributes
+
+=head1 SYNOPSIS
+
+  use Params::Validate qw(:all);
+
+  # takes named params (hash or hashref)
+  # foo is mandatory, bar is optional
+  sub foo : Validate ( foo => 1, bar => 0 )
+  {
+      ...
+  }
+
+  # takes positional params
+  # first two are mandatory, third is optional
+  sub bar : ValidatePos ( 1, 1, 0 )
+  {
+      ...
+  }
+
+  # for some reason Perl insists that the entire attribute be on one line
+  sub foo2 : Validate ( foo => { type => ARRAYREF }, bar => { can => [ 'print', 'flush', 'frobnicate' ] }, baz => { type => SCALAR, callbacks => { 'numbers only' => sub { shift() =~ /^\d+$/ }, 'less than 90' => sub { shift() < 90 } } } )
+  {
+      ...
+  }
+
+  # note that this is marked as a method.  This is very important!
+  sub baz : Validate ( foo => { type => ARRAYREF }, bar => { isa => 'Frobnicator' } ) method
+  {
+      ...
+  }
+
+=head1 DESCRIPTION
+
+The Attribute::Params::Validate module allows you to validate method
+or function call parameters just like Params::Validate does.  However,
+this module allows you to specify your validation spec as an
+attribute, rather than by calling the C<validate> routine.
+
+Please see Params::Validate for more information on how you can
+specify what validation is performed.
+
+=head2 EXPORT
+
+This module exports everthing that Params::Validate does except for
+the C<validate> and C<validate_pos> subroutines.
+
+=head2 ATTRIBUTES
+
+=over 4
+
+=item * Validate
+
+This attribute corresponse to the C<validate> subroutine in
+Params::Validate.
+
+=item * ValidatePos
+
+This attribute corresponse to the C<validate_pos> subroutine in
+Params::Validate.
+
+=back
+
+=head2 OO
+
+If you are using this module to mark B<methods> for validation, as
+opposed to subroutines, it is crucial that you mark these methods with
+the C<:method> attribute, as well as the C<Validate> or C<ValidatePos>
+attribute.
+
+If you do not do this, then the object or class used in the method
+call will be passed to the validation routines, which is probably not
+what you want.
+
+=head2 CAVEATS
+
+You B<must> put all the arguments to the C<Validate> or C<ValidatePos>
+attribute on a single line, or Perl will complain.
+
+=head1 SEE ALSO
+
+Params::Validate
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=cut
+
