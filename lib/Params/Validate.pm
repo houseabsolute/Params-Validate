@@ -42,7 +42,7 @@ my %tags =
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.18';
+$VERSION = '0.20';
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
@@ -265,29 +265,7 @@ sub validate_with
 {
     return if NO_VALIDATE && ! defined wantarray;
 
-    my %p = validate( @_,
-                      { params => { type => ARRAYREF | HASHREF },
-                        spec   => { type => ARRAYREF | HASHREF },
-
-                        called =>
-                        { type => SCALAR, optional => 1 },
-
-                        ignore_case =>
-                        { type => BOOLEAN, optional => 1 },
-
-                        strip_leading =>
-                        { type => BOOLEAN, optional => 1 },
-
-                        allow_extra =>
-                        { type => BOOLEAN, optional => 1 },
-
-                        on_fail =>
-                        { type => CODEREF, optional => 1 },
-
-                        stack_skip =>
-                        { type => SCALAR, optional => 1 },
-                      }
-                    );
+    my %p = @_;
 
     local $options = _get_options( (caller(0))[0], %p );
 
