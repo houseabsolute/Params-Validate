@@ -1,3 +1,9 @@
+0.57 Feb 28, 2003
+
+- When called from the main body of a script, the validation routines
+would cause an undefined value warning if validation failed.  Reported
+by Britton Kerin and fixed by Ilya Martynov.
+
 0.56 Feb 24, 2003
 
 - The XS code that handled callbacks expects all callbacks to return
