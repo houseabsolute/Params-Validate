@@ -293,6 +293,7 @@ sub _validate_one_param
 		 'GLOB'   => GLOBREF,
 		 'SCALAR' => SCALARREF,
 	       );
+    my %simple_refs = map { $_ => 1 } keys %isas;
 
     sub _get_type
     {
@@ -309,7 +310,7 @@ sub _validate_one_param
 	}
 
 	my $or = 0;
-	if ( ! grep { $ref eq $_ } keys %isas )
+	unless ( $simple_refs{$ref} )
 	{
 	    $or = OBJECT;
 	}

@@ -260,11 +260,11 @@ sub run_tests
 	check();
     }
 
-    # set_options
+    # validation_options
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( ignore_case => 1 );
+	    Params::Validate::validation_options( ignore_case => 1 );
 	}
 	eval { Foo::sub18( FOO => 1 ) };
 	check();

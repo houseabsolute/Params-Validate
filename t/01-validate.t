@@ -97,7 +97,7 @@ use vars qw(@expect);
 	   0,
 	   q|^0 parameters were passed .* but 1 - 2 were expected|,
 
-	   # set_options
+	   # validation_options
 	   0,
 	   q|^The following parameter .* FOO|,
 
