@@ -98,11 +98,17 @@ use vars qw(@expect);
 	   0,
 	   q|^0 parameters were passed .* but 1 - 2 were expected|,
 
-	   # positional - 3
+	   # positional - 4
 	   q|^3 parameters were passed .* but 1 - 2 were expected|,
 	   0,
 	   0,
 	   q|^0 parameters were passed .* but 1 - 2 were expected|,
+
+	   # positional - too few arguments supplied ##test 65 onward
+	   q|^0 parameters were passed .* but 3 - 4 were expected|,
+	   q|^2 parameters were passed .* but 3 - 4 were expected|,
+	   q|^0 parameters were passed .* but 3 - 4 were expected|,
+	   q|^2 parameters were passed .* but 3 - 4 were expected|,
 
 	   # validation_options
 	   0,

@@ -2,7 +2,7 @@ use strict;
 
 use Params::Validate qw(:all);
 
-print "1..93\n";
+print "1..97\n";
 
 $| = 1;
 
@@ -266,6 +266,18 @@ sub run_tests
 	eval { sub17( 1 ) };
 	check();
 	eval { sub17() };
+	check();
+    }
+
+    {
+	# positional - too few arguments supplied
+	eval { sub17a() };
+	check();
+	eval { sub17a(1, 2) };
+	check();
+	eval { sub17b() };
+	check();
+	eval { sub17b(42, 2) };
 	check();
     }
 
@@ -541,6 +553,21 @@ sub sub17
 	validate_pos( @_, 1 );
     }
 }
+
+sub sub17a
+{
+    validate_pos( @_, 1, 1, 1, 0 );
+}
+
+sub sub17b
+{
+    validate_pos( @_, 
+		  { callbacks =>
+		    { 'less than 43' => sub { shift() < 43 } }},
+		  { type => SCALAR }, 
+		  1,
+		  {optional => 1});
+} 
 
 sub sub18
 {

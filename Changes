@@ -1,3 +1,10 @@
+0.73
+
+- The minimum number of arguments required was reported incorrectly by
+the XS code when a call to validate_pos() failed because too few
+parameters were given.  Patch from Britton Kerin.
+
+
 0.72 Dec 3, 2003
 
 - If a normalize_keys callback returns the same normalized key for two

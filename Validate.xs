@@ -47,7 +47,7 @@
             return;                                   \
         case G_ARRAY:                                 \
             EXTEND(SP, av_len(ret) + 1);              \
-            for(i = 0; i <= av_len(ret); i ++) {      \
+            for(i = 0; i <= av_len(ret); i++) {      \
                 PUSHs(*av_fetch(ret, i, 1));          \
             }                                         \
             break;                                    \
@@ -474,7 +474,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
       IV i;
       AV* array = (AV*) SvRV(*temp);
 
-      for(i = 0; i <= av_len(array); i ++) {
+      for(i = 0; i <= av_len(array); i++) {
         SV* package;
 
         package = *av_fetch(array, i, 1);
@@ -495,7 +495,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
       IV i;
       AV* array = (AV*) SvRV(*temp);
 
-      for(i = 0; i <= av_len(array); i ++) {
+      for(i = 0; i <= av_len(array); i++) {
         SV* method;
 
         method = *av_fetch(array, i, 1);
@@ -1051,7 +1051,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
         sv_catpv(buffer, "was ");
       }
       sv_catpv(buffer, "not listed in the validation options: ");
-      for(i = 0; i <= av_len(unmentioned); i ++) {
+      for(i = 0; i <= av_len(unmentioned); i++) {
         sv_catsv(buffer, *av_fetch(unmentioned, i, 1));
         if (i < av_len(unmentioned)) {
           sv_catpv(buffer, " ");
@@ -1129,7 +1129,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     } else {
       sv_catpv(buffer, " ");
     }
-    for(i = 0; i <= av_len(missing); i ++) {
+    for(i = 0; i <= av_len(missing); i++) {
       sv_catpvf(buffer, "'%s'",
                 SvPV_nolen(*av_fetch(missing, i, 0)));
       if (i < av_len(missing)) {
@@ -1186,6 +1186,29 @@ validate_pos_failure(IV pnum, IV min, IV max, HV* options)
   return buffer;
 }
 
+/* Given a single parameter spec and a corresponding complex spec form
+   of it (which must be false if the spec is not complex), return true
+   says that the parameter is options.  */
+static bool 
+spec_says_optional(SV* spec, IV complex_spec) 
+{
+  SV** temp;
+
+  if (complex_spec) {
+    if (temp = hv_fetch((HV*) SvRV(spec), "optional", 8, 0)) {  
+      SvGETMAGIC(*temp);
+      if (!SvTRUE(*temp)) 
+	return FALSE;
+    } else {
+      return FALSE;
+    }
+  } else {
+    if (SvTRUE(spec)) 
+      return FALSE;
+  }
+  return TRUE;
+}
+
 static IV
 validate_pos(AV* p, AV* specs, HV* options, AV* ret)
 {
@@ -1196,30 +1219,27 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
   IV i;
   IV complex_spec;
   IV allow_extra;
-  IV min;
+  /* Index of highest-indexed required parameter known so far, or -1
+     if no required parameters are known yet.  */
+  IV min = -1;
 
   /* iterate through all parameters and validate them */
-  min = -1;
-  for (i = 0; i <= av_len(specs); i ++) {
+  for (i = 0; i <= av_len(specs); i++) {
     spec = *av_fetch(specs, i, 1);
     SvGETMAGIC(spec);
     complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
 
-    if (complex_spec) {
-      if (temp = hv_fetch((HV*) SvRV(spec), "optional", 8, 0)) {
-        SvGETMAGIC(*temp);
-        if (!SvTRUE(*temp)) min = i;
-      } else {
-        min = i;
-      }
-    } else {
-      if (SvTRUE(spec)) min = i;
+    /* Unless the current spec refers to an optional argument, update
+       our notion of the index of the highest-idexed required
+       parameter.  */
+    if (! spec_says_optional(spec, complex_spec) ) {
+      min = i;
     }
 
     if (i <= av_len(p)) {
       value = *av_fetch(p, i, 1);
       SvGETMAGIC(value);
-      if (!no_validation() && complex_spec) {
+      if (! no_validation() && complex_spec) {
         buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
         if (SvOK(value)) {
           sv_catpv(buffer, "\"");
@@ -1240,7 +1260,22 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
       if (GIMME_V != G_VOID) av_push(ret, SvREFCNT_inc(*temp));
     } else {
       if (i == min) {
+	/* We don't have as many arguments as the arg spec requires.  */
         SV* buffer;
+
+	/* Look forward through remaining argument specifications to
+	   find the last non-optional one, so we can correctly report the
+	   number of arguments required.  */
+	for (i++ ; i <= av_len(specs); i++) {
+	  spec = *av_fetch(specs, i, 1);
+	  SvGETMAGIC(spec);
+	  complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
+	  if (! spec_says_optional(spec, complex_spec)) {
+	    min = i;
+	  }
+	  if (min != i)
+            break;
+	}
 
         buffer = validate_pos_failure(av_len(p), min, av_len(specs), options);
 
@@ -1262,7 +1297,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
     if (allow_extra) {
       /* put all additional parameters into return array */
       if (GIMME_V != G_VOID) {
-        for(i = av_len(specs) + 1; i <= av_len(p); i ++) {
+        for(i = av_len(specs) + 1; i <= av_len(p); i++) {
           value = *av_fetch(p, i, 1);
           SvGETMAGIC(value);
           av_push(ret, SvREFCNT_inc(value));
@@ -1358,7 +1393,7 @@ _validate_pos(p, ...)
     }
     specs = (AV*) sv_2mortal((SV*) newAV());
     av_extend(specs, items);
-    for(i = 1; i < items; i ++) {
+    for(i = 1; i < items; i++) {
       if (!av_store(specs, i - 1, SvREFCNT_inc(ST(i)))) {
         SvREFCNT_dec(ST(i));
         croak("Cannot store value in array");
