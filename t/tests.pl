@@ -2,7 +2,7 @@ use strict;
 
 use Params::Validate qw(:all);
 
-print "1..91\n";
+print "1..93\n";
 
 sub run_tests
 {
@@ -356,6 +356,15 @@ sub run_tests
 
     eval { sub25( 1 ) };
     check();
+
+    eval { sub26( foo => 1 ) };
+    check();
+
+    {
+        my $fh = do { local *BAR; *BAR };
+        eval { sub26( foo => 1, bar => $fh ) };
+        check();
+    }
 }
 
 sub sub1
@@ -574,6 +583,16 @@ sub sub24
 sub sub25
 {
     validate( @_, { foo => 1 } );
+}
+
+sub sub26
+{
+    validate( @_, { foo =>
+                    { type => SCALAR },
+                    bar =>
+		    { type => HANDLE, optional => 1 },
+                  },
+	    );
 }
 
 {
