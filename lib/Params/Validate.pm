@@ -96,7 +96,7 @@ sub validate_pos (\@@)
                     if ref $specs[$x] && exists $specs[$x]->{default};
 	}
 
-	return @p;
+	return wantarray ? @p : \@p;
     }
 
     # I'm too lazy to pass these around all over the place.
@@ -198,21 +198,43 @@ sub validate (\@$)
 
     if ( NO_VALIDATE )
     {
-        return (
-                # this is a has containing just the defaults
-                ( map { $_ => $specs->{$_}->{default} }
-                  grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
-                  keys %$specs
-                ),
-                # this recapitulates the login seen above in order to
-                # derefence our parameters properly
-                ( ref $p eq 'ARRAY' ?
-                  ( ref $p->[0] ?
-                    %{ $p->[0] } :
-                    @$p ) :
-                  %$p
-                )
-               );
+        return
+            ( wantarray ?
+              (
+               # this is a has containing just the defaults
+               ( map { $_ => $specs->{$_}->{default} }
+                 grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
+                 keys %$specs
+               ),
+               # this recapitulates the login seen above in order to
+               # derefence our parameters properly
+               ( ref $p eq 'ARRAY' ?
+                 ( ref $p->[0] ?
+                   %{ $p->[0] } :
+                   @$p ) :
+                 %$p
+               )
+              ) :
+              do
+              {
+                  my $ref =
+                      ( ref $p eq 'ARRAY' ?
+                        ( ref $p->[0] ?
+                          $p->[0] :
+                          {@$p} ) :
+                        $p
+                      );
+
+                  foreach ( grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
+                            keys %$specs )
+                  {
+                      $ref->{$_} = $specs->{$_}->{default}
+                          unless exists $ref->{$_};
+                  }
+
+                  $ref;
+              }
+            );
     }
 
     unless ( $options->{allow_extra} )
