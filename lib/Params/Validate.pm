@@ -42,7 +42,7 @@ sub validate_pos (\@@)
     my $p = shift;
     my @specs = @_;
 
-    if ( $ENV{NO_VALIDATE} )
+    if ( $ENV{PERL_NO_VALIDATION} )
     {
 	foreach my $x (0..$#specs)
 	{
@@ -123,7 +123,7 @@ sub validate (\@$)
 	$p = {@$p};
     }
 
-    if ( $ENV{NO_VALIDATE} )
+    if ( $ENV{PERL_NO_VALIDATION} )
     {
 	while ( my ($key, $spec) = each %$specs )
 	{
@@ -802,18 +802,13 @@ The default is to simply use the Carp module's C<confess()> function.
 
 =head1 DISABLING VALIDATION
 
-** This functionality may change in the future **
-
-If the environment variable C<NO_VALIDATION> is set to something true,
-then all calls to the validation functions are turned into no-ops.
-This may be useful if you only want to use this module during
+If the environment variable C<PERL_NO_VALIDATION> is set to something
+true, then all calls to the validation functions are turned into
+no-ops.  This may be useful if you only want to use this module during
 development but don't want the speed hit during production.
 
 The only error that will be caught will be when an odd number of
 parameters are passed into a function/method that expects a hash.
-
-I am not terribly happy with the current mechanism for doing this so
-this may change in the future.
 
 =head1 LIMITATIONS
 

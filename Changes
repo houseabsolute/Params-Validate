@@ -1,3 +1,23 @@
+0.08
+
+- Explicitly mention that, by default, Params::Validate uses
+Carp::confess to report a validation failure.  Suggested by Mark
+Stosberg.
+
+- The 'NO_VALIDATION' mode was seriously broken in that it didn't
+handle defaults at all.
+
+- The 'NO_VALIDATION' env var was mis-documented as being
+'NO_VALIDATE'.
+
+- The 'NO_VALIDATION' env var is now 'PERL_NO_VALIDATION' and this
+method of disabling validation is no longer considered alpha.
+
+- The validation functions now check this environment variable every
+time they are called.  This is probably a bit slower than the previous
+implementation, which only checked once when the module was loaded.
+If you have a problem with this, let me know.
+
 0.07
 
 - Fix problem with CPAN shell's 'r' command that

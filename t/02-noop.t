@@ -2,7 +2,7 @@ use strict;
 
 use lib './t';
 
-$ENV{NO_VALIDATE} = 1;
+$ENV{PERL_NO_VALIDATION} = 1;
 require Params::Validate;
 Params::Validate->import(':all');
 

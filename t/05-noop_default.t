@@ -4,7 +4,7 @@ use lib './t';
 
 BEGIN
 {
-    $ENV{NO_VALIDATE} = 1;
+    $ENV{PERL_NO_VALIDATION} = 1;
     require Params::Validate;
     Params::Validate->import(':all');
 }
@@ -15,7 +15,7 @@ my %p;
 
 eval { %p = foo( a => 1 ) };
 ok( ! $@,
-    "NO_VALIDATE env var did not cause validation to be skipped: $!" );
+    "NO_VALIDATION env var did not cause validation to be skipped: $!" );
 
 ok( exists $p{a},
     "Parameter 'a' did not exist in the returned hash" );
@@ -32,7 +32,7 @@ ok( $p{b} == 2,
 my @p;
 eval { @p = bar( 1 ) };
 ok( ! $@,
-    "NO_VALIDATE env var did not cause validation to be skipped: $!" );
+    "NO_VALIDATION env var did not cause validation to be skipped: $!" );
 
 ok( defined $p[0],
     "Parameter 0 was not defined in the returned array" );
