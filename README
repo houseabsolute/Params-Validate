@@ -6,7 +6,7 @@ checking parameter types, and using customized callbacks to ensure
 data integrity.
 
 The module has been designed to work equally well with positional or
-named parameters (via a hash or hash reference).
+named parameters (as a hash or hash reference).
 
 It includes both a fast XS implementation, and a slower pure Perl
 implementation that it can fall back on.
