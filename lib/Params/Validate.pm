@@ -22,13 +22,15 @@ BEGIN
 	*validate = sub { 1 };
 	*validate_pos = sub { 1 };
 	*set_options = sub { 1 };
+	*validation_options = sub { 1 };
     }
     else
     {
 	require Params::Validate::Heavy;
 	*validate = \&_validate;
 	*validate_pos = \&_validate_pos;
-	*set_options = \&_set_options;
+	*set_options = \&_validation_options;
+	*validation_options = \&_validation_options;
     }
 }
 
@@ -39,7 +41,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
 	   );
 
-%EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos ), map { @{ $tags{$_} } } keys %tags ],
+%EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos validation_options ), map { @{ $tags{$_} } } keys %tags ],
 		 %tags,
 	       );
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
@@ -114,21 +116,18 @@ arguments.
 
 =head2 EXPORT
 
-The module always exports the C<validate> and C<validate_pos> methods.
+The module always exports the C<validate> and C<validate_pos>
+functions.
+
 In addition, it can export the following constants, which are used as
 part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
 C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>,
 C<UNDEF>, C<OBJECT>, and C<HANDLE>.  These are explained in the
-section on L<Type Validation|Params::Validate/Type Validation>.  These
-constants are available via the tag C<:types>.  There is also a
-C<:all> tag, which for now is equivalent to the C<:types> tag.
+section on L<Type Validation|Params::Validate/Type Validation>.
 
-Finally, it is possible to import the L<C<set_options>|"GLOBAL"
-OPTIONS> function, but only by requesting it explicitly, as it is not
-included in C<:all>.  The reason for this is that this function only
-needs to be called once per module and its name is potentially common
-enough that exporting it without an explicit request to do so seems
-bound to cause trouble.
+The constants are available via the export tag C<:types>.  There is
+also an C<:all> tag which includes all of the constants as well as the
+C<validation_options> function.
 
 =head1 PARAMETER VALIDATION
 
@@ -380,18 +379,18 @@ B<only applied to calls originating from the package that set the
 options>.
 
 In other words, if I am in package C<Foo> and I call
-C<Params::Validate::set_options>, those options are only in effect
-when I call C<validate> from package C<Foo>.
+C<Params::Validate::validation_options>, those options are only in
+effect when I call C<validate> from package C<Foo>.
 
 While this is quite different from how most other modules operate, I
 feel that this is necessary in able to make it possible for one
 module/application to use Params::Validate while still using other
 modules that also use Params::Validate, perhaps with different
-options set;
+options set.
 
 The downside to this is that if you are writing an app with a standard
 calling style for all functions, and your app has ten modules, B<each
-module must include a call to C<Params::Validate::set_options>>.
+module must include a call to C<Params::Validate::validation_options>>.
 
 =head2 Options
 
