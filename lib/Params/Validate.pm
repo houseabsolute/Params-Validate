@@ -141,18 +141,15 @@ sub validate (\@$)
 
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
-    my %p;
     unless ( NO_VALIDATE )
     {
-        if ( defined $p->[0] && ref $p->[0] )
+        if ( ref $p eq 'ARRAY' )
         {
-            # Make a copy so we don't alter the hash reference for the
-            # caller.
-            %p = %{ $p->[0] };
-        }
-        else
-        {
-            if ( @$p % 2 )
+            if ( @$p == 1 )
+            {
+                $p = $p->[0];
+            }
+            elsif ( @$p % 2 )
             {
                 my $called =
                     ( exists $options->{called} ?
@@ -163,19 +160,19 @@ sub validate (\@$)
                 $options->{on_fail}->
                     ( "Odd number of parameters in call to $called " .
                       "when named parameters were expected\n" );
-            }
 
-            # This is to hashify the list.  Also has the side effect of
-            # copying the values so we can play with it however we want
-            # without actually changing @_.
-            %p = @$p;
+            }
+            else
+            {
+                $p = {@$p};
+            }
         }
     }
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
 	$specs = _normalize_named($specs);
-	%p = %{ _normalize_named(\%p) };
+	$p = _normalize_named($p);
     }
 
     if ( NO_VALIDATE )
@@ -199,7 +196,7 @@ sub validate (\@$)
               (caller( $options->{stack_skip} ))[3]
             );
 
-	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %p )
+	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %$p )
 	{
 	    $options->{on_fail}->
                 ( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
@@ -213,7 +210,7 @@ sub validate (\@$)
  OUTER:
     while ( my ($key, $spec) = each %$specs )
     {
-	if ( ! exists $p{$key} &&
+	if ( ! exists $p->{$key} &&
              ( ref $spec ?
                ! ( do
                    {
@@ -224,7 +221,7 @@ sub validate (\@$)
                    {
                        if ( exists $spec->{default} )
                        {
-                           $p{$key} = $spec->{default};
+                           $p->{$key} = $spec->{default};
                            next OUTER;
                        }
                    }
@@ -239,7 +236,7 @@ sub validate (\@$)
             # Can't validate a non hashref spec beyond presence/absence of the parameter.
             next unless ref $spec;
 
-	    _validate_one_param( $p{$key}, $spec, "The '$key' parameter" );
+	    _validate_one_param( $p->{$key}, $spec, "The '$key' parameter" );
 	}
     }
 
@@ -258,7 +255,7 @@ sub validate (\@$)
               " $missing missing in call to $called\n" );
     }
 
-    return %p if wantarray;
+    return wantarray ? %$p : $p;
 }
 
 sub validate_with
@@ -284,10 +281,8 @@ sub validate_with
     }
     else
     {
-        $p{params} = [ %{ $p{params} } ]
-            unless UNIVERSAL::isa( $p{params}, 'ARRAY' );
-
-	return validate( @{ $p{params} }, $p{spec} );
+        # intentionally ignore prototype
+	return &validate( $p{params}, $p{spec} );
     }
 }
 
