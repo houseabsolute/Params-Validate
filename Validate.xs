@@ -245,22 +245,28 @@ validation_failure(SV* message, HV* options)
         PUTBACK;
         perl_call_sv(on_fail, G_DISCARD | G_EVAL);
         if (SvTRUE(ERRSV)) {
+            croak(SvPV_nolen(ERRSV));
+        } else {
             croak(Nullch);
-        }        
+        }
     }
 
     /* by default resort to Carp::confess for error reporting */
     {
+        perl_require_pv("Carp.pm");
         dSP;
-        perl_require_pv("Carp");
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
-        perl_call_pv("Carp::confess", G_DISCARD | G_EVAL);
+        perl_call_pv("Carp::croak", G_DISCARD | G_EVAL);
         if (SvTRUE(ERRSV)) {
+            croak(SvPV_nolen(ERRSV));
+        } else {
             croak(Nullch);
         }
     }
+
+    return;
 }
 
 /* get called subroutine fully qualified name */
@@ -285,8 +291,7 @@ get_called(HV* options)
 
         buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", frame));
 
-        /* another damn thing ppport should handle but doesn't, argh! */
-        return perl_eval_pv(SvPV(buffer, PL_na), 1);
+        return perl_eval_pv(SvPV_nolen(buffer), 1);
     }
 }
 
