@@ -9,7 +9,7 @@ BEGIN
     }
 }
 
-print "1..10\n";
+print "1..13\n";
 
 use Attribute::Params::Validate qw(:types);
 
@@ -30,6 +30,11 @@ sub baz :Validate( foo => { type => ARRAYREF, callbacks => { '5 elements' => sub
 {
     my %data = @_;
     return $data{foo}->[0];
+}
+
+sub quux :ValidatePos( { type => SCALAR }, 1 )
+{
+    return $_[0];
 }
 
 my $res = eval { foo( c => 1 ) };
@@ -69,6 +74,19 @@ ok( ! $@,
 
 ok( $res == 5,
     "The return value from baz( foo => [5,4,3,2,1] ) was $res\n" );
+
+eval { quux( [], 1 ) };
+
+ok( $@,
+    "No exception was thrown when calling quux( [], 1 )\n" );
+
+ok( $@ =~ /2 parameters were passed to .* but 1 was expected/,
+    "The exception thrown when calling quux( [], 1 ) was $@\n" );
+
+$res = eval { quux( 1, [] ) };
+
+ok( ! $@,
+    "Calling quux failed: $@\n" );
 
 sub ok
 {
