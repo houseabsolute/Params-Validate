@@ -871,7 +871,7 @@ validate(HV* p, HV* specs, HV* options)
             sv_catpv(buffer, " ");
         }
         for(i = 0; i <= av_len(missing); i ++) {
-            sv_catpvf(buffer, "'\%s'",
+            sv_catpvf(buffer, "'%s'",
                       SvPV_nolen(*av_fetch(missing, i, 0)));
             if(i < av_len(missing)) {
                 sv_catpv(buffer, ", ");
