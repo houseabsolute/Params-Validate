@@ -2,12 +2,13 @@ package Params::Validate;
 
 use strict;
 
-$Params::Validate::VERSION = '0.50';
-
 BEGIN
 {
+    $Params::Validate::VERSION = '0.50';
+
     unless ( eval { require Params::ValidateXS } )
     {
+        # suppress a subroutine redefined warnin
         undef &Params::Validate::validation_options;
         require Params::ValidatePP;
     }
