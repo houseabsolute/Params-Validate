@@ -455,7 +455,13 @@ figures out how to do this, please let me know.
 
 =head1 SEE ALSO
 
-Carp::Assert and Class::Contract.
+Getargs::Long - similar capabilities with a different interface.  If
+you like what Params::Validate does but not its 'feel' try this one
+instead.
+
+Carp::Assert and Class::Contract - other modules in the general spirit
+of validating that certain things are true before/while/after
+executing actual program code.
 
 =head1 AUTHOR
 
