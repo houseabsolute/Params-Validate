@@ -59,6 +59,15 @@ monstrosity):
 -- We only calculate $called as needed for this reason, even though it
    means copying code all over.
 
+- All the validation routines need to be careful never to alter the
+  references that are passed.
+
+-- The code assumes that _most_ callers will not be using the
+   skip_leading or ignore_case features.  In order to not alter the
+   references passed in, we copy them wholesale when normalize them to
+   make these features work.  This is slower but lets us be faster
+   when not using them.
+
 =end
 
 =cut
@@ -132,18 +141,18 @@ sub validate_pos (\@@)
     foreach ( 0..$bigger )
     {
 	my $spec = $specs[$_];
-	if ( $_ <= $#p )
-	{
-	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) )
-		if ref $spec;
-	}
 
 	next unless ref $spec;
+
+	if ( $_ <= $#p )
+	{
+	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) );
+	}
 
 	$p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
     }
 
-    return @p if wantarray;
+    return wantarray ? @p : \@p;
 }
 
 sub validate (\@$)
@@ -160,7 +169,9 @@ sub validate (\@$)
     {
         if ( ref $p eq 'ARRAY' )
         {
-            if ( @$p == 1 && ref $p->[0] )
+            # we were called as validate( @_, ... ) where @_ has a
+            # single element, a hash reference
+            if ( ref $p->[0] )
             {
                 $p = $p->[0];
             }
@@ -171,7 +182,6 @@ sub validate (\@$)
                 $options->{on_fail}->
                     ( "Odd number of parameters in call to $called " .
                       "when named parameters were expected\n" );
-
             }
             else
             {
@@ -188,16 +198,20 @@ sub validate (\@$)
 
     if ( NO_VALIDATE )
     {
-        return ( ( map { $_ => $specs->{$_}->{default} }
-                   grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
-                   keys %$specs
-                 ),
-                 ( ref $p eq 'ARRAY' ?
-                   ( ref $p->[0] ?
-                     %{ $p->[0] } :
-                     @$p ) :
-                   %$p
-                 )
+        return (
+                # this is a has containing just the defaults
+                ( map { $_ => $specs->{$_}->{default} }
+                  grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
+                  keys %$specs
+                ),
+                # this recapitulates the login seen above in order to
+                # derefence our parameters properly
+                ( ref $p eq 'ARRAY' ?
+                  ( ref $p->[0] ?
+                    %{ $p->[0] } :
+                    @$p ) :
+                  %$p
+                )
                );
     }
 
@@ -224,15 +238,20 @@ sub validate (\@$)
                ! (
                   do
                   {
+                      # we want to short circuit the loop here if we
+                      # can assign a default, because there's no need
+                      # check anything else at all.
                       if ( exists $spec->{default} )
                       {
                           $p->{$key} = $spec->{default};
                           next OUTER;
-                       }
+                      }
                   }
                   ||
                   do
                   {
+                      # Similarly, an optional parameter that is
+                      # missing needs no additional processing.
                       $spec->{optional} && next OUTER
                   }
                  ) :
@@ -241,11 +260,10 @@ sub validate (\@$)
         {
             push @missing, $key;
 	}
-        else
+        # Can't validate a non hashref spec beyond the presence or
+        # absence of the parameter.
+        elsif (ref $spec)
         {
-            # Can't validate a non hashref spec beyond presence/absence of the parameter.
-            next unless ref $spec;
-
 	    _validate_one_param( $p->{$key}, $spec, "The '$key' parameter" );
 	}
     }
@@ -287,7 +305,9 @@ sub validate_with
     }
     else
     {
-        # intentionally ignore prototype
+        # intentionally ignore the prototype because this contains
+        # either an array or hash reference, and validate() will
+        # handle either one properly
 	return &validate( $p{params}, $p{spec} );
     }
 }
@@ -654,7 +674,7 @@ subroutine like this:
                  ...
                } );
 
-Subroutines expected positional parameters should call the
+Subroutines expecting positional parameters should call the
 C<validate_pos> subroutine like this:
 
  validate_pos( @_, { validation spec }, { validation spec } );
@@ -874,6 +894,9 @@ Simple examples of defaults would be:
 
  my @p = validate( @_, 1, { default => 99 } );
 
+In scalar context, a hash reference or array reference will be
+returned, as appropriate.
+
 =head1 USAGE NOTES
 
 =head2 Validation failure
@@ -940,6 +963,9 @@ This is only relevant when dealing with named parameters.  If it is
 true, then the validation code will ignore the case of parameter
 names.  Defaults to false.
 
+When this is turned on, we have to copy more data around internally,
+leading to a potential speed impact.
+
 =item * strip_leading => $characters
 
 This too is only relevant when dealing with named parameters.  If this
@@ -947,6 +973,9 @@ is given then any parameters starting with these characters will be
 considered equivalent to parameters without them entirely.  For
 example, if this is specified as '-', then C<-foo> and C<foo> would be
 considered identical.
+
+When this is turned on, we have to copy more data around internally,
+leading to a potential speed impact.
 
 =item * allow_extra => $boolean
 
