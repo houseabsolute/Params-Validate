@@ -2,7 +2,9 @@ use strict;
 
 use lib './t';
 
-use Params::Validate qw(:all);
+$ENV{PERL_NO_VALIDATION} = 0;
+require Params::Validate;
+Params::Validate->import(':all');
 
 use vars qw(@expect);
 @expect = (

@@ -1,6 +1,9 @@
 use strict;
 
-use Params::Validate qw(:all);
+$ENV{PERL_NO_VALIDATION} = 0;
+require Params::Validate;
+Params::Validate->import(':all');
+
 
 use lib '.', './t';
 

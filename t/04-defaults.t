@@ -1,6 +1,11 @@
 use strict;
 
-use Params::Validate qw(:all);
+BEGIN
+{
+    $ENV{PERL_NO_VALIDATION} = 0;
+    require Params::Validate;
+    Params::Validate->import(':all');
+}
 
 print "1..10\n";
 

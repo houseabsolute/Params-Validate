@@ -14,6 +14,10 @@ BEGIN
 	print "1..0\n";
 	exit;
     }
+
+    $ENV{PERL_NO_VALIDATION} = 0;
+    require Attribute::Params::Validate;
+    Params::Validate->import(':all');
 }
 
 if ( $] == 5.006 )
@@ -31,8 +35,6 @@ EOF
 }
 
 print "1..13\n";
-
-use Attribute::Params::Validate qw(:types);
 
 sub foo :Validate( c => { type => SCALAR } )
 {
