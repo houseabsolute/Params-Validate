@@ -1,10 +1,19 @@
 use strict;
 
-eval "use Attribute::Handlers";
-if ($@)
+BEGIN
 {
-    print "1..0\n";
-    exit;
+    if ($] < 5.006)
+    {
+	print "1..0\n";
+	exit;
+    }
+
+    eval "use Attribute::Handlers";
+    if ($@)
+    {
+	print "1..0\n";
+	exit;
+    }
 }
 
 if ( $] == 5.006 )
