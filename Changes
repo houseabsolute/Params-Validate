@@ -6,6 +6,12 @@ Schaffner.
 - Error messages now include the stringified value of the variable
 that was invalid.  Implemented by Daisuke Maki.
 
+- Added a new parameter normalization callback feature, the
+"normalize_keys" option.  Implemented by Daisuke Maki.
+
+** The "strip_leading" and "ignore_case" options are now deprecated.
+Use the new "normalize" feature instead.
+
 
 0.65 Aug 07, 2003
 

@@ -30,6 +30,7 @@ my $default_fail = sub { require Carp;
 		     allow_extra   => 0,
 		     on_fail       => $default_fail,
 		     stack_skip    => 1,
+                     normalize_keys => undef,
 		   );
 
     *set_options = \&validation_options;

@@ -24,6 +24,8 @@ t/11-cb.t
 t/12-noop_cb.t
 t/13-taint.t
 t/14-no_validate.t
+t/15-case.t
+t/16-normalize.t
 t/callbacks.pl
 t/defaults.pl
 t/regex.pl

@@ -116,8 +116,7 @@ Params::Validate - Validate method/function parameters
        my %p = validate_with
                    ( params => \@_,
                      spec   => { foo => { type SCALAR, default => 2 } },
-                     ignore_case   => 1,
-                     strip_leading => '-',
+                     normalize_keys => sub { $_[0] =~ s/^-//; lc $_[0] },
                    );
   }
 
@@ -135,7 +134,7 @@ arguments.
 
 =head2 EXPORT
 
-The module always exports the C<validate> and C<validate_pos>
+The module always exports the C<validate()> and C<validate_pos()>
 functions.
 
 It also has an additional function available for export,
@@ -150,7 +149,7 @@ in the section on L<Type Validation|Params::Validate/Type Validation>.
 
 The constants are available via the export tag C<:types>.  There is
 also an C<:all> tag which includes all of the constants as well as the
-C<validation_options> function.
+C<validation_options()> function.
 
 =head1 PARAMETER VALIDATION
 
@@ -164,7 +163,7 @@ checks fail.
 When handling named parameters, the module is capable of handling
 either a hash or a hash reference transparently.
 
-Subroutines expecting named parameters should call the C<validate>
+Subroutines expecting named parameters should call the C<validate()>
 subroutine like this:
 
  validate( @_, { parameter1 => validation spec,
@@ -173,7 +172,7 @@ subroutine like this:
                } );
 
 Subroutines expecting positional parameters should call the
-C<validate_pos> subroutine like this:
+C<validate_pos()> subroutine like this:
 
  validate_pos( @_, { validation spec }, { validation spec } );
 
@@ -186,8 +185,8 @@ For a subroutine expecting named parameters, you would do this:
 
  validate( @_, { foo => 1, bar => 1, baz => 0 } );
 
-This says that the C<foo> and C<bar> parameters are mandatory and that
-the C<baz> parameter is optional.  The presence of any other
+This says that the "foo" and "bar" parameters are mandatory and that
+the "baz" parameter is optional.  The presence of any other
 parameters will cause an error.
 
 For a subroutine expecting positional parameters, you would do this:
@@ -387,9 +386,9 @@ optional.
 
 =head2 Specifying defaults
 
-If the C<validate> or C<validate_pos> functions are called in a list
-context, they will return an array or hash containing the original
-parameters plus defaults as indicated by the validation spec.
+If the C<validate()> or C<validate_pos()> functions are called in a
+list context, they will return an array or hash containing the
+original parameters plus defaults as indicated by the validation spec.
 
 If the function is not called in a list context, providing a default
 in the validation spec still indicates that the parameter is optional.
@@ -412,7 +411,7 @@ returned, as appropriate.
 =head2 Validation failure
 
 By default, when validation fails C<Params::Validate> calls
-C<Carp::confess>.  This can be overridden by setting the C<on_fail>
+C<Carp::confess()>.  This can be overridden by setting the C<on_fail>
 option, which is described in the L<"GLOBAL" OPTIONS|"GLOBAL" OPTIONS>
 section.
 
@@ -420,13 +419,13 @@ section.
 
 When using this module to validate the parameters passed to a method
 call, you will probably want to remove the class/object from the
-parameter list B<before> calling C<validate> or C<validate_pos>.  If
-your method expects named parameters, then this is necessary for the
-C<validate> function to actually work, otherwise C<@_> will not
-contain a hash, but rather your object (or class) B<followed> by a
-hash.
+parameter list B<before> calling C<validate()> or C<validate_pos()>.
+If your method expects named parameters, then this is necessary for
+the C<validate()> function to actually work, otherwise C<@_> will not
+be useable as a hash, because it will first have your object (or
+class) B<followed> by a set of keys and values.
 
-Thus the idiomatic usage of C<validate> in a method call will look
+Thus the idiomatic usage of C<validate()> in a method call will look
 something like this:
 
  sub method
@@ -438,7 +437,7 @@ something like this:
 
 =head1 "GLOBAL" OPTIONS
 
-Because the calling syntax for the C<validate> and C<validate_pos>
+Because the calling syntax for the C<validate()> and C<validate_pos()>
 functions does not make it possible to specify any options other than
 the the validation spec, it is possible to set some options as
 pseudo-'globals'.  These allow you to specify such things as whether
@@ -450,8 +449,8 @@ B<only applied to calls originating from the package that set the
 options>.
 
 In other words, if I am in package C<Foo> and I call
-C<Params::Validate::validation_options>, those options are only in
-effect when I call C<validate> from package C<Foo>.
+C<Params::Validate::validation_options()>, those options are only in
+effect when I call C<validate()> from package C<Foo>.
 
 While this is quite different from how most other modules operate, I
 feel that this is necessary in able to make it possible for one
@@ -461,31 +460,47 @@ options set.
 
 The downside to this is that if you are writing an app with a standard
 calling style for all functions, and your app has ten modules, B<each
-module must include a call to C<Params::Validate::validation_options>>.
+module must include a call to
+C<Params::Validate::validation_options()>>.
 
 =head2 Options
 
 =over 4
 
-=item * ignore_case => $boolean
+=item * normalize_keys => $callback
 
-This is only relevant when dealing with named parameters.  If it is
-true, then the validation code will ignore the case of parameter
-names.  Defaults to false.
+This option is only relevant when dealing with named parameters.
 
-When this is turned on, we have to copy more data around internally,
-leading to a potential speed impact.
+This callback will be used to transform the hash keys of both the
+parameters and the parameter spec when C<validate()> or
+C<validate_with()> are called.
 
-=item * strip_leading => $characters
+Any alterations made by this callback will be reflected in the
+parameter hash that is returned by the validation function.  For
+example:
 
-This too is only relevant when dealing with named parameters.  If this
-is given then any parameters starting with these characters will be
-considered equivalent to parameters without them entirely.  For
-example, if this is specified as '-', then C<-foo> and C<foo> would be
-considered identical.
+  sub foo {
+      return
+        validate_with( params => \@_,
+                       spec   => { foo => { type => SCALAR } },
+                       normalize_keys =>
+                       sub { my $k = shift; $k =~ s/^-//; return uc $k },
+                     );
 
-When this is turned on, we have to copy more data around internally,
-leading to a potential speed impact.
+  }
+
+  %p = foo( foo => 20 );
+
+  # $p{FOO} is now 20
+
+  %p = foo( -fOo => 50 );
+
+  # $p{FOO} is now 50
+
+The callback must return a defined value.
+
+If a callback is given than the deprecated "ignore_case" and
+"strip_leading" options are ignored.
 
 =item * allow_extra => $boolean
 
@@ -502,7 +517,7 @@ string describing the failure.  This is useful if you wish to have
 this module throw exceptions as objects rather than as strings, for
 example.
 
-This callback is expected to C<die> internally.  If it does not, the
+This callback is expected to C<die()> internally.  If it does not, the
 validation will proceed onwards, with unpredictable results.
 
 The default is to simply use the Carp module's C<confess()> function.
@@ -511,16 +526,34 @@ The default is to simply use the Carp module's C<confess()> function.
 
 This tells Params::Validate how many stack frames to skip when finding
 a subroutine name to use in error messages.  By default, it looks one
-frame back, at the immediate caller to C<validate> or C<validate_pos>.
-If this option is set, then the given number of frames are skipped
-instead.
+frame back, at the immediate caller to C<validate()> or
+C<validate_pos()>.  If this option is set, then the given number of
+frames are skipped instead.
+
+=item * ignore_case => $boolean
+
+DEPRECATED
+
+This is only relevant when dealing with named parameters.  If it is
+true, then the validation code will ignore the case of parameter
+names.  Defaults to false.
+
+=item * strip_leading => $characters
+
+DEPRECATED
+
+This too is only relevant when dealing with named parameters.  If this
+is given then any parameters starting with these characters will be
+considered equivalent to parameters without them entirely.  For
+example, if this is specified as '-', then C<-foo> and C<foo> would be
+considered identical.
 
 =back
 
 =head1 PER-INVOCATION OPTIONS
 
-The C<validate_with> function can be used to set the options listed above on
-a per-invocation basis.  For example:
+The C<validate_with()> function can be used to set the options listed
+above on a per-invocation basis.  For example:
 
   my %p =
       validate_with
@@ -531,13 +564,13 @@ a per-invocation basis.  For example:
           );
 
 In addition to the options listed above, it is also possible to set
-the option C<called>, which should be a string.  This string will be
+the option "called", which should be a string.  This string will be
 used in any error messages caused by a failure to meet the validation
 spec.
 
-This subroutine will validate named parameters as a hash if the
-C<spec> parameter is a hash reference.  If it is an array reference,
-the parameters are assumed to be positional.
+This subroutine will validate named parameters as a hash if the "spec"
+parameter is a hash reference.  If it is an array reference, the
+parameters are assumed to be positional.
 
   my %p =
       validate_with
