@@ -5,10 +5,10 @@ use strict;
 use Params::Validate qw(validate validate_pos);
 use Test::More;
 
-eval "use Test::Taint";
+eval "use Test::Taint 0.02";
 if ($@)
 {
-    plan skip_all => 'These tests require Test::Taint to run';
+    plan skip_all => 'These tests require Test::Taint 0.02+ to run';
 }
 else
 {
