@@ -7,9 +7,6 @@ given a non-array reference.  Same for can, etc.  See how this is
 handled in callbacks for example.
 
 
-- turn no validation mode into a runtime switch
-
-
 - add a way to specify dependencies between parameters
 
 
