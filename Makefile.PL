@@ -52,7 +52,7 @@ if ( -d 'CVS' )
 
         close F;
 
-        $test = "$shbang\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
+        $test = "$shbang\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
 
         my $new_file = File::Spec->catfile( 't', "zz_$file" );
         open F, ">$new_file" or die "Cannot write $new_file: $!";
