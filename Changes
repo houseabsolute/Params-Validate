@@ -3,6 +3,8 @@
 - Apply some of the same optimizations to positional parameters.  The
 speedup here seems to be about 7-8%.
 
+- Fix stupid bug in 04-defaults tests.
+
 0.12
 
 - Add BOOLEAN type (equivalent to UNDEF | SCALAR).  Suggested by Ken
