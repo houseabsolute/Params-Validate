@@ -932,6 +932,23 @@ validate_named_depends(HV* p, HV* specs, HV* options)
   return 1;
 }
 
+void
+cat_string_representation(SV* buffer, SV* value)
+{
+#if (PERL_VERSION == 5)
+  if (SvTYPE(value) == SVt_PVGV) {
+    sv_catpv(buffer, "GLOB/handle");
+  } else
+#endif
+         if(SvOK(value)) {
+    sv_catpv(buffer, "\"");
+    sv_catpv(buffer, SvPV_nolen(value));
+    sv_catpv(buffer, "\"");
+  } else {
+    sv_catpv(buffer, "undef");
+  }
+}
+
 static IV
 validate(HV* p, HV* specs, HV* options, HV* ret)
 {
@@ -1020,15 +1037,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
           buffer = sv_2mortal(newSVpv("The '", 0));
           sv_catsv(buffer, HeSVKEY_force(he));
           sv_catpv(buffer, "' parameter (");
-
-          if(SvOK(HeVAL(he))) {
-            value = SvPV_nolen(HeVAL(he));
-            sv_catpv(buffer, "\"");
-            sv_catpv(buffer, value);
-            sv_catpv(buffer, "\"");
-          } else {
-            sv_catpv(buffer, "undef");
-          }
+          cat_string_representation(buffer, HeVAL(he));
           sv_catpv(buffer, ")");
 
           if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options, &untaint))
@@ -1263,13 +1272,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
         IV untaint = 0;
 
         buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
-        if (SvOK(value)) {
-          sv_catpv(buffer, "\"");
-          sv_catpv(buffer, SvPV_nolen(value));
-          sv_catpv(buffer, "\"");
-        } else {
-          sv_catpv(buffer, "undef");
-        }
+        cat_string_representation(buffer, value);
         sv_catpv(buffer, ")");
 
         if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec),
