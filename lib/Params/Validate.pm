@@ -431,6 +431,18 @@ validation will proceed onwards, with unpredictable results.
 
 The default is to simply use Perl's builtin C<die> function.
 
+=head1 DISABLING VALIDATION
+
+** This functionality may change in the future **
+
+If the environment variable C<NO_VALIDATION> is set to something true,
+then all calls to the validation functions are turned into no-ops.
+This may be useful if you only want to use this module during
+development but don't want the speed hit during production.
+
+I am not terribly happy with the current mechanism for doing this so
+this may change in the future.
+
 =head1 LIMITATIONS
 
 Right now there is no way (short of a callback) to specify that
