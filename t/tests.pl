@@ -1,5 +1,7 @@
 use strict;
 
+use Params::Validate qw(:all);
+
 print "1..77\n";
 
 sub run_tests
@@ -262,7 +264,7 @@ sub run_tests
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( ignore_case => 1 );
+	    validation_options( ignore_case => 1 );
 	}
 	eval { Foo::sub18( FOO => 1 ) };
 	check();
@@ -273,7 +275,7 @@ sub run_tests
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( strip_leading => '-' );
+	    validation_options( strip_leading => '-' );
 	}
 	eval { Foo::sub18( -foo => 1 ) };
 	check();
@@ -284,7 +286,7 @@ sub run_tests
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( allow_extra => 1 );
+	    validation_options( allow_extra => 1 );
 	}
 	eval { Foo::sub18( foo => 1, bar => 1 ) };
 	check();
@@ -296,17 +298,17 @@ sub run_tests
 	eval { sub19( 1, 2 ) };
 	check();
 
-	Params::Validate::set_options( strip_leading => '-' );
+	validation_options( strip_leading => '-' );
 	eval { Foo::sub18( -foo => 1 ) };
 	check();
     }
 
-    Params::Validate::set_options();
+    validation_options();
 
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( on_fail => sub { die "ERROR WAS: $_[0]" } );
+	    validation_options( on_fail => sub { die "ERROR WAS: $_[0]" } );
 	}
 	eval { Foo::sub18( bar => 1 ) };
 	check();
@@ -540,6 +542,8 @@ sub ok
 }
 
 package Foo;
+
+use Params::Validate qw(:all);
 
 sub fooify {1}
 
