@@ -439,7 +439,7 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
                     XPUSHs(value);
                     PUTBACK;
                     if(!call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
-                        croak("Subroutine have not returned anything");
+                        croak("Subroutine did not return anything");
                     }
                     SPAGAIN;
                     ok = POPi;
@@ -603,6 +603,7 @@ normalize_named(HV* p, HV* options)
 
                 rawstr = SvPV(sv, len);
                 for(i = 0; i < len; i ++) {
+                    /* should this account for UTF8 strings? */
                     *(rawstr + i) = toLOWER(*(rawstr + i));
                 }
                 sv = sv_2mortal(newSVpvn(rawstr, len));
@@ -846,7 +847,7 @@ validate_pos(AV* p, AV* specs, HV* options)
     IV max;
     IV limit;
 
-    /* iterate throw all parameters and validate them */
+    /* iterate through all parameters and validate them */
     if(GIMME_V != G_VOID) ret = (AV*) sv_2mortal((SV*) newAV());
     min = -1;
     for(i = 0; i <= av_len(specs); i ++) {
@@ -927,10 +928,10 @@ validate(p, specs)
         if(NO_VALIDATE && GIMME_V == G_VOID) return;
 
         if(!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
-            croak("Expecting array reference");
+            croak("Expecting array reference as first parameter");
         }
         if(!SvROK(specs) || !(SvTYPE(SvRV(specs)) == SVt_PVHV)) {
-            croak("Expecting hash reference");
+            croak("Expecting hash reference as second parameter");
         }
 
         pa = (AV*) SvRV(p);
@@ -965,11 +966,12 @@ validate_pos(p, ...)
         if(NO_VALIDATE && GIMME_V == G_VOID) return;
 
         if(!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
-            croak("Expecting array reference");
+            croak("Expecting array reference as first parameter");
         }
         specs = (AV*) sv_2mortal((SV*) newAV());
+        av_extend(specs, items);
         for(i = 1; i < items; i ++) {
-            av_push(specs, SvREFCNT_inc(ST(i)));
+            av_store(specs, i - 1, SvREFCNT_inc(ST(i)));
         }
 
         ret = validate_pos((AV*) SvRV(p), specs, get_options(NULL));
