@@ -5,3 +5,4 @@ Makefile
 MANIFEST.SKIP
 .*\.tar\.gz
 benchmarks
+_old.pm$
