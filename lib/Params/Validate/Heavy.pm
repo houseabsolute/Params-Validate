@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.8 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -113,7 +113,10 @@ sub _normalize_named
 
     if ( $options->{ignore_case} )
     {
-	$copy{ lc $_ } = delete $copy{$_} foreach keys %copy;
+	foreach (keys %copy)
+	{
+	    $copy{ lc $_ } = delete $copy{$_};
+	}
     }
 
     if ( $options->{strip_leading} )
@@ -188,11 +191,11 @@ sub _validate_one_param
 {
     # if it UNIVERSAL::isa the string on the left then its the type on
     # the right
-    my %isas = ( ARRAY  => ARRAYREF,
-		 HASH   => HASHREF,
-		 CODE   => CODEREF,
-		 GLOB   => GLOBREF,
-		 SCALAR => SCALARREF,
+    my %isas = ( 'ARRAY'  => ARRAYREF,
+		 'HASH'   => HASHREF,
+		 'CODE'   => CODEREF,
+		 'GLOB'   => GLOBREF,
+		 'SCALAR' => SCALARREF,
 	       );
 
     sub _get_type
