@@ -16,7 +16,7 @@ Params::Validate::validation_options( stack_skip => 2 );
 
 sub foo
 {
-    validate(@_, { bar => 1 });
+    my %p = validate(@_, { bar => 1 });
 }
 
 sub bar { foo(@_) }
@@ -37,7 +37,6 @@ ok( $@ =~ /mandatory.*missing.*call to main::baz/i );
 
 unless ( $] == 5.006 )
 {
-    use Exception::Class qw(MyException);
     Params::Validate::validation_options
         ( on_fail => sub { die bless { hash => 'ref' }, 'Dead' } );
 
