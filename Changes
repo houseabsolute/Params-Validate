@@ -30,7 +30,7 @@ Schwartz.
 
 0.23 Jul 19, 2002
 
-- Argh.  In 0.22 some of the tests printer their test counts (1..x)
+- Argh.  In 0.22 some of the tests printed their test counts (1..x)
 after doing the tests.  This works with newer versions of
 Test::Harness so I didn't notice it.  Reported by Peter Asemann.
 
@@ -93,7 +93,7 @@ odd number of elements.
 0.14 Mar 14, 2002
 
 - validate_pos used exists on an array element, which only works with
-5.6.0.  This releaes makes it work 5.00503 again.  Reported by Jon
+5.6.0.  This release makes it work 5.00503 again.  Reported by Jon
 Swartz.
 
 0.13 Mar 10, 2002
