@@ -528,6 +528,7 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
     if(temp = hv_fetch(spec, "regex", 5, 0)) {
         IV has_regex = 0;
         IV ok;
+        dSP;
   
         SvGETMAGIC(*temp);
         if(SvPOK(*temp)) {
@@ -553,7 +554,6 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
             return;
         }
 
-        dSP;
         PUSHMARK(SP);
         EXTEND(SP, 2);
         PUSHs(value);
