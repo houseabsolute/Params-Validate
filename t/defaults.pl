@@ -80,6 +80,7 @@ print "1..21\n";
         "No default (or incorrect default) assigned for 4rd parameter: $def->[0]\n" );
 }
 
+# test that defaults containing refs return _copies_ of these refs
 {
     my $spec = { foobar => { default => [] } };
     my $test1 = validate_with(params => [], spec => $spec);
