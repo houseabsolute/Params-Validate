@@ -1,7 +1,9 @@
-0.65
+0.65 Aug 07, 2003
 
-- It is now possible to turn validation on and off at runtime via the
-$Params::Validate::NO_VALIDATION variable.
+- It is now possible to turn validation on and off at runtime.  To
+make this easier, it can be set via the PERL_NO_VALIDATION environment
+variable, or the $Params::Validate::NO_VALIDATION global variable.  Go
+ahead, shoot yourself in the foot with it!
 
 0.64 Jul 14, 2003
 
