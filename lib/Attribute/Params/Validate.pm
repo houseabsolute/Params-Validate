@@ -22,7 +22,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } }
 		   );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 
-our $VERSION = sprintf '%2d.%02d', q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+our $VERSION = sprintf '%2d.%02d', q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
@@ -96,7 +96,7 @@ Attribute::Params::Validate - Validate method/function parameters using attribut
 
 =head1 SYNOPSIS
 
-  use Params::Validate qw(:all);
+  use Attribute::Params::Validate qw(:all);
 
   # takes named params (hash or hashref)
   # foo is mandatory, bar is optional
