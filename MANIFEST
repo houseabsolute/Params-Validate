@@ -1,6 +1,6 @@
 Changes
-Makefile.PL
 MANIFEST
+Makefile.PL
 README
 lib/Attribute/Params/Validate.pm
 lib/Params/Validate.pm
@@ -11,4 +11,6 @@ t/04-defaults.t
 t/05-noop_default.t
 t/06-options.t
 t/07-with.t
+t/08-with_nop.t
 t/tests.pl
+t/with.pl
