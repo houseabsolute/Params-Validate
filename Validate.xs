@@ -270,34 +270,23 @@ static void
 validation_failure(SV* message, HV* options)
 {
     SV** temp;
-    SV* on_fail;
-
-    I32 flags = G_DISCARD;
+    SV*  on_fail;
 
     if(temp = hv_fetch(options, "on_fail", 7, 0)) {
-        SvGETMAGIC(*temp);
-        on_fail = *temp;
+      SvGETMAGIC(*temp);
+      on_fail = *temp;
     } else {
-        on_fail = NULL;
+      on_fail = &PL_sv_undef;
     }
 
-    /* use user defined callback if avialable */
-    if(on_fail) {
-        SV* errsv;
-        dSP;
-
-        CALL_FATAL_WITH_MESSAGE(message, perl_call_sv, on_fail);
-    } else {
-      /* by default resort to Carp::confess for error reporting */
-        SV* errsv;
-
-        dSP;
-        perl_require_pv("Carp.pm");
-
-        CALL_FATAL_WITH_MESSAGE(message, perl_call_pv, "Carp::croak");
-    }
-
-    return;
+    dSP;
+    ENTER;
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    PUSHs(message);
+    PUSHs(on_fail);
+    PUTBACK;
+    call_pv("Params::Validate::_fail_from_xs", G_VOID);
 }
 
 /* get called subroutine fully qualified name */
@@ -489,7 +478,7 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
                     PUSHMARK(SP);
                     XPUSHs(value);
                     PUTBACK;
-                    if(!perl_call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
+                    if(!call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
                         croak("Subroutine did not return anything");
                     }
                     SPAGAIN;

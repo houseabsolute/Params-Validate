@@ -15,7 +15,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.59';
+    $VERSION = '0.60';
 
     my %tags =
         ( types =>
@@ -41,6 +41,7 @@ BEGIN
         require Params::ValidatePP;
     }
 }
+
 
 1;
 
