@@ -229,6 +229,7 @@ validation_failure(SV* message, HV* options)
 {
     SV** temp;
     SV* on_fail;
+    I32 flags = PERL_VERSION >= 6 ? G_DISCARD | G_EVAL : G_DISCARD;
 
     if(temp = hv_fetch(options, "on_fail", 7, 0)) {
         SvGETMAGIC(*temp);
@@ -243,12 +244,22 @@ validation_failure(SV* message, HV* options)
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
-        perl_call_sv(on_fail, G_DISCARD | G_EVAL);
+        perl_call_sv(on_fail, flags);
+        /* for some reason, 5.00503 segfaults if we use the G_EVAL
+           flag, get a ref in ERRSV, and then call Nullch.  5.6.1
+           segfaults if we _don't_ use the G_EVAL flag */
+#if (PERL_VERSION >= 6)
         if (SvTRUE(ERRSV)) {
-            croak(SvPV_nolen(ERRSV));
+            if (SvROK(ERRSV)) {
+                croak(Nullch);
+            } else {
+                croak(SvPV_nolen(ERRSV));
+            }
         } else {
-            croak(Nullch);
+            croak(SvPV_nolen(message));
         }
+#endif
+        return;
     }
 
     /* by default resort to Carp::confess for error reporting */
@@ -258,12 +269,18 @@ validation_failure(SV* message, HV* options)
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
-        perl_call_pv("Carp::croak", G_DISCARD | G_EVAL);
+        perl_call_pv("Carp::croak", flags);
+#if (PERL_VERSION >= 6)
         if (SvTRUE(ERRSV)) {
-            croak(SvPV_nolen(ERRSV));
+            if (SvROK(ERRSV)) {
+                croak(Nullch);
+            } else {
+                croak(SvPV_nolen(ERRSV));
+            }
         } else {
-            croak(Nullch);
+            croak(SvPV_nolen(message));
         }
+#endif
     }
 
     return;
