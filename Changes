@@ -1,3 +1,11 @@
+0.56 Feb 24, 2003
+
+- The XS code that handled callbacks expects all callbacks to return
+an integer, instead of simply testing the returned value for truth.
+This could cause strange warnings like 'Argument "InMemory" isn't
+numeric in subroutine entry...'.  Based on a bug report from Robert
+Dick for another module I wrote (Lingua::ZH::CCDICT).
+
 0.55 Feb 21, 2003
 
 - Fixed Params::Validate for Perl configurations where sizeof(IV) !=
