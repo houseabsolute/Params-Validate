@@ -119,7 +119,8 @@ sub validate_pos (\@@)
 
 	if ( $_ <= $#p )
 	{
-	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) );
+	    my $value = defined $p[$_] ? qq|"$p[$_]"| : 'undef';
+	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) . " ($value)");
 	}
 
 	$p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
@@ -259,7 +260,8 @@ sub validate (\@$)
         # absence of the parameter.
         elsif (ref $spec)
         {
-	    _validate_one_param( $p->{$key}, $spec, "The '$key' parameter" );
+	    my $value = defined $p->{$key} ? qq|"$p->{$key}"| : 'undef';
+	    _validate_one_param( $p->{$key}, $spec, "The '$key' parameter ($value)" );
 	}
     }
 

@@ -112,7 +112,7 @@
 static void
 bootinit()
 {
-    char *str;
+    char* str;
     HV* stash;
 
     /* define constants */
@@ -134,7 +134,7 @@ bootinit()
 static bool
 no_validation()
 {
-    SV * no_v;
+    SV* no_v;
 
     no_v = perl_get_sv("Params::Validate::NO_VALIDATION", 0);
     if (! no_v)
@@ -267,7 +267,7 @@ article(SV* string)
     return "a";
 }
 
-static SV *
+static SV*
 get_on_fail(HV* options)
 {
     SV** temp;
@@ -386,7 +386,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options)
 static IV
 validate_can(SV* value, SV* method, SV* id, HV* options)
 {
-    char *name;
+    char* name;
     IV ok = 1;
     HV* pkg = NULL;
 
@@ -411,7 +411,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
 
     ok = 0;
     if (pkg) {
-        GV *gv;
+        GV* gv;
 
         gv = gv_fetchmethod_autoload(pkg, name, FALSE);
         if (gv && isGV(gv)) ok = 1;
@@ -819,11 +819,22 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
                 if (SvROK(HeVAL(he1)) && SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
                     SV* buffer;
                     HV* spec;
+                    char* value;
 
                     spec = (HV*) SvRV(HeVAL(he1));
                     buffer = sv_2mortal(newSVpv("The '", 0));
                     sv_catsv(buffer, HeSVKEY_force(he));
-                    sv_catpv(buffer, "' parameter");
+                    sv_catpv(buffer, "' parameter (");
+
+                    if(SvOK(HeVAL(he))) {
+                        value = SvPV_nolen(HeVAL(he));
+                        sv_catpv(buffer, "\"");
+                        sv_catpv(buffer, value);
+                        sv_catpv(buffer, "\"");
+                    } else {
+                        sv_catpv(buffer, "undef");
+                    }
+                    sv_catpv(buffer, ")");
 
                     if (! validate_one_param(HeVAL(he), spec, buffer, options))
                         return 0;
@@ -1018,7 +1029,9 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
             value = *av_fetch(p, i, 1);
             SvGETMAGIC(value);
             if (!no_validation() && complex_spec) {
-                buffer = sv_2mortal(newSVpvf("Parameter #%d", (int) i + 1));
+                buffer = sv_2mortal(newSVpvf("Parameter #%d (\"", (int) i + 1));
+                sv_catpv(buffer, SvPV_nolen(value));
+                sv_catpv(buffer, "\")");
 
                 if (! validate_one_param(value, (HV*) SvRV(spec), buffer, options))
                     return 0;

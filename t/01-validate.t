@@ -22,20 +22,20 @@ use vars qw(@expect);
 	   0,
 
 	   # simple types
-	   q|^The 'foo' parameter to main::sub3 was an 'arrayref'.* types: scalar|,
-	   q|^The 'brax' parameter to main::sub3 was an 'arrayref'.* types: scalar hash|,
-	   q|^The 'bar' parameter to main::sub3 was a 'hashref'.* types: arrayref|,
+	   q|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to main::sub3 was an 'arrayref'.* types: scalar|,
+	   q|^The 'brax' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to main::sub3 was an 'arrayref'.* types: scalar hash|,
+	   q|^The 'bar' parameter \("HASH\(0x[a-f0-9]+\)"\) to main::sub3 was a 'hashref'.* types: arrayref|,
 	   0,
 
 	   # funkier types
-	   q|^The 'bar' parameter to main::sub4 was a 'globref'.* types: glob|,
-	   q|^The 'baz' parameter to main::sub4 was a 'glob'.* types: globref|,
-	   q|^The 'foo' parameter to main::sub4 was a 'scalar'.* types: scalarref|,
-	   q|^The 'quux' parameter to main::sub4 was a 'globref'.* types: coderef|,
+	   q|^The 'bar' parameter \("GLOB\(0x[a-f0-9]+\)"\) to main::sub4 was a 'globref'.* types: glob|,
+	   q|^The 'baz' parameter \("\*main::FH"\) to main::sub4 was a 'glob'.* types: globref|,
+	   q|^The 'foo' parameter \("foobar"\) to main::sub4 was a 'scalar'.* types: scalarref|,
+	   q|^The 'quux' parameter \("GLOB\(0x[a-f0-9]+\)"\) to main::sub4 was a 'globref'.* types: coderef|,
 
 	   0,
 	   0,
-	   q|^The 'foo' parameter to main::sub4a was an 'arrayref'.* types: glob globref|,
+	   q|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to main::sub4a was an 'arrayref'.* types: glob globref|,
 
 	   0,
 	   0,
@@ -45,51 +45,51 @@ use vars qw(@expect);
 	   0,
 	   0,
 
-	   q|^The 'foo' parameter to main::sub6 was not a 'Bar'|,
+	   q|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to main::sub6 was not a 'Bar'|,
 	   0,
 	   0,
 
-	   q|^The 'foo' parameter to main::sub7 was not a 'Baz'|,
-	   q|^The 'foo' parameter to main::sub7 was not a 'Baz'|,
+	   q|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to main::sub7 was not a 'Baz'|,
+	   q|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to main::sub7 was not a 'Baz'|,
 	   0,
 
-	   q|^The 'foo' parameter to main::sub8 was not a 'Yadda'|,
+	   q|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to main::sub8 was not a 'Yadda'|,
 	   0,
 
 	   # can
 	   0,
 	   0,
-	   q|^The 'foo' parameter to main::sub9a does not have the method: 'barify'|,
+	   q|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to main::sub9a does not have the method: 'barify'|,
 	   0,
-	   q|^The 'foo' parameter to main::sub9b does not have the method: 'yaddaify'|,
-	   q|^The 'foo' parameter to main::sub9b does not have the method: 'barify'|,
-	   q|^The 'foo' parameter to main::sub9c does not have the method: 'yaddaify'|,
+	   q|^The 'foo' parameter \("Baz=SCALAR\(0x[a-f0-9]+\)"\) to main::sub9b does not have the method: 'yaddaify'|,
+	   q|^The 'foo' parameter \("Quux=SCALAR\(0x[a-f0-9]+\)"\) to main::sub9b does not have the method: 'barify'|,
+	   q|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to main::sub9c does not have the method: 'yaddaify'|,
 	   0,
 
 	   # callbacks
 	   0,
 	   0,
-	   q|^The 'foo' parameter to main::sub10 did not pass the 'less than 20' callback|,
+	   q|^The 'foo' parameter \("20"\) to main::sub10 did not pass the 'less than 20' callback|,
 
 	   0,
-	   q|^The 'foo' parameter to main::sub11 did not pass the 'less than 20' callback|,
-	   q|^The 'foo' parameter to main::sub11 did not pass the 'more than 0' callback|,
+	   q|^The 'foo' parameter \("20"\) to main::sub11 did not pass the 'less than 20' callback|,
+	   q|^The 'foo' parameter \("0"\) to main::sub11 did not pass the 'more than 0' callback|,
 
 	   # mix n' match
-	   q|^The 'foo' parameter to main::sub12 was a 'scalar'.* types: arrayref|,
-	   q|^The 'foo' parameter to main::sub12 did not pass the '5 elements' callback|,
+	   q|^The 'foo' parameter \("1"\) to main::sub12 was a 'scalar'.* types: arrayref|,
+	   q|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to main::sub12 did not pass the '5 elements' callback|,
 	   0,
 
 	   # positional - 1
 	   q|^1 parameter was passed to .* but 2 were expected|,
-	   q|^Parameter #2 to .* did not pass the '5 elements' callback|,
+	   q|^Parameter #2 \("ARRAY\(0x[a-f0-9]+\)"\) to .* did not pass the '5 elements' callback|,
 
 	   # positional - 2
-	   q|^Parameter #3 to .* was not a 'Bar'|,
+	   q|^Parameter #3 \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to .* was not a 'Bar'|,
 	   0,
 
 	   # hashref named params
-	   q|^The 'bar' parameter to .* was a 'hashref'.* types: arrayref|,
+	   q|^The 'bar' parameter \("HASH\(0x[a-f0-9]+\)"\) to .* was a 'hashref'.* types: arrayref|,
 	   q|^Mandatory parameter 'bar' missing|,
 
 	   # positional - 3
@@ -121,20 +121,20 @@ use vars qw(@expect);
 	   q|^ERROR WAS: The following parameter .* bar|,
 	   q|^The following parameter .* bar|,
 
-	   q|^The 'foo' parameter to .* was an 'undef'.*|,
+	   q|^The 'foo' parameter \(undef\) to .* was an 'undef'.*|,
 	   0,
 
-	   q|^The 'foo' parameter to .* was an 'arrayref'.*|,
+	   q|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to .* was an 'arrayref'.*|,
 	   0,
 
            0,
-           q|^The 'foo' parameter to .* was an 'arrayref'.*|,
+           q|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to .* was an 'arrayref'.*|,
            0,
 
            0,
 
            0,
-           q|^Parameter #1 to .* was a 'scalar'.*|,
+           q|^Parameter #1 \("1 element"\) to .* was a 'scalar'.*|,
            0,
 
            q|^Odd number|,
