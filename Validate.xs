@@ -521,23 +521,35 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
         if (SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV) {
           dSP;
 
-          SV* ok;
+          SV* ret;
+          IV ok;
+          IV count;
+
+          ENTER;
+          SAVETMPS;
 
           PUSHMARK(SP);
           EXTEND(SP, 2);
           PUSHs(value);
-          PUSHs(newRV_noinc(params));
+          PUSHs(sv_2mortal(newRV_inc(params)));
           PUTBACK;
-          if (! perl_call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
-            croak("Validation callback did not return anything");
-          }
+
+          count = perl_call_sv(SvRV(HeVAL(he)), G_SCALAR);
+
           SPAGAIN;
-          ok = POPs;
+
+          if (! count)
+            croak("Validation callback did not return anything");
+
+          ret = POPs;
+          SvGETMAGIC(ret);
+          ok = SvTRUE(ret);
+
           PUTBACK;
+          FREETMPS;
+          LEAVE;
 
-          SvGETMAGIC(ok);
-
-          if (! SvTRUE(ok)) {
+          if (! ok) {
             SV* buffer;
 
             buffer = sv_2mortal(newSVsv(id));
