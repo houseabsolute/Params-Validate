@@ -520,18 +520,6 @@ sub sub19
     validate_pos( @_, 1 );
 }
 
-{
-    my $x = 0;
-    sub check
-    {
-	my $expect = $expect[$x++];
-	$expect ?
-	    ok( $@ =~ /$expect/ ? 1 : 0,
-		$@ ? "$@ did not match:\n$expect" : 'no error when error was expected' ) :
-	    ok( ! $@, $@ );
-    }
-}
-
 sub sub20
 {
     validate( @_, { foo => { type => SCALAR } } );
@@ -550,6 +538,23 @@ sub sub22
 sub sub23
 {
     validate_pos( @_, 1 );
+}
+
+{
+    my $x = 0;
+    sub check
+    {
+	my $expect = $expect[$x++];
+
+        my $line = (caller(0))[2];
+
+	$expect ?
+	    ok( ( $@ =~ /$expect/ ? 1 : 0 ),
+		$@ ?
+                "$@ did not match:\n$expect" :
+                "no error when error was expected ($expect) - line $line" ) :
+	    ok( ! $@, $@ );
+    }
 }
 
 sub ok

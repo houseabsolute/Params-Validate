@@ -2,7 +2,7 @@ use strict;
 
 use Params::Validate qw(:all);
 
-print "1..8\n";
+print "1..10\n";
 
 my %def = eval { foo() };
 
@@ -18,6 +18,9 @@ ok( $def{b} == 2,
 ok( $def{c} == 42,
     "No default (or incorrect default) assigned for parameter 'c': $def{c}\n" );
 
+ok( $def{d} == 0,
+    "No default (or incorrect default) assigned for parameter 'd': $def{d}\n" );
+
 my @def = eval { bar() };
 
 ok( ! $@,
@@ -32,12 +35,16 @@ ok( $def[1] == 2,
 ok( $def[2] == 42,
     "No default (or incorrect default) assigned for 3rd parameter: $def[2]\n" );
 
+ok( $def[3] == 0,
+    "No default (or incorrect default) assigned for 4rd parameter: $def[0]\n" );
+
 sub foo
 {
     my @params = ( a => 1, b => 2 );
     my %def = validate( @params, { a => 1,
 				   b => { default => 99 },
 				   c => { default => 42 },
+                                   d => { default => 0 },
 				 } );
 
     return %def;
@@ -46,7 +53,7 @@ sub foo
 sub bar
 {
     my @params = ( 1, 2 );
-    my @def = validate_pos( @params, 1, { default => 99 }, { default => 42 } );
+    my @def = validate_pos( @params, 1, { default => 99 }, { default => 42 }, { default => 0 } );
 
     return @def;
 }
