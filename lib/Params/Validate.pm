@@ -377,7 +377,7 @@ for one example.
 
 These options are called pseudo-'globals' because these settings are
 B<only applied to calls originating from the package that set the
-options.
+options>.
 
 In other words, if I am in package C<Foo> and I call
 C<Params::Validate::set_options>, those options are only in effect
