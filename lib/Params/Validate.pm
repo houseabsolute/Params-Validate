@@ -103,6 +103,8 @@ sub validate (\@$)
     my $p = shift;
     my %specs = %{ shift() };
 
+    local $options = _get_options( (caller(0))[0] );
+
     my %p;
     if ( UNIVERSAL::isa( $p->[0], 'HASH' ) )
     {
@@ -135,7 +137,6 @@ sub validate (\@$)
     }
 
     local $called = (caller(1))[3];
-    local $options = _get_options( (caller(0))[0] );
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
