@@ -35,11 +35,14 @@ ok( $@ =~ /mandatory.*missing.*call to main::baz/i );
 
 unless ( $] == 5.006 )
 {
-    Params::Validate::validation_options( on_fail => sub { die { hash => 'ref' } } );
+    use Exception::Class qw(MyException);
+    Params::Validate::validation_options
+        ( on_fail => sub { die bless { hash => 'ref' }, 'Dead' } );
 
     eval { baz() };
 
     ok( $@ );
-    ok( ref $@ eq 'HASH' );
     ok( $@->{hash} eq 'ref' );
+    ok( UNIVERSAL::isa( $@, 'Dead' ) );
 }
+
