@@ -719,7 +719,7 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
   char *rawstr_sl;
   char *rawstr;
 
-  ret = newSVsv(key);
+  ret = sv_2mortal(newSVsv(key));
 
   /* if normalize_func is provided, ignore the other options */
   if (normalize_func) {
