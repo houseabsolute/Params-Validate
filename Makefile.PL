@@ -14,8 +14,6 @@ for (@ARGV)
     /^--xs/ and $no_xs = 0;
 }
 
-write_makefile();
-
 exit if defined $no_xs;
 
 print "Testing if you have a C compiler\n";
@@ -34,6 +32,7 @@ close F or no_cc();
 
 system("$Config{make} test$Config{obj_ext}") and no_cc();
 
+my @clean;
 if ( -d 'CVS' )
 {
     local *DIR;
@@ -60,8 +59,12 @@ if ( -d 'CVS' )
         print F $test;
 
         close F;
+
+        push @clean, $new_file;
     }
 }
+
+write_makefile();
 
 sub write_makefile
 {
@@ -76,8 +79,6 @@ CHECK/INIT blocks'.
 
 EOF
 
-    my $zz = join ' ', glob File::Spec->catfile( 't', 'zz_*.t' );
-
     my %prereq = ( 'Test::More' => 0 );
     $prereq{'Attribute::Handlers'} = 0 if $] >= 5.006;
 
@@ -85,7 +86,7 @@ EOF
                    NAME            => "Params::Validate",
                    PREREQ_PM       => \%prereq,
                    CONFIGURE       => \&init,
-                   clean           => { FILES => "test.c test.o $zz" },
+                   clean           => { FILES => "test.c test.o @clean" },
                    ( $] >= 5.005 ?
                      ( ABSTRACT_FROM => 'lib/Params/Validate.pm',
                        AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
