@@ -58,6 +58,10 @@ __END__
 
 Params::ValidateXS - XS implementation of Params::Validate
 
+=head1 SYNOPSIS
+
+  See Params::Validate
+
 =head1 DESCRIPTION
 
 This is an XS implementation of Params::Validate.  See the
