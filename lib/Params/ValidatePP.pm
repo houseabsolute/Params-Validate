@@ -120,7 +120,7 @@ sub validate_pos (\@@)
 	if ( $_ <= $#p )
 	{
 	    my $value = defined $p[$_] ? qq|"$p[$_]"| : 'undef';
-	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) . " ($value)");
+	    _validate_one_param( $p[$_], \@p, $spec, "Parameter #" . ($_ + 1) . " ($value)");
 	}
 
 	$p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
@@ -266,7 +266,7 @@ sub validate (\@$)
         elsif (ref $spec)
         {
 	    my $value = defined $p->{$key} ? qq|"$p->{$key}"| : 'undef';
-	    _validate_one_param( $p->{$key}, $spec, "The '$key' parameter ($value)" );
+	    _validate_one_param( $p->{$key}, $p, $spec, "The '$key' parameter ($value)" );
 	}
     }
 
@@ -362,7 +362,7 @@ sub _normalize_named
 
 sub _validate_one_param
 {
-    my ($value, $spec, $id) = @_;
+    my ($value, $params, $spec, $id) = @_;
 
     if ( exists $spec->{type} )
     {
@@ -438,7 +438,7 @@ sub _validate_one_param
                 $options->{on_fail}->( "callback '$_' for $called is not a subroutine reference\n" );
             }
 
-            unless ( $spec->{callbacks}{$_}->($value) )
+            unless ( $spec->{callbacks}{$_}->($value, $params) )
             {
                 my $called = _get_called(1);
 

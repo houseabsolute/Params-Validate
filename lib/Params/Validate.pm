@@ -356,9 +356,11 @@ expressions suitable for validating input.
 
 If none of the above are enough, it is possible to pass in one or more
 callbacks to validate the parameter.  The callback will be given the
-B<value> of the parameter as its sole argument.  Callbacks are
-specified as hash reference.  The key is an id for the callback (used
-in error messages) and the value is a subroutine reference, such as:
+B<value> of the parameter as its first argument.  Its second argument
+will be all the parameters, as a reference to either a hash or array.
+Callbacks are specified as hash reference.  The key is an id for the
+callback (used in error messages) and the value is a subroutine
+reference, such as:
 
  validate( @_,
            { foo =>
@@ -366,6 +368,11 @@ in error messages) and the value is a subroutine reference, such as:
              { 'smaller than a breadbox' => sub { shift() < $breadbox },
                'green or blue' =>
                 sub { $_[0] eq 'green' || $_[0] eq 'blue' } } } );
+
+ validate( @_,
+           { foo =>
+             callbacks =>
+             { 'bigger than baz' => sub { $_[0] > $_[1]->{baz} } } } );
 
 =head2 Mandatory/Optional Revisited
 

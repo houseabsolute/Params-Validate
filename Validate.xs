@@ -435,7 +435,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
 
 /* validates specific parameter using supplied parameter specification */
 static IV
-validate_one_param(SV* value, HV* spec, SV* id, HV* options)
+validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
 {
     SV** temp;
 
@@ -516,14 +516,17 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
             hv_iterinit((HV*) SvRV(*temp));
             while (he = hv_iternext((HV*) SvRV(*temp))) {
                 if (SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV) {
-                    SV* ok;
                     dSP;
 
+                    SV* ok;
+
                     PUSHMARK(SP);
-                    XPUSHs(value);
+                    EXTEND(SP, 2);
+                    PUSHs(value);
+                    PUSHs(newRV_noinc(params));
                     PUTBACK;
                     if (! perl_call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
-                        croak("Subroutine did not return anything");
+                        croak("Validation callback did not return anything");
                     }
                     SPAGAIN;
                     ok = POPs;
@@ -564,9 +567,10 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
     }
 
     if (temp = hv_fetch(spec, "regex", 5, 0)) {
+        dSP;
+
         IV has_regex = 0;
         IV ok;
-        dSP;
   
         SvGETMAGIC(*temp);
         if (SvPOK(*temp)) {
@@ -715,9 +719,9 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
 
     /* if normalize_func is provided, ignore the other options */
     if (normalize_func) {
-        SV* ok;
-
         dSP;
+
+        SV* key;
 
         PUSHMARK(SP);
         XPUSHs(ret);
@@ -726,13 +730,13 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
             croak("The normalize_keys callback did not return anything");
         }
         SPAGAIN;
-        ok = POPs;
+        key = POPs;
         PUTBACK;
 
-        if (! SvOK(ok))
+        if (! SvOK(key))
             croak("The normalize_keys callback did not return a defined value");
 
-        return ok;
+        return key;
     } else if (ignore_case || strip_leading) {
         if (ignore_case) {
             STRLEN i;
@@ -878,7 +882,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
                     }
                     sv_catpv(buffer, ")");
 
-                    if (! validate_one_param(HeVAL(he), spec, buffer, options))
+                    if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options))
                         return 0;
                 }
             } else if (! allow_extra) {
@@ -1075,7 +1079,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
                 sv_catpv(buffer, SvPV_nolen(value));
                 sv_catpv(buffer, "\")");
 
-                if (! validate_one_param(value, (HV*) SvRV(spec), buffer, options))
+                if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec), buffer, options))
                     return 0;
             }
             if (GIMME_V != G_VOID) av_push(ret, SvREFCNT_inc(value));
