@@ -1,3 +1,7 @@
+0.04
+
+- tweaks to make the code work under 5.00404
+
 0.03 
 
 - make sure all error messages contain the name of the subroutine that
