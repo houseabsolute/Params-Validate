@@ -7,29 +7,29 @@ BEGIN { plan test => 11 }
 
 eval
 {
-    verify( params => [ 'foo' ],
-            spec => [ SCALAR ],
-	  );
+    validate_with( params => [ 'foo' ],
+                   spec => [ SCALAR ],
+                 );
 };
 
 ok( !$@ );
 
 eval
 {
-    verify( params => { foo => 5,
-                        bar => {} },
-            spec => { foo => SCALAR,
-                      bar => HASHREF },
-	  );
+    validate_with( params => { foo => 5,
+                               bar => {} },
+                   spec => { foo => SCALAR,
+                             bar => HASHREF },
+                 );
 };
 ok( !$@ );
 
 eval
 {
-    verify( params => [],
-            spec => [ SCALAR ],
-            called => 'Yo::Mama',
-	  );
+    validate_with( params => [],
+                   spec => [ SCALAR ],
+                   called => 'Yo::Mama',
+                 );
 };
 ok( $@ =~ /Yo::Mama/ );
 
@@ -38,10 +38,10 @@ ok( $@ =~ /Yo::Mama/ );
     eval
     {
         %p =
-            verify( params => [],
-                    spec => { a => { default => 3 },
-                              b => { default => 'x' } },
-                  );
+            validate_with( params => [],
+                           spec => { a => { default => 3 },
+                                     b => { default => 'x' } },
+                         );
     };
 
     ok( exists $p{a} );
@@ -55,10 +55,10 @@ ok( $@ =~ /Yo::Mama/ );
     eval
     {
         @p =
-            verify( params => [],
-                    spec => [ { default => 3 },
-                              { default => 'x' } ],
-                  );
+            validate_with( params => [],
+                           spec => [ { default => 3 },
+                                     { default => 'x' } ],
+                         );
     };
 
     ok( $p[0], 3 );
@@ -72,18 +72,18 @@ ok( $@ =~ /Yo::Mama/ );
 
     eval
     {
-        verify( params => [ a => 1, b => 2, c => 3 ],
-                spec => { a => 1, b => 1 },
-              );
+        validate_with( params => [ a => 1, b => 2, c => 3 ],
+                       spec => { a => 1, b => 1 },
+                     );
     };
     main::ok( ! $@ );
 
     eval
     {
-        verify( params => [ a => 1, b => 2, c => 3 ],
-                spec => { a => 1, b => 1 },
-                allow_extra => 0,
-              );
+        validate_with( params => [ a => 1, b => 2, c => 3 ],
+                       spec => { a => 1, b => 1 },
+                       allow_extra => 0,
+                     );
     };
     main::ok( $@ =~ /was not listed/ );
 }
