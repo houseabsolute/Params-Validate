@@ -4,6 +4,8 @@ use Params::Validate qw(:all);
 
 print "1..93\n";
 
+$| = 1;
+
 sub run_tests
 {
     {
