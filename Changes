@@ -1,3 +1,8 @@
+0.09
+
+- I forgot to put the Makefile.PL in the MANIFEST.  I am dumb.
+Reported by Blair Zajac.
+
 0.08
 
 - Explicitly mention that, by default, Params::Validate uses
