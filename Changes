@@ -3,6 +3,9 @@
 - Fix a doc nit where I had a wrong code example.  Reported by Britton
 Kerin.
 
+- Added a new validation option parameter, stack_skip, which allows
+you to change how errors are reported by Params::Validate.
+
 0.16 May 11, 2002
 
 - Improve skipping of tests when run with 5.6.0.  Patch by Ken
