@@ -106,7 +106,7 @@ sub validate (\@$)
     local $options = _get_options( (caller(0))[0] );
 
     my %p;
-    if ( UNIVERSAL::isa( $p->[0], 'HASH' ) )
+    if ( defined $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
     {
 	# Make a copy so we don't alter the hash reference for the
 	# caller.
