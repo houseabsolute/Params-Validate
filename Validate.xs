@@ -136,7 +136,7 @@ no_validation()
 {
     SV * no_v;
 
-    no_v = get_sv("Params::Validate::NO_VALIDATION", 0);
+    no_v = perl_get_sv("Params::Validate::NO_VALIDATION", 0);
     if (! no_v)
         croak("Cannot retrieve $Params::Validate::NO_VALIATION\n");
 
