@@ -84,7 +84,7 @@ sub validate_pos (\@@)
     foreach ( 0..$bigger )
     {
 	my $spec = $specs[$_];
-	if ( exists $p[$_] )
+	if ( $_ <= $#p )
 	{
 	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) )
 		if ref $spec;
@@ -92,7 +92,7 @@ sub validate_pos (\@@)
 
 	next unless ref $spec;
 
-	$p[$_] = $spec->{default} if ! exists $p[$_] && exists $spec->{default};
+	$p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
     }
 
     return @p if wantarray;
