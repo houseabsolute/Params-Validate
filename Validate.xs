@@ -469,13 +469,15 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
     /* check isa */
     if (temp = hv_fetch(spec, "isa", 3, 0)) {
         SvGETMAGIC(*temp);
+
         if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVAV) {
             IV i;
+            AV* array = (AV*) SvRV(*temp);
 
-            for(i = 0; i <= av_len((AV*) SvRV(*temp)); i ++) {
+            for(i = 0; i <= av_len(array); i ++) {
                 SV* package;
 
-                package = *av_fetch((AV*) SvRV(*temp), i, 1);
+                package = *av_fetch(array, i, 1);
                 SvGETMAGIC(package);
                 if (! validate_isa(value, package, id, options))
                     return 0;
@@ -491,11 +493,12 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options)
         SvGETMAGIC(*temp);
         if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVAV) {
             IV i;
+            AV* array = (AV*) SvRV(*temp);
 
-            for(i = 0; i <= av_len((AV*) SvRV(*temp)); i ++) {
+            for(i = 0; i <= av_len(array); i ++) {
                 SV* method;
 
-                method = *av_fetch((AV*) SvRV(*temp), i, 1);
+                method = *av_fetch(array, i, 1);
                 SvGETMAGIC(method);
 
                 if (! validate_can(value, method, id, options))
