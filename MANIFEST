@@ -29,6 +29,7 @@ t/16-normalize.t
 t/17-callbacks.t
 t/18-depends.t
 t/19-untaint.t
+t/21-can.t
 t/callbacks.pl
 t/defaults.pl
 t/regex.pl

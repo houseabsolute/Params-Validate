@@ -348,6 +348,7 @@ get_called(HV* options)
 #endif        
 
     buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
+    SvTAINTED_off(buffer);
 
     caller = perl_eval_pv(SvPV_nolen(buffer), 1);
     if (SvTYPE(caller) == SVt_NULL) {
@@ -388,37 +389,40 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
 {
   char* name;
   IV ok = 1;
-  HV* pkg = NULL;
 
-  /* some bits of this code are stolen from universal.c:
-     XS_UNIVERSAL_can - beware that I've reformatted it and removed
-     unused parts */
-  if (SvGMAGICAL(value)) mg_get(value);
+  {
+    dSP;
 
-  if (!SvOK(value)) {
-    if (!(SvROK(value) || (SvPOK(value) && SvCUR(value)))) ok = 0;
+    SV* ret;
+    IV count;
+
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    PUSHs(value);
+    PUSHs(method);
+    PUTBACK;
+
+    count = call_method("can", G_SCALAR);
+
+    if (! count)
+      croak("Calling can did not return a value");
+
+    SPAGAIN;
+    
+    ret = POPs;
+    SvGETMAGIC(ret);
+
+    ok = SvTRUE(ret);
+
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
   }
-
-  if (ok) {
-    name = SvPV_nolen(method);
-    if (SvROK(value)) {
-      value = (SV*)SvRV(value);
-      if (SvOBJECT(value)) pkg = SvSTASH(value);
-    }
-  } else {
-    pkg = gv_stashsv(value, FALSE);
-  }
-
-  ok = 0;
-  if (pkg) {
-    GV* gv;
-
-    gv = gv_fetchmethod_autoload(pkg, name, FALSE);
-    if (gv && isGV(gv)) ok = 1;
-  }
-  /* end of stolen code */
-
-  if (!ok) {
+  
+  if (! ok) {
     SV* buffer;
 
     buffer = sv_2mortal(newSVsv(id));
@@ -1151,6 +1155,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     } else {
       sv_catpv(buffer, " ");
     }
+
     for(i = 0; i <= av_len(missing); i++) {
       sv_catpvf(buffer, "'%s'",
                 SvPV_nolen(*av_fetch(missing, i, 0)));

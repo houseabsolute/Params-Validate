@@ -497,7 +497,7 @@ sub _validate_one_param
     {
 	foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} )
 	{
-            unless ( UNIVERSAL::can( $value, $_ ) )
+            unless ( defined $value && $value->can($_) )
             {
                 my $called = _get_called(1);
 

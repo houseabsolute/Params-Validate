@@ -11,11 +11,12 @@ use strict;
 BEGIN
 {
     use Exporter;
-    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
+    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK
+                 %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.74';
+    $VERSION = '0.75';
 
     my %tags =
         ( types =>
