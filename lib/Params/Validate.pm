@@ -108,7 +108,7 @@ Params::Validate - Validate method/function parameters
 
   sub pos_with_defaults
   {
-       my @p = validate( @_, 1, { default => 99 } );
+       my @p = validate_pos( @_, 1, { default => 99 } );
   }
 
   sub sets_options_on_call
