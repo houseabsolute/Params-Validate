@@ -24,7 +24,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } }
 		   );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 
-$VERSION = sprintf '%2d.%02d', q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf '%2d.%02d', q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
@@ -102,26 +102,26 @@ Attribute::Params::Validate - Validate method/function parameters using attribut
 
   # takes named params (hash or hashref)
   # foo is mandatory, bar is optional
-  sub foo : Validate ( foo => 1, bar => 0 )
+  sub foo : Validate( foo => 1, bar => 0 )
   {
       ...
   }
 
   # takes positional params
   # first two are mandatory, third is optional
-  sub bar : ValidatePos ( 1, 1, 0 )
+  sub bar : ValidatePos( 1, 1, 0 )
   {
       ...
   }
 
   # for some reason Perl insists that the entire attribute be on one line
-  sub foo2 : Validate ( foo => { type => ARRAYREF }, bar => { can => [ 'print', 'flush', 'frobnicate' ] }, baz => { type => SCALAR, callbacks => { 'numbers only' => sub { shift() =~ /^\d+$/ }, 'less than 90' => sub { shift() < 90 } } } )
+  sub foo2 : Validate( foo => { type => ARRAYREF }, bar => { can => [ 'print', 'flush', 'frobnicate' ] }, baz => { type => SCALAR, callbacks => { 'numbers only' => sub { shift() =~ /^\d+$/ }, 'less than 90' => sub { shift() < 90 } } } )
   {
       ...
   }
 
   # note that this is marked as a method.  This is very important!
-  sub baz : Validate ( foo => { type => ARRAYREF }, bar => { isa => 'Frobnicator' } ) method
+  sub baz : Validate( foo => { type => ARRAYREF }, bar => { isa => 'Frobnicator' } ) method
   {
       ...
   }
