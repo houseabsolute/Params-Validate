@@ -1,3 +1,10 @@
+0.63 Jul 14, 2003
+
+- The XS version of validate_with failed if the params key contained
+an array reference containing a single hash reference.  Since this
+works with the pure Perl version, it should work with the XS version.
+Reported by Diab Jerius.
+
 0.62 Jun 25, 2003
 
 - Remove a warn() statement left in from debugging.  Reported by Shane
