@@ -47,6 +47,9 @@ $VERSION = '0.18';
 sub validate_pos (\@@)
 {
     my $p = shift;
+
+    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+
     my @specs = @_;
 
     my @p = @$p;
@@ -119,6 +122,9 @@ sub validate_pos (\@@)
 sub validate (\@$)
 {
     my $p = shift;
+
+    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+
     my %specs = %{ shift() };
 
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
@@ -215,6 +221,8 @@ sub validate (\@$)
 
 sub validate_with
 {
+    return if $ENV{PERL_NO_VALIDATION} && ! defined wantarray;
+
     my %p = validate( @_,
                       { params => { type => ARRAYREF | HASHREF },
                         spec   => { type => ARRAYREF | HASHREF },
