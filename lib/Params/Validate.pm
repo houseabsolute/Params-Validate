@@ -368,11 +368,6 @@ in error messages) and the value is a subroutine reference, such as:
                'green or blue' =>
                 sub { $_[0] eq 'green' || $_[0] eq 'blue' } } } );
 
-On a side note, I would highly recommend taking a look at Damian
-Conway's Regexp::Common module, which could greatly simply the
-callbacks you use, as it provides patterns useful for validating all
-sorts of data.
-
 =head2 Mandatory/Optional Revisited
 
 If you want to specify something such as type or interface, plus the
