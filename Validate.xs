@@ -628,7 +628,6 @@ get_options(HV* options)
 {
     HV* OPTIONS;
     HV* ret;
-    HE* he;
     SV** temp;
     char* pkg;
 
@@ -700,7 +699,7 @@ normalize_named(HV* p, HV* options)
 
             sv = HeSVKEY_force(he);
             if(ignore_case) {
-                IV i;
+                STRLEN i;
 
                 rawstr = SvPV(sv, len);
                 for(i = 0; i < len; i ++) {
@@ -818,7 +817,6 @@ validate(HV* p, HV* specs, HV* options)
     hv_iterinit(specs);
     while(he = hv_iternext(specs)) {
         HV* spec;
-        SV* value;
 
         /* get extended param spec if available */
         if(SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVHV) {
@@ -945,8 +943,6 @@ validate_pos(AV* p, AV* specs, HV* options)
     IV complex_spec;
     IV allow_extra;
     IV min;
-    IV max;
-    IV limit;
 
     /* iterate through all parameters and validate them */
     if(GIMME_V != G_VOID) ret = (AV*) sv_2mortal((SV*) newAV());
