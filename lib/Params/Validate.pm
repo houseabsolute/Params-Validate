@@ -37,7 +37,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 %EXPORT_TAGS = ( 'all' => [ qw( validate ), map { @{ $tags{$_} } } keys %tags ],
 		 %tags,
 	       );
-@EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
+@EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate );
 
 $VERSION = '0.01';
@@ -109,7 +109,14 @@ explained in more detail later on.  These constants are available via
 the tag C<:types>.  There is also a C<:all> tag, which for now is
 equivalent to C<:types> tag.
 
-=head1 USAGE
+Finally, it is possible to import the L<C<set_options>|"GLOBAL"
+OPTIONS> function, but only by requesting it explicitly, as it is not
+included in C<:all>.  The reason being that this function only needs
+to be called once per module and its name is potentially common enough
+that exporting it without an explicit request to do so seems bound to
+cause trouble.
+
+=head1 PARAMETER VALIDATION
 
 The validation mechanism provided by this module can handle both named
 parameters or positional.  For the most part, the same features are
@@ -316,6 +323,92 @@ or this for positional parameters:
 
 By default, parameters are assumed to be mandatory unless specified as
 optional.
+
+=head1 USAGE NOTES
+
+=head2 Method calls
+
+When using this module to validate the parameters passed to a method
+call, you will probably want to remove the class/object from the
+parameter list B<before> calling C<validate>.  If your method expects
+named parameters, then this is necessary for the C<validate> function
+to actually work, otherwise C<@_> will not contain a hash, but rather
+your object (or class) B<followed> by a hash.
+
+Thus the idiomatic usage of C<validate. in a method call will look
+something like this:
+
+ sub method
+ {
+     my $self = shift;
+     validate( @_, { foo => 1, bar => { type => ARRAYREF } } );
+     my %params = @_;
+ }
+
+=head1 "GLOBAL" OPTIONS
+
+Because the calling syntax for the C<validate> function does not make
+it possible to direct the C<validate> beyond the directions given in
+the validation spec, it is possible to set some options as
+pseudo-'globals'.  These allow you to specify such things as whether
+or not the validation of named parameters should be case sensitive,
+for one example.
+
+These options are called pseudo-'globals' because these settings are
+B<only applies to calls originating from the package that set the
+options>.
+
+In other words, if I am in package C<Foo> and I call
+C<Params::Validate::set_options>, those options are only in effect
+when I call C<validate> from package C<Foo>.
+
+While this is quite different from how most other modules operate, I
+feel that this is necessary in able to make it possible for one
+module/application to use Params::Validate while still using other
+modules that also use Params::Validate, perhaps with different
+options.
+
+The downside to this is that if you are writing an app with a standard
+calling style for all functions, and your app has ten modules, B<each
+module must include a call to C<Params::Validate::set_options>>.
+
+=head2 Options
+
+=over 4
+
+=item * ignore_case => $boolean
+
+This is only relevant when dealing with named parameters.  If it is
+true, then the validation code will ignore the case of parameters.
+Defaults to false.
+
+=item * strip_leading => $characters or $regex
+
+This too is only relevant when dealing with named parameters.  If this
+is given then any parameters starting with these characters will be
+considered equivalent to parameters without them entirely.  For
+example, if this is specified as '-', then C<-foo> and C<foo> would be
+considered identical.
+
+=item * allow_extra => $boolean
+
+If true, then the validation routine will allow extra parameters not
+named in the validation specification.  In the case of positional
+parameters, this allows an unlimited number of maximum parameters
+(though a minimum may still be set).  Defaults to false.
+
+=item * die => $callback
+
+If given, this callback will be called whenever a validation check
+fails.  It will be called with a single parameter, which will be a
+string describing the failure.  This is useful if you wish to have
+this module throw exceptions as objects rather than as strings, for
+example.
+
+This callback is expected to C<die> internally.  If it does not, the
+validation will proceed onwards, with unpredictable results.
+
+The default is to simply use Perl's builtin C<die> function.
 
 =head1 LIMITATIONS
 

@@ -1,6 +1,6 @@
 use strict;
 
-print "1..62\n";
+print "1..71\n";
 
 sub run_tests
 {
@@ -257,6 +257,72 @@ sub run_tests
 	eval { sub17() };
 	check();
     }
+
+    {
+	{
+	    package Foo;
+	    Params::Validate::set_options( ignore_case => 1 );
+	}
+	eval { Foo::sub18( FOO => 1 ) };
+	check();
+	eval { sub18( FOO => 1 ) };
+	check();
+    }
+
+    {
+	{
+	    package Foo;
+	    Params::Validate::set_options( strip_leading => '-' );
+	}
+	eval { Foo::sub18( -foo => 1 ) };
+	check();
+	eval { sub18( -foo => 1 ) };
+	check();
+    }
+
+    {
+	{
+	    package Foo;
+	    Params::Validate::set_options( allow_extra => 1 );
+	}
+	eval { Foo::sub18( foo => 1, bar => 1 ) };
+	check();
+	eval { sub18( foo => 1, bar => 1 ) };
+	check();
+
+	Params::Validate::set_options( strip_leading => '-' );
+	eval { Foo::sub18( -foo => 1 ) };
+	check();
+    }
+
+    {
+	{
+	    package Foo;
+	    Params::Validate::set_options( die => sub { die { error => shift } } );
+	}
+	eval { Foo::sub18( bar => 1 ) };
+
+	if ($Params::Validate::Heavy::VERSION)
+	{
+	    ok( $@ && ref $@ && $@->{error},
+		"\$\@ should be a reference but it is $@" );
+	}
+	else
+	{
+	    ok( ! $@ );
+	}
+
+	eval { sub18( bar => 1 ) };
+	if ($Params::Validate::Heavy::VERSION)
+	{
+	    ok( $@ && ! ref $@,
+		"\$\@ should not be a reference but it is" );
+	}
+	else
+	{
+	    ok( ! $@ );
+	}
+    }
 }
 
 sub sub1
@@ -411,6 +477,20 @@ sub sub16
 sub sub17
 {
     validate( @_, { type => SCALAR }, { type => SCALAR, optional => 1 } );
+}
+
+{
+    package Foo;
+    use Params::Validate;
+    sub sub18
+    {
+	validate( @_, { foo => 1 } );
+    }
+}
+
+sub sub18
+{
+    validate( @_, { foo => 1 } );
 }
 
 {

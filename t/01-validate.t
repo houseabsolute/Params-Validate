@@ -96,6 +96,17 @@ use vars qw(@expect);
 	   0,
 	   0,
 	   q|^0 parameters were passed .* but 1 - 2 were expected|,
+
+	   0,
+	   q|^The following parameter .* FOO|,
+
+	   0,
+	   q|^The following parameter .* -foo|,
+
+	   0,
+	   q|^The following parameter .* bar|,
+
+	   q|^Mandatory parameter 'foo' missing|,
 	  );
 
 require 'tests.pl';
