@@ -134,6 +134,8 @@ use vars qw(@expect);
            0,
            q|^Parameter #1 to .* was a 'scalar'.*|,
            0,
+
+           q|^Odd number|,
 	  );
 
 # 5.6.0 core dumps all over during the tests
