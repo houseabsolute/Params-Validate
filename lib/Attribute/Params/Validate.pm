@@ -21,27 +21,26 @@ our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } }
 		     %tags,
 		   );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-our @EXPORT = qw( validation_options );
 
-
-our $VERSION = sprintf '%2d.%02d', q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
+our $VERSION = sprintf '%2d.%02d', q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
 {
-    _wrap_sub(@_, 'named');
+    _wrap_sub('named', @_);
 }
 
 sub UNIVERSAL::ValidatePos : ATTR(CODE, INIT)
 {
-    _wrap_sub(@_, 'positional');
+    _wrap_sub('positional', @_);
 }
 
 sub _wrap_sub
 {
-    my ($package, $symbol, $referent, $attr, $params, $type) = @_;
+    my ($type, $package, $symbol, $referent, $attr, $params) = @_;
 
-    $params = {@$params};
+    my @p = @$params;
+    $params = {@p};
 
     my $subname = $package . '::' . *{$symbol}{NAME};
 
@@ -56,6 +55,7 @@ sub _wrap_sub
 	# the code to automatically create the relevant scalars from
 	# the hash of params can create the scalars in the proper
 	# place lexically.
+
 	my $code = <<"EOF";
 sub
 {
@@ -64,8 +64,14 @@ EOF
 
 	$code .= "    my \$object = shift;\n" if $is_method;
 
-	my $function = $type eq 'named' ? 'validate' : 'validate_pos';
-	$code .= "    Params::Validate::$function(\@_, \$params);\n";
+	if ($type eq 'named')
+	{
+	    $code .= "    Params::Validate::validate(\@_, \$params);\n";
+	}
+	else
+	{
+	    $code .= "    Params::Validate::validate_pos(\@_, \@p);\n";
+	}
 
 	$code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
 
@@ -119,6 +125,7 @@ Attribute::Params::Validate - Validate method/function parameters using attribut
   }
 
 =head1 DESCRIPTION
+
 
 The Attribute::Params::Validate module allows you to validate method
 or function call parameters just like Params::Validate does.  However,
