@@ -1,3 +1,13 @@
+0.59 May 24, 2003
+
+- If an odd number of parameters was given to validate() in the array
+as its first argument, the error given would be different depending on
+whether or not the pure Perl or XS version of the code was being used.
+
+- Fixed incredibly odd bug that occurred in XS code when tainting was
+on with Perl 5.00503.  Unfortunately, the only test case that reliably
+reproduces this is one of Mason's tests, so no test was added.
+
 0.58 Apr 03, 2003
 
 - Fix some compiler warnings from MS Visual Studio 6.  Reported by Ron
