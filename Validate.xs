@@ -529,9 +529,10 @@ get_options(HV* options)
 
     ret = (HV*) sv_2mortal((SV*) newHV());
 
-    /* gets caller's package name */
-#ifndef PERL_VERSION     /* Perl < 5.6.0 does not defined this */
-    pkg = "";
+    /* gets caller's package name - Perl < 5.6.0 does not have
+       CopSTASHPV */
+#ifndef PERL_VERSION     /* Perl < 5.6.0 does not define this */
+    pkg = HvNAME(PL_curcop->cop_stash);
 #else
     pkg = CopSTASHPV(PL_curcop);
 #endif
