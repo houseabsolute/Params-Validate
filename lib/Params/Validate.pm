@@ -68,7 +68,7 @@ monstrosity):
    to make these features work.  This is slower but lets us be faster
    when not using them.
 
-=end
+=end internal
 
 =cut
 
