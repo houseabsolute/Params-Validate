@@ -364,15 +364,15 @@ reference, such as:
 
  validate( @_,
            { foo =>
-             callbacks =>
-             { 'smaller than a breadbox' => sub { shift() < $breadbox },
-               'green or blue' =>
-                sub { $_[0] eq 'green' || $_[0] eq 'blue' } } } );
+             { callbacks =>
+               { 'smaller than a breadbox' => sub { shift() < $breadbox },
+                 'green or blue' =>
+                  sub { $_[0] eq 'green' || $_[0] eq 'blue' } } } );
 
  validate( @_,
            { foo =>
-             callbacks =>
-             { 'bigger than baz' => sub { $_[0] > $_[1]->{baz} } } } );
+             { callbacks =>
+               { 'bigger than baz' => sub { $_[0] > $_[1]->{baz} } } } } );
 
 =head2 Untainting
 
