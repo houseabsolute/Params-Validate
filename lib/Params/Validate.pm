@@ -232,7 +232,7 @@ sub validate (\@$)
                           unless exists $ref->{$_};
                   }
 
-                  $ref;
+                  return $ref;
               }
             );
     }
