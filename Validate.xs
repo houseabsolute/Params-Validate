@@ -911,9 +911,9 @@ validate_pos_failure(IV pnum, IV min, IV max, HV* options)
     sv_catpv(buffer, " but ");
     if(!allow_extra) {
         if(min != max) {
-            sv_catpvf(buffer, "%d - %d", min + 1, max + 1);
+            sv_catpvf(buffer, "%d - %d", (I32) min + 1, (I32) max + 1);
         } else {
-            sv_catpvf(buffer, "%d", max + 1);
+            sv_catpvf(buffer, "%d", (I32) max + 1);
         }
     } else {
         sv_catpvf(buffer, "at least %d", min + 1);
