@@ -1,9 +1,9 @@
-0.51
+0.51 Jan 14, 2003
 
 - Added copyright info to each source file.  Added LICENSE file to
 distro.
 
-0.50
+0.50 Jan 9, 2003
 
 - Added an XS implementation, written by Ilya Martynov.  The pure Perl
 implementation is still included as a fallback for users who do not
@@ -14,7 +14,7 @@ done.
 This XS code is known to work Perl 5.00503+, but it may not work with
 earlier versions of Perl.
 
-0.24
+0.24  Jul 19, 2002
 
 - Fix Attribute::Params::Validate docs to show that attribute
 declaration must have open paren immediately after "Validate" or
@@ -24,24 +24,24 @@ declaration must have open paren immediately after "Validate" or
 validate() expecting a hash ref to be returned.  Reported by Randal
 Schwartz.
 
-0.23
+0.23 Jul 19, 2002
 
 - Argh.  In 0.22 some of the tests printer their test counts (1..x)
 after doing the tests.  This works with newer versions of
 Test::Harness so I didn't notice it.  Reported by Peter Asemann.
 
-0.22
+0.22 Jul 15, 2002
 
 - The last version's tarball was a mess, and had blib and other junk
 in it.  This is a nice clean one.
 
-0.21
+0.21 Jul 14, 2002
 
 - The various validation functions are now context sensitive, and will
 return a reference in scalar context.  This may be a helpful speedup,
 especially for large parameter lists.
 
-0.20
+0.20 Jul 13, 2002
 
 - More optimization work.
 
@@ -60,13 +60,13 @@ thus making it a little more fragile.
 is loaded.  This means you cannot change it mid-program.  This is a
 backwards incompatibility.
 
-0.18
+0.18 June 18, 2002
 
 - Added a new function, validate_with(), that allow you to set various
 options on a per-invocation basis, rather than on a per-package basis.
 Patch by Ken Williams.
 
-0.17
+0.17 Jun 15, 2002
 
 - Fix a doc nit where I had a wrong code example.  Reported by Britton
 Kerin.
