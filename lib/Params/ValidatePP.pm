@@ -379,7 +379,8 @@ sub _validate_one_param
     }
 
     # short-circuit for common case
-    return unless $spec->{isa} || $spec->{can} || $spec->{callbacks};
+    return unless ( $spec->{isa} || $spec->{can} ||
+                    $spec->{callbacks} || $spec->{regex} );
 
     if ( exists $spec->{isa} )
     {
@@ -440,6 +441,16 @@ sub _validate_one_param
                 $options->{on_fail}->( "$id to $called did not pass the '$_' callback\n" );
             }
 	}
+    }
+
+    if ( exists $spec->{regex} )
+    {
+        unless ( $value =~ /$spec->{regex}/ )
+        {
+            my $called = _get_called(1);
+
+            $options->{on_fail}->( "$id to $called did not pass regex check\n" );
+        }
     }
 }
 

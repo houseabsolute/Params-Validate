@@ -62,10 +62,10 @@ Params::Validate - Validate method/function parameters
 
 		  baz =>
 		  { type => SCALAR,   # a scalar ...
+               	    # ... that is a plain integer ...
+                    regex => qr/^\d+$/,
 		    callbacks =>
-		      # ... that is a plain integer ...
-		    { 'numbers only' => sub { shift() =~ /^\d+$/ },
-		      # ... and smaller than 90
+		    { # ... and smaller than 90
 		      'less than 90' => sub { shift() < 90 },
 		    },
 		  }
@@ -310,6 +310,23 @@ parameter belongs to a class (or child class) or classes, do:
            { foo =>
              { isa => [ qw( My::Frobnicator IO::Handle ) ] } } );
  # must be both, not either!
+
+=head2 Regex Validation
+
+If you want to specify that a given parameter must match a specific
+regular expression, this can be done with "regex" spec key.  For
+example:
+
+
+ validate( @_,
+           { foo =>
+             { regex => qr/^\d+$/ } } );
+
+The value of the "regex" key may be either a string or a pre-compiled
+regex created via C<qr>.
+
+The C<Regexp::Common> module on CPAN is an excellent source of regular
+expressions suitable for validating input.
 
 =head2 Callback Validation
 
