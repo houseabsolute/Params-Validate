@@ -1,0 +1,7 @@
+- isa/can validation in XS allows this:
+
+ { a => { isa => \%hash } }
+
+and tries to see if a->isa("HASH(0x1581)").  Instead, we should die if
+given a non-array reference.  Same for can, etc.  See how this is
+handled in callbacks for example.
