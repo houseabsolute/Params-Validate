@@ -1,6 +1,7 @@
 0.62 Jun 25, 2003
 
-- Remove a warn() statement left in from debugging.
+- Remove a warn() statement left in from debugging.  Reported by Shane
+McCarron.
 
 0.61 Jun 23, 2003
 
