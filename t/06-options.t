@@ -33,10 +33,11 @@ Params::Validate::validation_options( stack_skip => 3 );
 eval { baz() };
 
 ok( $@ );
-ok( $@ =~ /mandatory.*missing.*call to main::baz/i );
 
 unless ( $] == 5.006 )
 {
+    ok( $@ =~ /mandatory.*missing.*call to main::baz/i );
+
     Params::Validate::validation_options
         ( on_fail => sub { die bless { hash => 'ref' }, 'Dead' } );
 

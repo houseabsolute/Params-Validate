@@ -1,9 +1,16 @@
+0.66
+
+- Skip a few more tests under Perl 5.6.0.  Patch from Christian
+Schaffner.
+
+
 0.65 Aug 07, 2003
 
 - It is now possible to turn validation on and off at runtime.  To
 make this easier, it can be set via the PERL_NO_VALIDATION environment
 variable, or the $Params::Validate::NO_VALIDATION global variable.  Go
 ahead, shoot yourself in the foot with it!
+
 
 0.64 Jul 14, 2003
 
@@ -12,6 +19,7 @@ ahead, shoot yourself in the foot with it!
  Validate.xs: In function `validate_isa':
  Validate.xs:381: `perl_on_error' undeclared (first use in this function)
 
+
 0.63 Jul 14, 2003
 
 - The XS version of validate_with failed if the params key contained
@@ -19,15 +27,18 @@ an array reference containing a single hash reference.  Since this
 works with the pure Perl version, it should work with the XS version.
 Reported by Diab Jerius.  Bug #2791 on rt.cpan.org.
 
+
 0.62 Jun 25, 2003
 
 - Remove a warn() statement left in from debugging.  Reported by Shane
 McCarron.
 
+
 0.61 Jun 23, 2003
 
 - The last release had some debugging code left in which tried to load
 Devel::StackTrace.  Reported by Iain Truskett.
+
 
 0.60 Jun 21, 2003
 
@@ -42,6 +53,7 @@ Perl 5.6.0 and 5.6.1 is slightly slower than that used with 5.00503 or
 
 - Use XSLoader in preference to Dynaloader with Perl 5.6.0+.
 
+
 0.59 May 24, 2003
 
 - If an odd number of parameters was given to validate() in the array
@@ -52,16 +64,19 @@ whether or not the pure Perl or XS version of the code was being used.
 on with Perl 5.00503.  Unfortunately, the only test case that reliably
 reproduces this is one of Mason's tests, so no test was added.
 
+
 0.58 Apr 03, 2003
 
 - Fix some compiler warnings from MS Visual Studio 6.  Reported by Ron
 Hill.
+
 
 0.57 Feb 28, 2003
 
 - When called from the main body of a script, the validation routines
 would cause an undefined value warning if validation failed.  Reported
 by Britton Kerin and fixed by Ilya Martynov.
+
 
 0.56 Feb 24, 2003
 
@@ -71,10 +86,12 @@ This could cause strange warnings like 'Argument "InMemory" isn't
 numeric in subroutine entry...'.  Based on a bug report from Robert
 Dick for another module I wrote (Lingua::ZH::CCDICT).
 
+
 0.55 Feb 21, 2003
 
 - Fixed Params::Validate for Perl configurations where sizeof(IV) !=
 sizeof(int).  Reported by Alain Barbet.
+
 
 0.54 Feb 20, 2003
 
@@ -82,19 +99,23 @@ sizeof(int).  Reported by Alain Barbet.
 die/segfault/something under 5.6.0.  These tests will be skipped with
 5.6.0 in the future.  Reported by Christian Schaffner.
 
+
 0.53 Feb 19, 2003
 
 - When testing for a compiler, use nmake on Win32.  Implemented by
 Ronald Hill.
 
+
 0.52 Feb 14, 2003
 
 - Added regex validation option.
+
 
 0.51 Jan 14, 2003
 
 - Added copyright info to each source file.  Added LICENSE file to
 distro.
+
 
 0.50 Jan 9, 2003
 
@@ -107,6 +128,7 @@ done.
 This XS code is known to work Perl 5.00503+, but it may not work with
 earlier versions of Perl.
 
+
 0.24  Jul 19, 2002
 
 - Fix Attribute::Params::Validate docs to show that attribute
@@ -117,22 +139,26 @@ declaration must have open paren immediately after "Validate" or
 validate() expecting a hash ref to be returned.  Reported by Randal
 Schwartz.
 
+
 0.23 Jul 19, 2002
 
 - Argh.  In 0.22 some of the tests printed their test counts (1..x)
 after doing the tests.  This works with newer versions of
 Test::Harness so I didn't notice it.  Reported by Peter Asemann.
 
+
 0.22 Jul 15, 2002
 
 - The last version's tarball was a mess, and had blib and other junk
 in it.  This is a nice clean one.
+
 
 0.21 Jul 14, 2002
 
 - The various validation functions are now context sensitive, and will
 return a reference in scalar context.  This may be a helpful speedup,
 especially for large parameter lists.
+
 
 0.20 Jul 13, 2002
 
@@ -153,11 +179,13 @@ thus making it a little more fragile.
 is loaded.  This means you cannot change it mid-program.  This is a
 backwards incompatibility.
 
+
 0.18 June 18, 2002
 
 - Added a new function, validate_with(), that allow you to set various
 options on a per-invocation basis, rather than on a per-package basis.
 Patch by Ken Williams.
+
 
 0.17 Jun 15, 2002
 
@@ -167,6 +195,7 @@ Kerin.
 - Added a new validation option parameter, stack_skip, which allows
 you to change how errors are reported by Params::Validate.
 
+
 0.16 May 11, 2002
 
 - Improve skipping of tests when run with 5.6.0.  Patch by Ken
@@ -174,10 +203,12 @@ Williams.
 
 - Silence an uninit value warning
 
+
 0.15 Apr 19, 2002
 
 - validate_pos would die stupidly when it received an array with an
 odd number of elements.
+
 
 0.14 Mar 14, 2002
 
@@ -185,12 +216,14 @@ odd number of elements.
 5.6.0.  This release makes it work 5.00503 again.  Reported by Jon
 Swartz.
 
+
 0.13 Mar 10, 2002
 
 - Apply some of the same optimizations to positional parameters.  The
 speedup here seems to be about 7-8%.
 
 - Fix stupid bug in 04-defaults tests.
+
 
 0.12 Mar 10, 2002
 
@@ -209,10 +242,12 @@ were checked.  Now, the validation parameters (type, isa, etc.) are
 checked first, so that these errors will show up before missing
 parameters.
 
+
 0.11 Jan 04, 2002
 
 - Accidentally removed the set_options function (in 0.08).  Though
 this will go away in the future it isn't happening quite yet.
+
 
 0.10 Jan 04, 2002
 
@@ -223,10 +258,12 @@ Zajac.
 - When running Makefile.PL you get some warnings that can be ignored.
 Add a message saying you can ignore them.
 
+
 0.09 Jan 04, 2002
 
 - I forgot to put the Makefile.PL in the MANIFEST.  I am dumb.
 Reported by Blair Zajac.
+
 
 0.08 Jan 03, 2002
 
@@ -248,6 +285,7 @@ time they are called.  This is probably a bit slower than the previous
 implementation, which only checked once when the module was loaded.
 If you have a problem with this, let me know.
 
+
 0.07 Sep 23, 2001
 
 - Fix problem with CPAN shell's 'r' command that
@@ -258,11 +296,13 @@ by Rob BloodGood.
 hash/array back from validate or validate_pos.  Partial patch
 submitted by Ken Williams.
 
+
 0.06 Aug 23, 2001
 
 - Require Attribute::Handlers if using Perl 5.6.0+.
 
 - fix doc nits.
+
 
 0.05 Aug 23, 2001
 
@@ -273,9 +313,11 @@ safely and is included in the :all export tag.  set_options is
 deprecated and will be removed in a future release.  Thanks to Jon
 Swartz for the suggestion.
 
+
 0.04 Apr 14, 2001
 
 - tweaks to make the code work under 5.00404
+
 
 0.03 Mar 17, 2001
 
@@ -288,9 +330,11 @@ spec has been improved.
 - use Carp::confess by default when dying with an error.  This
 produces a more useful error message.
 
+
 0.02 Mar 6, 2001
 
 - fix a bug in the test suite that caused failures in 5.6.0.
+
 
 0.01 Feb 16, 2001
 

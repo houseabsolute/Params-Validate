@@ -7,7 +7,7 @@ use lib './t';
 use Params::Validate qw(validate);
 
 use Test;
-plan test => 3;
+plan test => $] == 5.006 ? 2 : 3;
 
 eval { foo() };
 ok( $@ =~ /parameter 'foo'/ );
@@ -19,8 +19,11 @@ ok( $@ =~ /parameter 'foo'/ );
     ok( ! $@ );
 }
 
-eval { foo() };
-ok( $@ =~ /parameter 'foo'/ );
+unless ( $] == 5.006 )
+{
+    eval { foo() };
+    ok( $@ =~ /parameter 'foo'/ );
+}
 
 sub foo
 {
