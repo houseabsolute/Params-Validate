@@ -4,14 +4,13 @@ use strict;
 
 $Params::Validate::VERSION = '0.50';
 
-if ( eval { require Params::ValidateXS } )
+BEGIN
 {
-    goto &Exporter::import;
-}
-else
-{
-    require Params::ValidatePP;
-    goto &Exporter::import;
+    unless ( eval { require Params::ValidateXS } )
+    {
+        undef &Params::Validate::validation_options;
+        require Params::ValidatePP;
+    }
 }
 
 1;
@@ -549,6 +548,6 @@ executing actual program code.
 
 =head1 AUTHOR
 
-Dave Rolsky, <autarch@urth.org>
+Dave Rolsky, <autarch@urth.org> and Ilya Martynov <ilya@martynov.org>
 
 =cut

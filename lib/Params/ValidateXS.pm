@@ -63,8 +63,4 @@ Params::ValidateXS - XS implementation of Params::Validate
 This is an XS implementation of Params::Validate.  See the
 Params::Validate documentation for details.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org> and Ilya Martynov, <ilya@martynov.org>
-
 =cut

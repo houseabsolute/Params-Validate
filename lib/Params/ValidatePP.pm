@@ -580,8 +580,4 @@ Params::ValidatePP - pure Perl implementation of Params::Validate
 This is a pure Perl implementation of Params::Validate.  See the
 Params::Validate documentation for details.
 
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
 =cut
