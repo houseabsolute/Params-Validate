@@ -478,7 +478,7 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
             hv_iterinit((HV*) SvRV(*temp));
             while(he = hv_iternext((HV*) SvRV(*temp))) {
                 if(SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV) {
-                    IV ok;
+                    SV* ok;
                     dSP;
 
                     PUSHMARK(SP);
@@ -488,9 +488,12 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
                         croak("Subroutine did not return anything");
                     }
                     SPAGAIN;
-                    ok = POPi;
+                    ok = POPs;
                     PUTBACK;
-                    if(!ok) {
+
+                    SvGETMAGIC(ok);
+
+                    if(! SvTRUE(ok)) {
                         SV* buffer;
 
                         buffer = sv_2mortal(newSVsv(id));
