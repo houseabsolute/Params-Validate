@@ -790,6 +790,133 @@ normalize_hash_keys(HV* p, SV* normalize_func, SV* strip_leading, IV ignore_case
 }
 
 static IV
+validate_pos_depends(AV* p, AV* specs, HV* options)
+{
+    IV p_idx, d_idx;
+    SV** depends;
+    SV** p_spec;
+    SV* buffer;
+    SV* temp;
+
+    for(p_idx = 0; p_idx <= av_len(p); p_idx++) {
+        p_spec = av_fetch(specs, p_idx, 0);
+        if (p_spec != NULL && SvROK(*p_spec) &&
+            SvTYPE(SvRV(*p_spec)) == SVt_PVHV) {
+
+            depends = hv_fetch((HV*) SvRV(*p_spec), "depends", 7, 0);
+
+            if (depends != NULL) {
+                if (SvROK(*depends)) {
+                    croak("Arguments to 'depends' for validate_pos() must be a scalar");
+                }
+
+                if (av_len(p) < SvIV(*depends) -1) {
+
+                    buffer = sv_2mortal(newSVpvf(
+                          "Parameter #%d depends on parameter #%d, which was not given",
+                          (int) p_idx + 1,
+                          (int) SvIV(*depends)));
+
+                    FAIL(buffer, options);
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+static IV
+validate_named_depends(HV* p, HV* specs, HV* options)
+{
+    HE* he;
+    HE* he1;
+    SV* buffer;
+    SV** depends_value;
+    AV* depends_list;
+    SV* depend_name;
+    SV* temp;
+    I32 d_idx;
+    
+    /* the basic idea here is to iterate through the parameters
+     * (which we assumed to have already gone through validation
+     * via validate_one_param()), and the check to see if that
+     * parameter contains a "depends" spec. If it does, we'll
+     * check if that parameter specified by depends exists in p
+     */
+    hv_iterinit(p);
+        while (he = hv_iternext(p)) {
+            he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he));
+    
+            if (he1 && SvROK(HeVAL(he1)) &&
+                SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
+
+                if (hv_exists((HV*) SvRV(HeVAL(he1)), "depends", 7)) {
+                    depends_value = hv_fetch((HV*) SvRV(HeVAL(he1)),
+                                             "depends", 7, 0);
+                    
+                /* check if the depends spec exists, and if it does, make sure
+                 * it's an arrayre (if it's a scalar, convert it to an array)
+                 */
+                if (depends_value != NULL) {
+                    if (!SvROK(*depends_value)) {
+                        depends_list = (AV*) sv_2mortal((SV*) newAV());
+                        temp = sv_2mortal(newSVsv(*depends_value));
+                        av_push(depends_list,SvREFCNT_inc(temp));
+                    } else if (SvTYPE(SvRV(*depends_value)) == SVt_PVAV) {
+                        depends_list = (AV*) SvRV(*depends_value);
+                    } else {
+                        /* if we're given a reference that's not arrayref,
+                         * complain that we only accept scalar or arrayrefs
+                         */
+                        croak("Arguments to 'depends' must be a scalar or arrayref");
+                    }
+    
+                    for (d_idx =0; d_idx <= av_len(depends_list); d_idx++) {
+
+                        depend_name = *av_fetch(depends_list, d_idx, 0);
+                        /* first check if the parameter to which this
+                         * depends on was given to us
+                         */
+                        if (!hv_exists(p, SvPV_nolen(depend_name),
+                                    SvCUR(depend_name))) {
+                            /* oh-oh, the parameter that this parameter
+                             * depends on is not available. Let's first check
+                             * if this is even valid in the spec (i.e., the
+                             * spec actually contains a spec for such parameter)
+                             */
+                            if (!hv_exists(specs, SvPV_nolen(depend_name),
+                                           SvCUR(depend_name))) {
+
+                               	buffer =
+                                  sv_2mortal(newSVpv(
+                                    "Following parameter specified in depends for '",
+                                    0));
+
+                                sv_catsv(buffer, HeSVKEY_force(he1));
+                                sv_catpv(buffer, "' does not exist in spec: ");
+                                sv_catsv(buffer, depend_name);
+    
+                                croak(SvPV_nolen(buffer));
+                            } 
+                            /* if we got here, the spec was correct. we just
+                             * need to issue a regular validation failure
+                             */
+                            buffer = sv_2mortal(newSVpv( "Parameter '", 0));
+                            sv_catsv(buffer, HeSVKEY_force(he1));
+                            sv_catpv(buffer, "' depends on parameter '");
+                            sv_catsv(buffer, depend_name);
+                            sv_catpv(buffer, "', which was not given");
+                            FAIL(buffer, options);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+static IV
 validate(HV* p, HV* specs, HV* options, HV* ret)
 {
     AV* missing;
@@ -923,6 +1050,8 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
             FAIL(buffer, options);
         }
     }
+
+	validate_named_depends(p, specs, options);
 
     /* find missing parameters */
     if (!no_validation()) missing = (AV*) sv_2mortal((SV*) newAV());
@@ -1106,6 +1235,8 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
             }
         }
     }
+
+	validate_pos_depends(p, specs, options);
 
     /* test for extra parameters */
     if (av_len(p) > av_len(specs)) {

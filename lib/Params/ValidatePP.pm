@@ -126,7 +126,72 @@ sub validate_pos (\@@)
 	$p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
     }
 
+    _validate_pos_depends(\@p, \@specs);
+
     return wantarray ? @p : \@p;
+}
+
+sub _validate_pos_depends
+{
+    my ( $p, $specs ) = @_;
+
+    for my $p_idx ( 0..$#$p )
+    {
+        my $spec = $specs->[$p_idx];
+
+        next unless $spec && UNIVERSAL::isa( $spec, 'HASH' ) && exists $spec->{depends};
+
+        my $depends = $spec->{depends};
+
+        if ( ref $depends )
+        {
+            require Carp;
+            local $Carp::CarpLevel = 2;
+            Carp::croak( "Arguments to 'depends' for validate_pos() must be a scalar" )
+        }
+
+        my $p_size = scalar @$p;
+        if ( $p_size < $depends - 1 )
+        {
+            my $error = ( "Parameter #" . ($p_idx + 1) . " depends on parameter #" .
+                          $depends . ", which was not given" );
+
+            $options->{on_fail}->($error);
+        }
+    }
+    return 1;
+}
+
+sub _validate_named_depends
+{
+    my ( $p, $specs ) = @_;
+
+    foreach my $pname ( keys %$p )
+    {
+        my $spec = $specs->{$pname};
+
+        next unless $spec && UNIVERSAL::isa( $spec, 'HASH' ) && $spec->{depends};
+
+        unless ( UNIVERSAL::isa( $spec->{depends}, 'ARRAY' ) || ! ref $spec->{depends} )
+        {
+            require Carp;
+            local $Carp::CarpLevel = 2;
+            Carp::croak( "Arguments to 'depends' must be a scalar or arrayref" );
+        }
+
+        foreach my $depends_name ( ref $spec->{depends}
+                                   ? @{ $spec->{depends} }
+                                   : $spec->{depends} )
+        {
+            unless ( exists $p->{$depends_name} )
+            {
+                my $error = ( "Parameter '$pname' depends on parameter '" .
+                              $depends_name . "', which was not given" );
+
+                $options->{on_fail}->($error);
+            }
+        }
+    }
 }
 
 sub validate (\@$)
@@ -175,7 +240,11 @@ sub validate (\@$)
 	$p = _normalize_named($p);
     }
 
-    if ( $NO_VALIDATION )
+
+    if (!$NO_VALIDATION) {
+        _validate_named_depends($p, $specs);
+    }
+    else
     {
         return
             ( wantarray ?

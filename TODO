@@ -7,8 +7,5 @@ given a non-array reference.  Same for can, etc.  See how this is
 handled in callbacks for example.
 
 
-- add a way to specify dependencies between parameters
-
-
 - add a transformation callback feature, to be called before
 validating a value, which can be used to normalize values

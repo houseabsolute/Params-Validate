@@ -15,7 +15,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.67';
+    $VERSION = '0.68';
 
     my %tags =
         ( types =>
@@ -390,6 +390,39 @@ or this for positional parameters:
 
 By default, parameters are assumed to be mandatory unless specified as
 optional.
+
+=head2 Dependencies
+
+It also possible to specify that a given optional parameter depends on
+the presence of one or more other optional parameters.
+
+ validate( @_, { cc_number =>
+                 { type => SCALAR, optional => 1,
+                   depends => [ 'cc_expiration', 'cc_holder_name' ],
+                 },
+                 cc_expiration
+                 { type => SCALAR, optional => 1 },
+                 cc_holder_name
+                 { type => SCALAR, optional => 1 },
+               } );
+
+In this case, "cc_number", "cc_expiration", and "cc_holder_name" are
+all optional.  However, if "cc_number" is provided, then
+"cc_expiration" and "cc_holder_name" must be provided as well.
+
+This allows you to group together sets of parameters that all must be
+provided together.
+
+The C<validate_pos()> version of dependencies is slightly different,
+in that you can only depend on one other parameter.  Also, if for
+example, the second parameter 2 depends on the fourth parameter, then
+it implies a dependency on the third parameter as well.  This is
+because if the fourth parameter is required, then the user must also
+provide a third parameter so that there can be four parameters in
+total.
+
+C<Params::Validate> will die if you try to depend on a parameter not
+declared as part of your parameter specification.
 
 =head2 Specifying defaults
 

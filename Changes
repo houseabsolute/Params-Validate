@@ -1,3 +1,9 @@
+0.68
+
+- Added spiffy new parameter dependency feature.  Implemented by
+Daisuke Mai.
+
+
 0.67
 
 - The test count for 06-option.t was off.  Reported by Christian
