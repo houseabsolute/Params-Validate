@@ -20,7 +20,7 @@ BEGIN
     my %tags =
         ( types =>
           [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
-            SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
+                SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
         );
 
     %EXPORT_TAGS =
