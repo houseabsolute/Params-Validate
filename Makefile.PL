@@ -13,32 +13,6 @@ for (@ARGV)
     /^--xs/ and $no_xs = 0;
 }
 
-if ( $] < 5.006_01 )
-{
-    open TYPEMAP, ">typemap"
-        or die "Cannot write to typemap: $!";
-
-    print TYPEMAP <<'EOF';
-NV                      T_NV
-UV                      T_UV
-
-INPUT
-T_NV
-	$var = ($type)SvNV($arg)
-T_UV
-	$var = ($type)SvUV($arg)
-
-OUTPUT
-T_NV
-	sv_setnv($arg, (NV)$var);
-T_UV
-	sv_setuv($arg, (UV)$var);
-
-EOF
-
-    close TYPEMAP;
-}
-
 write_makefile();
 
 exit if defined $no_xs;
