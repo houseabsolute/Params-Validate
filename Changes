@@ -4,6 +4,10 @@
 declaration must have open paren immediately after "Validate" or
 "ValidatePos".  Reported by Britton Kerin.
 
+- Fix bug with Perl 5.8.0 when in PERL_NO_VALIDATION mode and calling
+validate() expecting a hash ref to be returned.  Reported by Randal
+Schwartz.
+
 0.23
 
 - Argh.  In 0.22 some of the tests printer their test counts (1..x)
