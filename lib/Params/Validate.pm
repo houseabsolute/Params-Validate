@@ -36,6 +36,8 @@ BEGIN
 
     if ( $@ || $ENV{PV_TEST_PERL} )
     {
+        warn $@ if $@;
+
         # suppress a subroutine redefined warning
         undef &Params::Validate::validation_options;
         require Params::ValidatePP;
