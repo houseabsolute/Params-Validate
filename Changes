@@ -1,3 +1,9 @@
+0.24
+
+- Fix Attribute::Params::Validate docs to show that attribute
+declaration must have open paren immediately after "Validate" or
+"ValidatePos".  Reported by Britton Kerin.
+
 0.23
 
 - Argh.  In 0.22 some of the tests printer their test counts (1..x)
