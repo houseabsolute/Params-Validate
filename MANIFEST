@@ -4,6 +4,7 @@ MANIFEST			This list of files
 Makefile.PL
 ppport.h
 README
+TODO
 Validate.xs
 lib/Attribute/Params/Validate.pm
 lib/Params/Validate.pm
