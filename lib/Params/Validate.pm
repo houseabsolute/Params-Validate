@@ -322,8 +322,8 @@ probably better to specify what methods you expect an object to
 have rather than what class it should be of (or a child of).  This
 will make your API much more flexible.
 
-With that said, if you want to validate_with that an incoming
-parameter belongs to a class (or child class) or classes, do:
+With that said, if you want to validate that an incoming parameter
+belongs to a class (or child class) or classes, do:
 
  validate( @_,
            { foo =>
