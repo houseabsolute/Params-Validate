@@ -10,7 +10,7 @@ BEGIN
 }
 
 use Test;
-plan test => $] == 5.006 ? 4 : 7;
+plan test => $] == 5.006 ? 3 : 7;
 
 Params::Validate::validation_options( stack_skip => 2 );
 
