@@ -2,5 +2,7 @@ Changes
 MANIFEST
 Makefile.PL
 README
-Validate.pm
-test.pl
+lib/Params/Validate.pm
+t/01-validate.t
+t/02-noop.t
+t/tests.pl
