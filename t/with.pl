@@ -1,5 +1,5 @@
 use Test;
-BEGIN { plan test => 11 }
+BEGIN { plan test => 13 }
 
 eval
 {
@@ -95,6 +95,21 @@ else
     {
         main::ok( $@ =~ /was not listed/ );
     }
+}
+
+{
+    # Bug 2791 on rt.cpan.org
+    my %p;
+    eval
+    {
+        my @p = { foo => 1 };
+        %p = validate_with( params => \@p,
+                            spec   => { foo => 1 },
+                          );
+    };
+    warn $@ if $@;
+    ok( ! $@ );
+    ok( $p{foo}, 1 );
 }
 
 1;
