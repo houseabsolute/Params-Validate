@@ -1,3 +1,9 @@
+0.21
+
+- The various validation functions are now context sensitive, and will
+return a reference in scalar context.  This may be a helpful speedup,
+especially for large parameter lists.
+
 0.20
 
 - More optimization work.

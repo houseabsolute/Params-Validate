@@ -77,21 +77,18 @@
 sub foo
 {
     my @params = ( a => 1, b => 2 );
-    my %def = validate( @params, { a => 1,
-				   b => { default => 99 },
-				   c => { optional => 1, default => 42 },
-                                   d => { default => 0 },
-				 } );
-
-    return %def;
+    return validate( @params, { a => 1,
+                                b => { default => 99 },
+                                c => { optional => 1, default => 42 },
+                                d => { default => 0 },
+                              } );
 }
 
 sub bar
 {
     my @params = ( 1, 2 );
-    my @def = validate_pos( @params, 1, { default => 99 }, { default => 42 }, { default => 0 } );
 
-    return @def;
+    return validate_pos( @params, 1, { default => 99 }, { default => 42 }, { default => 0 } );
 }
 
 sub ok
