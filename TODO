@@ -13,3 +13,7 @@ validating a value, which can be used to normalize values
 
 - make it possible to explicitly not use the XS version in a non-hacky
 way.
+
+
+- is there something better than "N/A" that could be used when
+validation is being done outside a sub?
