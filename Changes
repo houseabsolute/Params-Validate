@@ -3,6 +3,9 @@
 - Neither --xs or --pm worked with the Makefile.PL the way they were
 supposed to.  Reported by Doug Treder.
 
+- Moved source to my personal SVN repo.
+https://svn.urth.org/svn/Params-Validate
+
 
 0.76 Nov 13, 2004 (The "Cancan some more" release)
 

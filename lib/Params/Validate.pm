@@ -699,8 +699,8 @@ figures out how to do this, please let me know.
 =head1 SUPPORT
 
 For now, support questions should be sent to Dave at autarch@urth.org.
-The CVS repository is on Savannah at
-https://savannah.nongnu.org/projects/p-v-perl/.
+
+The code repository is at https://svn.urth.org/svn/Params-Validate/
 
 =head1 SEE ALSO
 
