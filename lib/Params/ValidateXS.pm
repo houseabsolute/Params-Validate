@@ -56,6 +56,8 @@ bootstrap Params::Validate $Params::Validate::VERSION;
     }
 }
 
+sub _check_regex_from_xs { return $_[0] =~ /$_[1]/ ? 1 : 0 }
+
 1;
 
 __END__
