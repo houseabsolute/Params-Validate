@@ -45,7 +45,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 1;
 
@@ -429,7 +429,7 @@ example.
 This callback is expected to C<die> internally.  If it does not, the
 validation will proceed onwards, with unpredictable results.
 
-The default is to simply use Perl's builtin C<die> function.
+The default is to simply use the Carp module's C<confess()> function.
 
 =head1 DISABLING VALIDATION
 

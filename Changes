@@ -1,3 +1,14 @@
+0.03 
+
+- make sure all error messages contain the name of the subroutine that
+was called.
+
+- the error message given when an argument doesn't match the 'isa'
+spec has been improved.
+
+- use Carp::confess by default when dying with an error.  This
+produces a more useful error message.
+
 0.02  Tue Mar 06 18:30 2001
 
 - fix a bug in the test suite that caused failures in 5.6.0.

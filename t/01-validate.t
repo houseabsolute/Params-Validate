@@ -18,71 +18,71 @@ use vars qw(@expect);
 	   0,
 
 	   # simple types
-	   q|^The 'foo' parameter is an 'arrayref'.* types: scalar|,
-	   q|^The 'brax' parameter is an 'arrayref'.* types: scalar hash|,
-	   q|^The 'bar' parameter is a 'hashref'.* types: arrayref|,
+	   q|^The 'foo' parameter to main::sub3 was an 'arrayref'.* types: scalar|,
+	   q|^The 'brax' parameter to main::sub3 was an 'arrayref'.* types: scalar hash|,
+	   q|^The 'bar' parameter to main::sub3 was a 'hashref'.* types: arrayref|,
 	   0,
 
 	   # funkier types
-	   q|^The 'bar' parameter is a 'globref'.* types: glob|,
-	   q|^The 'baz' parameter is a 'glob'.* types: globref|,
-	   q|^The 'foo' parameter is a 'scalar'.* types: scalarref|,
-	   q|^The 'quux' parameter is a 'globref'.* types: coderef|,
+	   q|^The 'bar' parameter to main::sub4 was a 'globref'.* types: glob|,
+	   q|^The 'baz' parameter to main::sub4 was a 'glob'.* types: globref|,
+	   q|^The 'foo' parameter to main::sub4 was a 'scalar'.* types: scalarref|,
+	   q|^The 'quux' parameter to main::sub4 was a 'globref'.* types: coderef|,
 
 	   0,
 	   0,
-	   q|^The 'foo' parameter is an 'arrayref'.* types: glob globref|,
+	   q|^The 'foo' parameter to main::sub4a was an 'arrayref'.* types: glob globref|,
 
-	   # isa
+	   # wasa
 	   0,
-	   0,
-	   0,
-
-	   q|^The 'foo' parameter is not a 'Bar'|,
 	   0,
 	   0,
 
-	   q|^The 'foo' parameter is not a 'Baz'|,
-	   q|^The 'foo' parameter is not a 'Baz'|,
+	   q|^The 'foo' parameter to main::sub6 was not a 'Bar'|,
+	   0,
 	   0,
 
-	   q|^The 'foo' parameter is not a 'Yadda'|,
+	   q|^The 'foo' parameter to main::sub7 was not a 'Baz'|,
+	   q|^The 'foo' parameter to main::sub7 was not a 'Baz'|,
+	   0,
+
+	   q|^The 'foo' parameter to main::sub8 was not a 'Yadda'|,
 	   0,
 
 	   # can
 	   0,
 	   0,
-	   q|^The 'foo' parameter cannot 'barify'|,
+	   q|^The 'foo' parameter to main::sub9a does not have the method: 'barify'|,
 	   0,
-	   q|^The 'foo' parameter cannot 'yaddaify'|,
-	   q|^The 'foo' parameter cannot 'barify'|,
-	   q|^The 'foo' parameter cannot 'yaddaify'|,
+	   q|^The 'foo' parameter to main::sub9b does not have the method: 'yaddaify'|,
+	   q|^The 'foo' parameter to main::sub9b does not have the method: 'barify'|,
+	   q|^The 'foo' parameter to main::sub9c does not have the method: 'yaddaify'|,
 	   0,
 
 	   # callbacks
 	   0,
 	   0,
-	   q|^The 'foo' parameter did not pass the 'less than 20' callback|,
+	   q|^The 'foo' parameter to main::sub10 did not pass the 'less than 20' callback|,
 
 	   0,
-	   q|^The 'foo' parameter did not pass the 'less than 20' callback|,
-	   q|^The 'foo' parameter did not pass the 'more than 0' callback|,
+	   q|^The 'foo' parameter to main::sub11 did not pass the 'less than 20' callback|,
+	   q|^The 'foo' parameter to main::sub11 did not pass the 'more than 0' callback|,
 
 	   # mix n' match
-	   q|^The 'foo' parameter is a 'scalar'.* types: arrayref|,
-	   q|^The 'foo' parameter did not pass the '5 elements' callback|,
+	   q|^The 'foo' parameter to main::sub12 was a 'scalar'.* types: arrayref|,
+	   q|^The 'foo' parameter to main::sub12 did not pass the '5 elements' callback|,
 	   0,
 
 	   # positional - 1
 	   q|^1 parameter was passed to .* but 2 were expected|,
-	   q|^Parameter #2 did not pass the '5 elements' callback|,
+	   q|^Parameter #2 to .* did not pass the '5 elements' callback|,
 
 	   # positional - 2
-	   q|^Parameter #3 is not a 'Bar'|,
+	   q|^Parameter #3 to .* was not a 'Bar'|,
 	   0,
 
 	   # hashref named params
-	   q|^The 'bar' parameter is a 'hashref'.* types: arrayref|,
+	   q|^The 'bar' parameter to .* was a 'hashref'.* types: arrayref|,
 	   q|^Mandatory parameter 'bar' missing|,
 
 	   # positional - 3
@@ -114,10 +114,10 @@ use vars qw(@expect);
 	   q|^ERROR WAS: The following parameter .* bar|,
 	   q|^The following parameter .* bar|,
 
-	   q|^The 'foo' parameter is an 'undef'.*|,
+	   q|^The 'foo' parameter to .* was an 'undef'.*|,
 	   0,
 
-	   q|^The 'foo' parameter is an 'arrayref'.*|,
+	   q|^The 'foo' parameter to .* was an 'arrayref'.*|,
 	   0,
 	  );
 
