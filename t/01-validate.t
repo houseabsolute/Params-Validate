@@ -126,8 +126,6 @@ use vars qw(@expect);
            0,
 	  );
 
-require 'tests.pl';
-
 # 5.6.0 core dumps all over during the tests
 if ( $] == 5.006 )
 {
@@ -139,8 +137,10 @@ module itself.  5.6.1 works fine when I tested it.  5.6.0 is buggy.
 You are encouraged to upgrade.
 EOF
 
-    print "ok $_\n" for 1..77;
+    print "1..0";
     exit;
 }
+
+require 'tests.pl';
 
 run_tests();

@@ -9,10 +9,6 @@ BEGIN
     }
 }
 
-print "1..13\n";
-
-use Attribute::Params::Validate qw(:types);
-
 if ( $] == 5.006 )
 {
     warn <<'EOF';
@@ -23,9 +19,13 @@ module itself.  5.6.1 works fine when I tested it.  5.6.0 is buggy.
 You are encouraged to upgrade.
 EOF
 
-    print "ok $_\n" for 1..13;
+    print "1..0\n" for 1..13;
     exit;
 }
+
+print "1..13\n";
+
+use Attribute::Params::Validate qw(:types);
 
 sub foo :Validate( c => { type => SCALAR } )
 {
