@@ -1,3 +1,8 @@
+0.22
+
+- The last version's tarball was a mess, and had blib and other junk
+in it.  This is a nice clean one.
+
 0.21
 
 - The various validation functions are now context sensitive, and will
