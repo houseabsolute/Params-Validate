@@ -33,7 +33,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
@@ -43,17 +43,18 @@ sub validate_pos (\@@)
     my $p = shift;
     my @specs = @_;
 
+    my @p = @$p;
     if ( $ENV{PERL_NO_VALIDATION} )
     {
 	foreach my $x (0..$#specs)
 	{
-	    if ( $x > $#{$p} )
+	    if ( $x > $#p )
 	    {
-		$p->[$x] = $specs[$x]->{default} if ref $specs[$x] && exists $specs[$x]->{default};
+		$p[$x] = $specs[$x]->{default} if ref $specs[$x] && exists $specs[$x]->{default};
 	    }
 	}
 
-	return @$p;
+	return @p;
     }
 
     # I'm too lazy to pass these around all over the place.
@@ -70,7 +71,7 @@ sub validate_pos (\@@)
 
     my $max = scalar @specs;
 
-    my $actual = scalar @$p;
+    my $actual = scalar @p;
     unless ($actual >= $min && ( $options->{allow_extra} || $actual <= $max ) )
     {
 	my $minmax = $options->{allow_extra} ? "at least $min" : ( $min != $max ? "$min - $max" : $max );
@@ -79,27 +80,22 @@ sub validate_pos (\@@)
 	$options->{on_fail}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
     }
 
-    foreach ( 0..$#$p )
+    my $bigger = $#p > $#specs ? $#p : $#specs;
+    foreach ( 0..$bigger )
     {
-	_validate_one_param( $p->[$_], $specs[$_], "Parameter #" . ($_ + 1) )
-	    if ref $specs[$_];
+	my $spec = $specs[$_];
+	if ( exists $p[$_] )
+	{
+	    _validate_one_param( $p[$_], $spec, "Parameter #" . ($_ + 1) )
+		if ref $spec;
+	}
+
+	next unless ref $spec;
+
+	$p[$_] = $spec->{default} if ! exists $p[$_] && exists $spec->{default};
     }
 
-    return unless wantarray;
-
-    # Make a copy so we don't alter @_ for the caller.
-    my @p = @$p;
-
-    # Add defaults to existing parameters if called in list context
-    foreach (0..$#specs)
-    {
-	next unless ref $specs[$_];
-	next if $specs[$_]->{optional} || ! exists $specs[$_]->{default};
-
-	$p[$_] = $specs[$_]->{default};
-    }
-
-    return @p;
+    return @p if wantarray;
 }
 
 sub validate (\@$)

@@ -23,13 +23,13 @@ my @def = eval { bar() };
 ok( ! $@,
     "Error calling bar(): $@\n" );
 
-ok( $def{a} == 1,
+ok( $def[0] == 1,
     "1st parameter was altered: $def[0]\n" );
 
-ok( $def{b} == 2,
+ok( $def[1] == 2,
     "2nd parameter was altered: $def[1]\n" );
 
-ok( $def{c} == 42,
+ok( $def[2] == 42,
     "No default (or incorrect default) assigned for 3rd parameter: $def[2]\n" );
 
 sub foo
