@@ -1,4 +1,4 @@
-# Copyright (c) 2000-2003 Dave Rolsky
+# Copyright (c) 2000-2004 Dave Rolsky
 # All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.  See the LICENSE
@@ -164,5 +164,11 @@ Params::ValidateXS - XS implementation of Params::Validate
 
 This is an XS implementation of Params::Validate.  See the
 Params::Validate documentation for details.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2004 David Rolsky.  All rights reserved.  This program
+is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
 
 =cut
