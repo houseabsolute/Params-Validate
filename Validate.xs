@@ -4,6 +4,11 @@
 #define NEED_newCONSTSUB
 #include "ppport.h"
 
+/* not defined in 5.00503 _or_ ppport.h! */
+#ifndef SvPV_nolen
+#define SvPV_nolen(sv) SvPV(sv, PL_na)
+#endif
+
 /* type constants */
 #define SCALAR    1
 #define ARRAYREF  2
@@ -38,20 +43,19 @@
     } STMT_END
 
 
-/* it'd be nice to be able to call EXTEND(SP, x) below, but apparently
-   there's no easy way to find out how many keys a hash has from XS
- */
 #define RETURN_HASH(ret) \
     STMT_START {                                      \
         HE* he;                                       \
+        I32 keys;                                     \
         switch(GIMME_V) {                             \
         case G_VOID:                                  \
             return;                                   \
         case G_ARRAY:                                 \
-            hv_iterinit(ret);                         \
+            keys = hv_iterinit(ret);                  \
+            EXTEND(SP, keys * 2);                     \
             while(he = hv_iternext(ret)) {            \
-                XPUSHs(HeSVKEY_force(he));            \
-                XPUSHs(HeVAL(he));                    \
+                PUSHs(HeSVKEY_force(he));             \
+                PUSHs(HeVAL(he));                     \
             }                                         \
             break;                                    \
         case G_SCALAR:                                \
@@ -193,7 +197,11 @@ get_type(SV* sv)
 }
 
 /* get an article for given string */
+#if (PERL_VERSION >= 6) /* Perl 5.6.0+ */
 static const char*
+#else
+static char*
+#endif
 article(SV* string)
 {
     STRLEN len;
@@ -235,7 +243,7 @@ validation_failure(SV* message, HV* options)
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
-        call_sv(on_fail, G_DISCARD | G_EVAL);
+        perl_call_sv(on_fail, G_DISCARD | G_EVAL);
         if (SvTRUE(ERRSV)) {
             croak(Nullch);
         }        
@@ -244,11 +252,11 @@ validation_failure(SV* message, HV* options)
     /* by default resort to Carp::confess for error reporting */
     {
         dSP;
-        require_pv("Carp");
+        perl_require_pv("Carp");
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
-        call_pv("Carp::confess", G_DISCARD | G_EVAL);
+        perl_call_pv("Carp::confess", G_DISCARD | G_EVAL);
         if (SvTRUE(ERRSV)) {
             croak(Nullch);
         }
@@ -277,7 +285,8 @@ get_called(HV* options)
 
         buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", frame));
 
-        return eval_pv(SvPV_nolen(buffer), 1);
+        /* another damn thing ppport should handle but doesn't, argh! */
+        return perl_eval_pv(SvPV(buffer, PL_na), 1);
     }
 }
 
@@ -287,7 +296,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options)
 {
     SV* buffer;
 
-    /* quick test directly via Perl internals */
+    /* quick test directly from Perl internals */
     if(sv_derived_from(value, SvPV_nolen(package))) return;
 
     buffer = sv_2mortal(newSVsv(id));
@@ -314,7 +323,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
     HV* pkg = NULL;
 
     /* some bits of this code are stolen from universal.c:
-       XS_UNIVERSAL_can - beware that I've reformated it and removed
+       XS_UNIVERSAL_can - beware that I've reformatted it and removed
        unused parts */
     if(SvGMAGICAL(value)) mg_get(value);
 
@@ -438,7 +447,7 @@ validate_one_param(SV* value, HV* spec, SV* id, HV* options)
                     PUSHMARK(SP);
                     XPUSHs(value);
                     PUTBACK;
-                    if(!call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
+                    if(!perl_call_sv(SvRV(HeVAL(he)), G_SCALAR)) {
                         croak("Subroutine did not return anything");
                     }
                     SPAGAIN;
@@ -529,19 +538,19 @@ get_options(HV* options)
 
     ret = (HV*) sv_2mortal((SV*) newHV());
 
-    /* gets caller's package name - Perl < 5.6.0 does not have
-       CopSTASHPV */
-#ifndef PERL_VERSION     /* Perl < 5.6.0 does not define this */
-    pkg = HvNAME(PL_curcop->cop_stash);
-#else
+    /* gets caller's package name */
+
+#if (PERL_VERSION >= 6) /* Perl 5.6.0+ */
     pkg = CopSTASHPV(PL_curcop);
+#else
+    pkg = HvNAME(PL_curcop->cop_stash);
 #endif
     if(!pkg) {
         pkg = "main";
     }
 
     /* get package specific options */
-    OPTIONS = get_hv("Params::Validate::OPTIONS", 1);
+    OPTIONS = perl_get_hv("Params::Validate::OPTIONS", 1);
     if(temp = hv_fetch(OPTIONS, pkg, strlen(pkg), 0)) {
         SvGETMAGIC(*temp);
         if(SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV) {
