@@ -324,7 +324,7 @@ get_called(HV* options)
             frame = 1;
         }
 
-        buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", frame));
+        buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
 
         return perl_eval_pv(SvPV_nolen(buffer), 1);
     }
@@ -911,12 +911,12 @@ validate_pos_failure(IV pnum, IV min, IV max, HV* options)
     sv_catpv(buffer, " but ");
     if(!allow_extra) {
         if(min != max) {
-            sv_catpvf(buffer, "%d - %d", (I32) min + 1, (I32) max + 1);
+            sv_catpvf(buffer, "%d - %d", (int) min + 1, (int) max + 1);
         } else {
-            sv_catpvf(buffer, "%d", (I32) max + 1);
+            sv_catpvf(buffer, "%d", (int) max + 1);
         }
     } else {
-        sv_catpvf(buffer, "at least %d", min + 1);
+        sv_catpvf(buffer, "at least %d", (int) min + 1);
     }
     if((allow_extra ? min : max) != 0) {
         sv_catpv(buffer, " were expected\n");
@@ -965,7 +965,7 @@ validate_pos(AV* p, AV* specs, HV* options)
             value = *av_fetch(p, i, 1);
             SvGETMAGIC(value);
             if(!NO_VALIDATE && complex_spec) {
-                buffer = sv_2mortal(newSVpvf("Parameter #%d", i + 1));
+                buffer = sv_2mortal(newSVpvf("Parameter #%d", (int) i + 1));
                 validate_one_param(value, (HV*) SvRV(spec), buffer, options);
             }
             if(GIMME_V != G_VOID) av_push(ret, SvREFCNT_inc(value));
