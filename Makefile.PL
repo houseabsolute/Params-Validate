@@ -31,7 +31,8 @@ EOF
 
 close F or no_cc();
 
-system("make test$Config{obj_ext}") and no_cc();
+my $make = $^O =~ /win32/i ? 'nmake' : 'make';
+system("$make test$Config{obj_ext}") and no_cc();
 
 sub write_makefile
 {
