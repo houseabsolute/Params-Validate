@@ -13,3 +13,7 @@ way.
 
 - is there something better than "N/A" that could be used when
 validation is being done outside a sub?
+
+
+- add an excludes param to the spec as the opposite of depends,
+suggested by Diab Jerius (see rt.cpan.org).

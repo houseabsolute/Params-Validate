@@ -1,3 +1,12 @@
+0.74 April 4, 2004 (The "I hate old Perls" release)
+
+- Sometimes, but not always, Perl 5.00504 and 5.00503 cannot produce a
+string value for a glob (as opposed to glob reference) parameter.
+This was uncovered by a test in the HTML::Mason test suite, but I
+cannot reproduce it in a simple testable form for this test suite.
+Sigh ...
+
+
 0.73 Mar 28, 2004  (The "YAPC::Taipei release party" release)
 
 - The minimum number of arguments required was reported incorrectly by

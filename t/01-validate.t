@@ -29,7 +29,7 @@ use vars qw(@expect);
 
 	   # funkier types
 	   q|^The 'bar' parameter \("GLOB\(0x[a-f0-9]+\)"\) to main::sub4 was a 'globref'.* types: glob|,
-	   q|^The 'baz' parameter \("\*main::FH"\) to main::sub4 was a 'glob'.* types: globref|,
+	   q|^The 'baz' parameter \((?:"\*main::FH"\|GLOB)\) to main::sub4 was a 'glob'.* types: globref|,
 	   q|^The 'foo' parameter \("foobar"\) to main::sub4 was a 'scalar'.* types: scalarref|,
 	   q|^The 'quux' parameter \("GLOB\(0x[a-f0-9]+\)"\) to main::sub4 was a 'globref'.* types: coderef|,
 

@@ -937,7 +937,7 @@ cat_string_representation(SV* buffer, SV* value)
 {
 #if (PERL_VERSION == 5)
   if (SvTYPE(value) == SVt_PVGV) {
-    sv_catpv(buffer, "GLOB/handle");
+    sv_catpv(buffer, "GLOB");
   } else
 #endif
          if(SvOK(value)) {
