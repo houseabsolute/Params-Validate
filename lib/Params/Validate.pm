@@ -33,7 +33,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
