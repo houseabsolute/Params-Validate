@@ -4,3 +4,4 @@ Makefile
 ~$
 MANIFEST.SKIP
 .*\.tar\.gz
+benchmarks
