@@ -20,5 +20,6 @@ t/08-noop_with.t
 t/09-regex.t
 t/10-noop_regex.t
 t/defaults.pl
+t/regex.pl
 t/tests.pl
 t/with.pl
