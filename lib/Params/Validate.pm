@@ -64,8 +64,8 @@ monstrosity):
 
 -- The code assumes that _most_ callers will not be using the
    skip_leading or ignore_case features.  In order to not alter the
-   references passed in, we copy them wholesale when normalize them to
-   make these features work.  This is slower but lets us be faster
+   references passed in, we copy them wholesale when normalizing them
+   to make these features work.  This is slower but lets us be faster
    when not using them.
 
 =end
