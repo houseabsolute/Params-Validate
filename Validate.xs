@@ -108,23 +108,12 @@
         validation_failure(message, options);
 #endif /* PERL_VERSION */
 
-/* enable/disable validation */
-static int NO_VALIDATE ;
-
 /* module initialization */
 static void
 bootinit()
 {
     char *str;
     HV* stash;
-
-    /* turn on/off validation */
-    str = PerlEnv_getenv("PERL_NO_VALIDATION");
-    if (str) {
-        NO_VALIDATE = SvIV(sv_2mortal(newSVpv(str, 0)));
-    } else {
-        NO_VALIDATE = 0;
-    }
 
     /* define constants */
     stash = gv_stashpv("Params::Validate", 1);
@@ -142,6 +131,18 @@ bootinit()
     newCONSTSUB(stash, "BOOLEAN", newSViv(BOOLEAN));
 }
 
+static bool
+no_validation()
+{
+    SV * no_v;
+
+    no_v = get_sv("Params::Validate::NO_VALIDATION", 0);
+    if (! no_v)
+        croak("Cannot retrieve $Params::Validate::NO_VALIATION\n");
+
+    return SvTRUE(no_v);
+}
+    
 /* return type string that corresponds to typemask */
 static SV*
 typemask_to_string(IV mask)
@@ -789,7 +790,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     }
 
     /* find extra parameters and validate good parameters */
-    if (! NO_VALIDATE)
+    if (! no_validation())
       unmentioned = (AV*) sv_2mortal((SV*) newAV());
 
     hv_iterinit(p);
@@ -810,7 +811,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
             }
         }
 
-        if (!NO_VALIDATE) {
+        if (!no_validation()) {
             /* check if this parameter is defined in spec and if it is
                then validate it using spec */
             if (he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he))) {
@@ -832,7 +833,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
             }
         }
 
-        if (!NO_VALIDATE && av_len(unmentioned) > -1) {
+        if (!no_validation() && av_len(unmentioned) > -1) {
             SV* buffer;
             IV i;
 
@@ -864,7 +865,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
     }
 
     /* find missing parameters */
-    if (!NO_VALIDATE) missing = (AV*) sv_2mortal((SV*) newAV());
+    if (!no_validation()) missing = (AV*) sv_2mortal((SV*) newAV());
     hv_iterinit(specs);
     while (he = hv_iternext(specs)) {
         HV* spec;
@@ -901,7 +902,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
         }
 
         /* find if missing parameter is mandatory */
-        if (!NO_VALIDATE) {
+        if (!no_validation()) {
             SV** temp;
 
             if (spec) {
@@ -916,7 +917,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
         }
     }
 
-    if (!NO_VALIDATE && av_len(missing) > -1) {
+    if (!no_validation() && av_len(missing) > -1) {
         SV* buffer;
         IV i;
 
@@ -1016,7 +1017,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
         if (i <= av_len(p)) {
             value = *av_fetch(p, i, 1);
             SvGETMAGIC(value);
-            if (!NO_VALIDATE && complex_spec) {
+            if (!no_validation() && complex_spec) {
                 buffer = sv_2mortal(newSVpvf("Parameter #%d", (int) i + 1));
 
                 if (! validate_one_param(value, (HV*) SvRV(spec), buffer, options))
@@ -1084,7 +1085,7 @@ _validate(p, specs)
         HV* options;
         IV  ok;
 
-        if (NO_VALIDATE && GIMME_V == G_VOID) XSRETURN(0);
+        if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
         if (!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
             croak("Expecting array reference as first parameter");
@@ -1132,7 +1133,7 @@ _validate_pos(p, ...)
         AV* ret;
         IV i;
 
-        if (NO_VALIDATE && GIMME_V == G_VOID) XSRETURN(0);
+        if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
         if (!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
             croak("Expecting array reference as first parameter");
@@ -1160,7 +1161,7 @@ _validate_with(...)
         SV* spec;
         IV i;
 
-        if (NO_VALIDATE && GIMME_V == G_VOID) XSRETURN(0);
+        if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
         /* put input list into hash */
         p = (HV*) sv_2mortal((SV*) newHV());

@@ -23,9 +23,6 @@ BEGIN
 
     sub HANDLE    () { 16 | 32 }
     sub BOOLEAN   () { 1 | 256 }
-
-    my $val = $ENV{PERL_NO_VALIDATION} ? 1 : 0;
-    eval "sub NO_VALIDATE () { $val }";
 }
 
 # Various internals notes (for me and any future readers of this
@@ -54,14 +51,14 @@ BEGIN
 # reference.  Everything after is the parameters for validation.
 sub validate_pos (\@@)
 {
-    return if NO_VALIDATE && ! defined wantarray;
+    return if $NO_VALIDATION && ! defined wantarray;
 
     my $p = shift;
 
     my @specs = @_;
 
     my @p = @$p;
-    if ( NO_VALIDATE )
+    if ( $NO_VALIDATION )
     {
         # if the spec is bigger that's where we can start adding
         # defaults
@@ -133,7 +130,7 @@ sub validate_pos (\@@)
 
 sub validate (\@$)
 {
-    return if NO_VALIDATE && ! defined wantarray;
+    return if $NO_VALIDATION && ! defined wantarray;
 
     my $p = $_[0];
 
@@ -141,7 +138,7 @@ sub validate (\@$)
 
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
-    unless ( NO_VALIDATE )
+    unless ( $NO_VALIDATION )
     {
         if ( ref $p eq 'ARRAY' )
         {
@@ -172,7 +169,7 @@ sub validate (\@$)
 	$p = _normalize_named($p);
     }
 
-    if ( NO_VALIDATE )
+    if ( $NO_VALIDATION )
     {
         return
             ( wantarray ?
@@ -282,13 +279,13 @@ sub validate (\@$)
 
 sub validate_with
 {
-    return if NO_VALIDATE && ! defined wantarray;
+    return if $NO_VALIDATION && ! defined wantarray;
 
     my %p = @_;
 
     local $options = _get_options( (caller(0))[0], %p );
 
-    unless ( NO_VALIDATE )
+    unless ( $NO_VALIDATION )
     {
         unless ( exists $options->{called} )
         {

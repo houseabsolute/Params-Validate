@@ -11,11 +11,11 @@ use strict;
 BEGIN
 {
     use Exporter;
-    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options );
+    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.64';
+    $VERSION = '0.65';
 
     my %tags =
         ( types =>
@@ -31,6 +31,8 @@ BEGIN
 
     @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
     @EXPORT = qw( validate validate_pos );
+
+    $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
     eval { require Params::ValidateXS } unless $ENV{PV_TEST_PERL};
 
@@ -558,15 +560,37 @@ the parameters are assumed to be positional.
 =head1 DISABLING VALIDATION
 
 If the environment variable C<PERL_NO_VALIDATION> is set to something
-true, then all calls to the validation functions are turned into
-no-ops.  This may be useful if you only want to use this module during
-development but don't want the speed hit during production.
+true, then validation is turned off.  This may be useful if you only
+want to use this module during development but don't want the speed
+hit during production.
 
 The only error that will be caught will be when an odd number of
 parameters are passed into a function/method that expects a hash.
 
-This environment value is checked B<only> when the module is first
-loaded.  You cannot change it after the module has loaded.
+If you want to selectively turn validation on and off at runtime, you
+can directly set the C<$Params::Validate::NO_VALIDATION> global
+variable.  It is B<strongly> recommended that you B<localize> any
+changes to this variable, because other modules you are using may
+expect validation to be on when they execute.  For example:
+
+
+  {
+      local $Params::Validate::NO_VALIDATION = 1;
+      # no error
+      foo( bar => 2 );
+  }
+
+  # error
+  foo( bar => 2 );
+
+  sub foo
+  {
+      my %p = validate( @_, { foo => 1 } );
+      ...
+  }
+
+But if you want to shoot yourself in the foot and just turn it off, go
+ahead!
 
 =head1 LIMITATIONS
 
