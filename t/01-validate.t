@@ -138,6 +138,9 @@ use vars qw(@expect);
            0,
 
            q|^Odd number|,
+
+           # optional glob
+           0,
 	  );
 
 # 5.6.0 core dumps all over during the tests
