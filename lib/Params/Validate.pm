@@ -222,11 +222,11 @@ sub validate (\@$)
                    ||
                    do
                    {
-                       exists $spec->{default}
-                           &&
-                       ($p{$key} = $spec->{default})
-                           &&
-                       next OUTER;
+                       if ( exists $spec->{default} )
+                       {
+                           $p{$key} = $spec->{default};
+                           next OUTER;
+                       }
                    }
                  ) :
                $spec )
