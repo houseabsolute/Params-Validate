@@ -1,3 +1,9 @@
+0.23
+
+- Argh.  In 0.22 some of the tests printer their test counts (1..x)
+after doing the tests.  This works with newer versions of
+Test::Harness so I didn't notice it.  Reported by Peter Asemann.
+
 0.22
 
 - The last version's tarball was a mess, and had blib and other junk
