@@ -1,3 +1,8 @@
+0.58 Apr 03, 2003
+
+- Fix some compiler warnings from MS Visual Studio 6.  Reported by Ron
+Hill.
+
 0.57 Feb 28, 2003
 
 - When called from the main body of a script, the validation routines

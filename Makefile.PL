@@ -19,7 +19,7 @@ exit if defined $no_xs;
 
 print "Testing if you have a C compiler\n";
 
-unless ( open F,">test.c" )
+unless ( open F, ">test.c" )
 {
     warn "Cannot write test.c, skipping test compilation and install pure Perl version.\n";
     no_cc();
