@@ -44,6 +44,26 @@ my %tags =
 
 $VERSION = '0.20';
 
+=pod
+
+=begin internals
+
+Various internals notes (for me and any future readers of this
+monstrosity):
+
+- A lot of the weirdness is _intentional_, because it optimizes for
+  the _success_ case.  It does not really matter how slow the code is
+  after it enters a path that leads to reporting failure.  But the
+  "success" path should be as fast as possible.
+
+-- We only calculate $called as needed for this reason, even though it
+   means copying code all over.
+
+=end
+
+=cut
+
+
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
 # reference.  Everything after is the parameters for validation.
@@ -58,6 +78,8 @@ sub validate_pos (\@@)
     my @p = @$p;
     if ( NO_VALIDATE )
     {
+        # if the spec is bigger that's where we can start adding
+        # defaults
         for ( my $x = $#p + 1; $x <= $#specs; $x++ )
 	{
             $p[$x] =
@@ -96,11 +118,7 @@ sub validate_pos (\@@)
 	my $val = $options->{allow_extra} ? $min : $max;
 	$minmax .= $val != 1 ? ' were' : ' was';
 
-        my $called =
-            ( exists $options->{called} ?
-              $options->{called} :
-              (caller( $options->{stack_skip} + 1 ))[3]
-            );
+        my $called = _get_called();
 
 	$options->{on_fail}->
             ( "$actual parameter" .
@@ -148,11 +166,7 @@ sub validate (\@$)
             }
             elsif ( @$p % 2 )
             {
-                my $called =
-                    ( exists $options->{called} ?
-                      exists $options->{called} :
-                      (caller( $options->{stack_skip} ))[3]
-                    );
+                my $called = _get_called();
 
                 $options->{on_fail}->
                     ( "Odd number of parameters in call to $called " .
@@ -189,11 +203,7 @@ sub validate (\@$)
 
     unless ( $options->{allow_extra} )
     {
-        my $called =
-            ( exists $options->{called} ?
-              $options->{called} :
-              (caller( $options->{stack_skip} ))[3]
-            );
+        my $called = _get_called();
 
 	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %$p )
 	{
@@ -242,11 +252,7 @@ sub validate (\@$)
 
     if (@missing)
     {
-        my $called =
-            ( exists $options->{called} ?
-              $options->{called} :
-              (caller( $options->{stack_skip} ))[3]
-            );
+        my $called = _get_called();
 
 	my $missing = join ', ', map {"'$_'"} @missing;
 	$options->{on_fail}->
@@ -326,11 +332,7 @@ sub _validate_one_param
 	    my @allowed = _typemask_to_strings($spec->{type});
 	    my $article = $is[0] =~ /^[aeiou]/i ? 'an' : 'a';
 
-            my $called =
-                ( exists $options->{called} ?
-                  exists $options->{called} :
-                  (caller( $options->{stack_skip} + 1 ))[3]
-                );
+            my $called = _get_called(1);
 
 	    $options->{on_fail}->
                 ( "$id to $called was $article '@is', which " .
@@ -351,11 +353,7 @@ sub _validate_one_param
 		my $article1 = $_ =~ /^[aeiou]/i ? 'an' : 'a';
 		my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
 
-                my $called =
-                    ( exists $options->{called} ?
-                      exists $options->{called} :
-                      (caller( $options->{stack_skip} + 1 ))[3]
-                    );
+                my $called = _get_called(1);
 
 		$options->{on_fail}->
                     ( "$id to $called was not $article1 '$_' " .
@@ -370,11 +368,7 @@ sub _validate_one_param
 	{
             unless ( UNIVERSAL::can( $value, $_ ) )
             {
-                my $called =
-                    ( exists $options->{called} ?
-                      exists $options->{called} :
-                      (caller( $options->{stack_skip} + 1 ))[3]
-                    );
+                my $called = _get_called(1);
 
                 $options->{on_fail}->( "$id to $called does not have the method: '$_'\n" );
             }
@@ -385,11 +379,7 @@ sub _validate_one_param
     {
         unless ( UNIVERSAL::isa( $spec->{callbacks}, 'HASH' ) )
         {
-            my $called =
-                ( exists $options->{called} ?
-                  exists $options->{called} :
-                  (caller( $options->{stack_skip} + 1 ))[3]
-                );
+            my $called = _get_called(1);
 
             $options->{on_fail}->
                 ( "'callbacks' validation parameter for $called must be a hash reference\n" );
@@ -400,22 +390,14 @@ sub _validate_one_param
 	{
             unless ( UNIVERSAL::isa( $spec->{callbacks}{$_}, 'CODE' ) )
             {
-                my $called =
-                    ( exists $options->{called} ?
-                      exists $options->{called} :
-                      (caller( $options->{stack_skip} + 1 ))[3]
-                    );
+                my $called = _get_called(1);
 
                 $options->{on_fail}->( "callback '$_' for $called is not a subroutine reference\n" );
             }
 
             unless ( $spec->{callbacks}{$_}->($value) )
             {
-                my $called =
-                    ( exists $options->{called} ?
-                      exists $options->{called} :
-                      (caller( $options->{stack_skip} + 1 ))[3]
-                    );
+                my $called = _get_called(1);
 
                 $options->{on_fail}->( "$id to $called did not pass the '$_' callback\n" );
             }
@@ -530,6 +512,19 @@ sub _validate_one_param
                   \%defaults );
         }
     }
+}
+
+sub _get_called
+{
+    my $extra_skip = $_[0] || 0;
+
+    # always add one more for this sub
+    $extra_skip++;
+
+    return ( exists $options->{called} ?
+             $options->{called} :
+             ( caller( $options->{stack_skip} + $extra_skip ) )[3]
+           );
 }
 
 1;
