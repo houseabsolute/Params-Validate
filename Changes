@@ -1,3 +1,8 @@
+0.15
+
+- validate_pos would die stupidly when it received an array with an
+odd number of elements.
+
 0.14
 
 - validate_pos used exists on an array element, which only works with
