@@ -33,7 +33,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
@@ -58,8 +58,8 @@ sub validate_pos (\@@)
     }
 
     # I'm too lazy to pass these around all over the place.
-    local $called = (caller(1))[3];
     local $options = _get_options( (caller(0))[0] );
+    local $called = (caller( $options->{stack_skip} ))[3];
 
     my $min = 0;
 
@@ -136,7 +136,7 @@ sub validate (\@$)
 	return %p;
     }
 
-    local $called = (caller(1))[3];
+    local $called = (caller( $options->{stack_skip} ))[3];
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {
@@ -346,10 +346,11 @@ sub _validate_one_param
 }
 
 {
-    my %defaults = ( ignore_case => 0,
+    my %defaults = ( ignore_case   => 0,
 		     strip_leading => 0,
-		     allow_extra => 0,
-		     on_fail => sub { require Carp;  Carp::confess(shift()) },
+		     allow_extra   => 0,
+		     on_fail       => sub { require Carp;  Carp::confess(shift()) },
+		     stack_skip    => 1,
 		   );
 
     *set_options = \&validation_options;
@@ -800,6 +801,15 @@ This callback is expected to C<die> internally.  If it does not, the
 validation will proceed onwards, with unpredictable results.
 
 The default is to simply use the Carp module's C<confess()> function.
+
+=item * stack_skip => $number
+
+This tells Params::Validate how many stack frames to skip when finding
+a subroutine name to use in error messages.  By default, it looks one
+frame back, at the immediate caller to C<validate> or C<validate_pos>.
+If this option is, then the given number of frames are skipped instead.
+
+=back
 
 =head1 DISABLING VALIDATION
 
