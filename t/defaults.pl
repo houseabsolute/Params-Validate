@@ -1,3 +1,7 @@
+use strict;
+
+$| = 1;
+
 print "1..21\n";
 
 {
