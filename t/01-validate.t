@@ -127,7 +127,7 @@ tests.  This may have to do with the test code rather than the module
 itself.  5.6.1-trial1 worked fine so there is hope.
 EOF
 
-    print "ok $_\n" for 1..55;
+    print "ok $_\n" for 1..73;
     exit;
 }
 

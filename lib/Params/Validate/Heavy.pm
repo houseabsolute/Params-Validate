@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -36,7 +36,7 @@ sub _validate_pos (\@@)
 	my $minmax = $options->{allow_extra} ? "at least $min" : ( $min != $max ? "$min - $max" : $max );
 	my $val = $options->{allow_extra} ? $min : $max;
 	$minmax .= $val != 1 ? ' were' : ' was';
-	$options->{die}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
+	$options->{on_fail}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
     }
 
     foreach ( 0..$#specs )
@@ -58,7 +58,7 @@ sub _validate (\@@)
     {
 	$p = [ %{ $p->[0] } ];
     }
-    $options->{die}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
+    $options->{on_fail}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
 	if @$p % 2;
 
     $p = {@$p};
@@ -73,7 +73,7 @@ sub _validate (\@@)
     {
 	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %$p )
 	{
-	    $options->{die}->( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
+	    $options->{on_fail}->( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
 			       " passed in the call to $called but " .
 			       (@unmentioned > 1 ? 'were' : 'was') .
 			       " not listed in the validation options: @unmentioned\n" );
@@ -94,7 +94,7 @@ sub _validate (\@@)
     if (@missing)
     {
 	my $missing = join ', ', map {"'$_'"} @missing;
-	$options->{die}->( "Mandatory parameter" . (@missing > 1 ? 's': '') . " $missing missing in call to $called\n" );
+	$options->{on_fail}->( "Mandatory parameter" . (@missing > 1 ? 's': '') . " $missing missing in call to $called\n" );
     }
 
     foreach (keys %$specs)
@@ -143,7 +143,7 @@ sub _validate_one_param
 	    my $is = (_typemask_to_strings($type))[0];
 	    my @allowed = _typemask_to_strings($spec->{type});
 	    my $article = $is =~ /^[aeiou]/ ? 'an' : 'a';
-	    $options->{die}->( "$id is $article '$is', which is not one of the allowed types: @allowed\n" );
+	    $options->{on_fail}->( "$id is $article '$is', which is not one of the allowed types: @allowed\n" );
 	}
     }
 
@@ -154,7 +154,7 @@ sub _validate_one_param
 	    unless ( UNIVERSAL::isa( $value, $_ ) )
 	    {
 		my $is = ref $value ? ref $value : 'plain scalar';
-		$options->{die}->( "$id is not a '$_'\n" );
+		$options->{on_fail}->( "$id is not a '$_'\n" );
 	    }
 	}
     }
@@ -163,21 +163,21 @@ sub _validate_one_param
     {
 	foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} )
 	{
-	    $options->{die}->( "$id cannot '$_'\n" ) unless UNIVERSAL::can( $value, $_ );
+	    $options->{on_fail}->( "$id cannot '$_'\n" ) unless UNIVERSAL::can( $value, $_ );
 	}
     }
 
     if ($spec->{callbacks})
     {
-	$options->{die}->( "'callbacks' validation parameter must be a hash reference\n" )
+	$options->{on_fail}->( "'callbacks' validation parameter must be a hash reference\n" )
 	    unless UNIVERSAL::isa( $spec->{callbacks}, 'HASH' );
 
 	foreach ( keys %{ $spec->{callbacks} } )
 	{
-	    $options->{die}->( "callback '$_' is not a subroutine reference\n" )
+	    $options->{on_fail}->( "callback '$_' is not a subroutine reference\n" )
 		unless UNIVERSAL::isa( $spec->{callbacks}{$_}, 'CODE' );
 
-	    $options->{die}->( "$id did not pass the '$_' callback\n" )
+	    $options->{on_fail}->( "$id did not pass the '$_' callback\n" )
 		unless $spec->{callbacks}{$_}->($value);
 	}
     }
@@ -242,7 +242,7 @@ sub _validate_one_param
     my %defaults = ( ignore_case => 0,
 		     strip_leading => 0,
 		     allow_extra => 0,
-		     die => sub { die shift() },
+		     on_fail => sub { die shift() },
 		   );
 
     sub _set_options

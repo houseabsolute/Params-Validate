@@ -402,7 +402,7 @@ named in the validation specification.  In the case of positional
 parameters, this allows an unlimited number of maximum parameters
 (though a minimum may still be set).  Defaults to false.
 
-=item * die => $callback
+=item * on_fail => $callback
 
 If given, this callback will be called whenever a validation check
 fails.  It will be called with a single parameter, which will be a

@@ -306,7 +306,7 @@ sub run_tests
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( die => sub { die "ERROR WAS: $_[0]" } );
+	    Params::Validate::set_options( on_fail => sub { die "ERROR WAS: $_[0]" } );
 	}
 	eval { Foo::sub18( bar => 1 ) };
 	check();
