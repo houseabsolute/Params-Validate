@@ -47,7 +47,7 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 1;
 
