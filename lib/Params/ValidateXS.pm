@@ -3,7 +3,6 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.  See the LICENSE
 # file that comes with this distribution for more details.
-use Devel::StackTrace;
 package Params::Validate;
 
 use strict;
