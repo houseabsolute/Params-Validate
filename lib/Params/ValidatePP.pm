@@ -326,7 +326,7 @@ sub _normalize_callback
 
         unless ( defined $new_key )
         {
-            Carp::croak( "The normalize_keys callback did not return a defined value" );
+            die "The normalize_keys callback did not return a defined value";
         }
         $new{$new_key} = $p->{ $key };
     }
