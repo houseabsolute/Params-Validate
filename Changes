@@ -3,6 +3,18 @@
 - Add BOOLEAN type (equivalent to UNDEF | SCALAR).  Suggested by Ken
 Williams.
 
+- This version is about 8-10% faster than previous versions.  This may
+not seem like that much but if most, or all, of your
+subroutines/methods use validation then this can be a significant
+improvement.
+
+- This version has slightly different semantics for dealing with
+missing parameters.  Previously, if parameters were missing, an
+exception was thrown before any of the other validation parameters
+were checked.  Now, the validation parameters (type, isa, etc.) are
+checked first, so that these errors will show up before missing
+parameters.
+
 0.11
 
 - Accidentally removed the set_options function (in 0.08).  Though
