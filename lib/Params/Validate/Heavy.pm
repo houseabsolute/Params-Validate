@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.10 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -46,7 +46,7 @@ sub _validate_pos (\@@)
     }
 }
 
-sub _validate (\@@)
+sub _validate (\@$)
 {
     my $p = shift;
     my $specs = shift;
@@ -260,7 +260,7 @@ sub _validate_one_param
 		     on_fail => sub { require Carp;  Carp::confess(shift()) },
 		   );
 
-    sub _set_options
+    sub _validation_options
     {
 	my %opts = @_;
 
