@@ -553,7 +553,7 @@ Carp::Assert and Class::Contract - other modules in the general spirit
 of validating that certain things are true before/while/after
 executing actual program code.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Dave Rolsky, <autarch@urth.org> and Ilya Martynov <ilya@martynov.org>
 
