@@ -1,3 +1,12 @@
+0.10
+
+- Apparently making a tarball for CPAN is beyond my limited abilities.
+0.09 was missing a file needed for tests.  Also reported by Blair
+Zajac.
+
+- When running Makefile.PL you get some warnings that can be ignored.
+Add a message saying you can ignore them.
+
 0.09
 
 - I forgot to put the Makefile.PL in the MANIFEST.  I am dumb.
