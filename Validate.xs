@@ -96,7 +96,7 @@
               if (! perl_error)     \
                   croak("Cannot retrieve $Params::Validate::ERROR\n");   \
               perl_on_fail = get_sv("Params::Validate::ON_FAIL", 0);     \
-              if (! perl_on_error)  \
+              if (! perl_on_fail)  \
                   croak("Cannot retrieve $Params::Validate::ON_FAIL\n"); \
               SvSetSV(perl_error, message);                              \
               on_fail = get_on_fail(options);                            \
