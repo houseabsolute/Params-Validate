@@ -58,14 +58,11 @@ sub validate_pos (\@@)
     my @p = @$p;
     if ( NO_VALIDATE )
     {
-	foreach my $x (0..$#specs)
+        for ( my $x = $#p + 1; $x <= $#specs; $x++ )
 	{
-	    if ( $x > $#p )
-	    {
-		$p[$x] =
-                    $specs[$x]->{default}
-                        if ref $specs[$x] && exists $specs[$x]->{default};
-	    }
+            $p[$x] =
+                $specs[$x]->{default}
+                    if ref $specs[$x] && exists $specs[$x]->{default};
 	}
 
 	return @p;
@@ -145,7 +142,7 @@ sub validate (\@$)
     {
         if ( ref $p eq 'ARRAY' )
         {
-            if ( @$p == 1 )
+            if ( @$p == 1 && ref $p->[0] )
             {
                 $p = $p->[0];
             }
@@ -181,9 +178,11 @@ sub validate (\@$)
                    grep { ref $specs->{$_} && exists $specs->{$_}->{default} }
                    keys %$specs
                  ),
-                 ( defined $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) ?
-                   %{ $p->[0] } :
-                   @$p
+                 ( ref $p eq 'ARRAY' ?
+                   ( ref $p->[0] ?
+                     %{ $p->[0] } :
+                     @$p ) :
+                   %$p
                  )
                );
     }
