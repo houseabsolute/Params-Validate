@@ -1,4 +1,4 @@
-0.19
+0.20
 
 - More optimization work.  Improved the speed of both validate() and
 validate_pos() by about 20-25%.  Improved the speed of the 'no
