@@ -550,10 +550,15 @@ sub _get_called
     # always add one more for this sub
     $extra_skip++;
 
-    return ( exists $options->{called} ?
-             $options->{called} :
-             ( caller( $options->{stack_skip} + $extra_skip ) )[3]
-           );
+    my $called =
+        ( exists $options->{called} ?
+          $options->{called} :
+          ( caller( $options->{stack_skip} + $extra_skip ) )[3]
+        );
+
+    $called = 'N/A' unless defined $called;
+
+    return $called;
 }
 
 1;
