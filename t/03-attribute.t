@@ -1,12 +1,10 @@
 use strict;
 
-BEGIN
+eval "use Attribute::Handlers";
+if ($@)
 {
-    if ($] < 5.006)
-    {
-	print "1..0\n";
-	exit;
-    }
+    print "1..0\n";
+    exit;
 }
 
 if ( $] == 5.006 )
@@ -19,7 +17,7 @@ module itself.  5.6.1 works fine when I tested it.  5.6.0 is buggy.
 You are encouraged to upgrade.
 EOF
 
-    print "1..0\n" for 1..13;
+    print "1..0\n";
     exit;
 }
 
