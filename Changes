@@ -1,3 +1,10 @@
+0.71 Dec 2, 2003
+
+- Suppressed some annoying "subroutine redefined" warnings if the pure
+Perl version ended up being loaded after attempting to load the XS
+version.
+
+
 0.70 Nov 23, 2003
 
 - Any validation call that used a callback leaked memory when using

@@ -15,7 +15,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.70';
+    $VERSION = '0.71';
 
     my %tags =
         ( types =>
@@ -34,15 +34,12 @@ BEGIN
 
     $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
-    eval { require Params::ValidateXS } unless $ENV{PV_TEST_PERL};
+    eval { require Params::ValidateXS; } unless $ENV{PV_TEST_PERL};
 
     if ( $@ || $ENV{PV_TEST_PERL} )
     {
-        # suppress a subroutine redefined warning
-        undef &Params::Validate::validation_options;
-        undef &Params::Validate::validate;
-        undef &Params::Validate::validate_pos;
-        undef &Params::Validate::validate_with;
+        # suppress subroutine redefined warnings
+        local $^W = 0;
         require Params::ValidatePP;
     }
 }
