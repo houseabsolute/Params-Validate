@@ -602,6 +602,12 @@ future.
 Ideally, there would be only one validation function.  If someone
 figures out how to do this, please let me know.
 
+=head1 SUPPORT
+
+For now, support questions should be sent to Dave at autarch@urth.org.
+The CVS repository is on Savannah at
+https://savannah.nongnu.org/projects/p-v-perl/.
+
 =head1 SEE ALSO
 
 Getargs::Long - similar capabilities with a different interface.  If
