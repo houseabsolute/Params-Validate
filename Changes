@@ -1,4 +1,9 @@
-0.60 
+0.61 Jun 23, 2003
+
+- The last release had some debugging code left in which tried to load
+Devel::StackTrace.  Reported by Iain Truskett.
+
+0.60 Jun 21, 2003
 
 - Fixed a weird segfault that could occur with Perl 5.6.1 when a
 user-defined on_fail callback died with an object as its argument.
