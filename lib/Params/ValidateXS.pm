@@ -8,26 +8,9 @@ package Params::Validate;
 
 use strict;
 
-require Exporter;
 require DynaLoader;
 
-use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options );
-@ISA = qw(Exporter DynaLoader);
-
-my %tags =
-    ( types =>
-      [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
-            SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
-    );
-
-%EXPORT_TAGS =
-    ( 'all' => [ qw( validate validate_pos validation_options validate_with ),
-                 map { @{ $tags{$_} } } keys %tags ],
-      %tags,
-    );
-
-@EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-@EXPORT = qw( validate validate_pos );
+push @ISA, 'DynaLoader';
 
 bootstrap Params::Validate $Params::Validate::VERSION;
 

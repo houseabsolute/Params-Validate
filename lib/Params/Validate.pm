@@ -10,9 +10,31 @@ use strict;
 
 BEGIN
 {
-    $Params::Validate::VERSION = '0.51';
+    use Exporter;
+    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %OPTIONS $options );
 
-    unless ( eval { require Params::ValidateXS } )
+    @ISA = 'Exporter';
+
+    $VERSION = '0.51';
+
+    my %tags =
+        ( types =>
+          [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
+            SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
+        );
+
+    %EXPORT_TAGS =
+        ( 'all' => [ qw( validate validate_pos validation_options validate_with ),
+                     map { @{ $tags{$_} } } keys %tags ],
+          %tags,
+        );
+
+    @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
+    @EXPORT = qw( validate validate_pos );
+
+    eval { require Params::ValidateXS } unless $ENV{PV_TEST_PERL};
+
+    if ( $@ || $ENV{PV_TEST_PERL} )
     {
         # suppress a subroutine redefined warnin
         undef &Params::Validate::validation_options;
