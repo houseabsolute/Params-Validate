@@ -41,6 +41,8 @@ if ( -d 'CVS' )
 
     foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
     {
+        next if $file eq '99-pod.t';
+
         my $real_file = File::Spec->catfile( 't', $file );
 
         local *F;
