@@ -62,36 +62,43 @@ Params::Validate - Validate method/function parameters
   # takes named params (hash or hashref)
   sub foo
   {
-       validate( @_, { foo => 1, # mandatory
-                       bar => 0, # optional
-                     }
-               );
+      validate( @_, { foo => 1, # mandatory
+		      bar => 0, # optional
+		    }
+	      );
   }
 
   # takes positional params
   sub bar
   {
-       validate_pos( @_, 1, 1, 0 ); # first two are mandatory, third is optional
+      # first two are mandatory, third is optional
+      validate_pos( @_, 1, 1, 0 );
   }
 
 
   sub foo2
   {
-       validate( @_, { foo =>
-                       { type => ARRAYREF }, # specify a type
-                       bar =>
-                       { can => [ 'print', 'flush', 'frobnicate' ] }, # specify an interface
-                       baz =>
-                       { type => SCALAR,   # a scalar ...
-                         callbacks =>
-                         { 'numbers only' => sub { shift() =~ /^\d+$/ }, # ... that is a plain integer
-                           'less than 90' => sub { shift() < 90 },       # ... and smaller than 90
-                         },
-                       }
-                     }
-               );
-  }
+      validate( @_,
+		{ foo =>
+		  # specify a type
+		  { type => ARRAYREF },
 
+		  bar =>
+		  # specify an interface
+		  { can => [ 'print', 'flush', 'frobnicate' ] },
+
+		  baz =>
+		  { type => SCALAR,   # a scalar ...
+		    callbacks =>
+		      # ... that is a plain integer ...
+		    { 'numbers only' => sub { shift() =~ /^\d+$/ },
+		      # ... and smaller than 90
+		      'less than 90' => sub { shift() < 90 },
+		    },
+		  }
+		}
+	      );
+  }
 
 =head1 DESCRIPTION
 
@@ -135,14 +142,6 @@ checks fail.
 When handling named parameters, the module is capable of handling
 either a hash or a hash reference transparently.
 
-All calls to the C<validate> subroutine start like this when using
-named parameters:
-
- validate( @_, ... );
-
-What goes in the '...' depends on what validation you want performed
-and whether you are using named or positional parameters.
-
 Subroutines expecting named parameters should call the C<validate>
 subroutine like this:
 
@@ -152,7 +151,7 @@ subroutine like this:
                } );
 
 Subroutines expected positional parameters should call the
-C<validate_post> subroutine like this:
+C<validate_pos> subroutine like this:
 
  validate_pos( @_, { validation spec }, { validation spec } );
 
@@ -177,7 +176,7 @@ This says that you expect at least 2 and no more than 4 parameters.
 If you have a subroutine that has a minimum number of parameters but
 can take any maximum number, you can do this:
 
- validate_pos( @_, 1, 1, (0) x @_ );
+ validate_pos( @_, 1, 1, (0) x @_ - 2 );
 
 This will always be valid as long as at least two parameters are
 given.  A similar construct could be used for the more complex
@@ -200,7 +199,7 @@ L<exported as constants|EXPORT>:
 =item * SCALAR
 
 A scalar which is not a reference, such as C<10> or C<'hello'>.  A
-paramater that is undefined is B<not> treated as a scalar.  If you
+parameter that is undefined is B<not> treated as a scalar.  If you
 want to allow undefined values, you will have to specify C<SCALAR |
 UNDEF>.
 
@@ -247,10 +246,10 @@ A blessed reference.
 
 =item * HANDLE
 
-This option is special, in that it just the equivalent of C<GLOB |
-GLOBREF>.  However, it seems likely to me that most people interested
-in either globs or glob references are likely to really be interested
-in whether what is being in is a potentially valid file or directory
+This option is special, in that it is just a shortcut for C<GLOB |
+GLOBREF>.  However, it seems likely that most people interested in
+either globs or glob references are likely to really be interested in
+whether what is being in is a potentially valid file or directory
 handle.
 
 =back
@@ -277,13 +276,15 @@ methods, we can do the following:
 
  validate( @_,
            { foo =>
-             { can => 'bar' } } ); # just has to be able to ->bar
+             # just has to be able to ->bar
+             { can => 'bar' } } );
 
  ... or ...
 
  validate( @_,
            { foo =>
-             { can => [ qw( bar print ) ] } } ); # must be able to ->bar and ->print
+             # must be able to ->bar and ->print
+             { can => [ qw( bar print ) ] } } );
 
 =head2 Class Validation
 
@@ -319,7 +320,7 @@ in error messages) and the value is a subroutine reference, such as:
              callbacks =>
              { 'smaller than a breadbox' => sub { shift() < $breadbox },
                'green or blue' =>
-                  sub { my $val = shift; $val eq 'green' || $val eq 'blue' } } } );
+                sub { my $val = shift; $val eq 'green' || $val eq 'blue' } } } );
 
 On a side note, I would highly recommend taking a look at Damian
 Conway's Regexp::Common module, which could greatly simply the
@@ -367,16 +368,16 @@ something like this:
 
 =head1 "GLOBAL" OPTIONS
 
-Because the calling syntax for the C<validate> function does not make
-it possible to direct the C<validate> beyond the directions given in
-the validation spec, it is possible to set some options as
+Because the calling syntax for the C<validate> and C<validate_pos>
+functions does not make it possible to specify any options other than
+the the validation spec, it is possible to set some options as
 pseudo-'globals'.  These allow you to specify such things as whether
 or not the validation of named parameters should be case sensitive,
 for one example.
 
 These options are called pseudo-'globals' because these settings are
-B<only applies to calls originating from the package that set the
-options>.
+B<only applied to calls originating from the package that set the
+options.
 
 In other words, if I am in package C<Foo> and I call
 C<Params::Validate::set_options>, those options are only in effect
@@ -402,7 +403,7 @@ This is only relevant when dealing with named parameters.  If it is
 true, then the validation code will ignore the case of parameters.
 Defaults to false.
 
-=item * strip_leading => $characters or $regex
+=item * strip_leading => $characters
 
 This too is only relevant when dealing with named parameters.  If this
 is given then any parameters starting with these characters will be
