@@ -47,11 +47,12 @@ if ( -d 'CVS' )
         local *F;
         open F, "<$real_file" or die "Cannot read $real_file: $!";
 
+        my $shbang = <F>;
         my $test = do { local $/; <F> };
 
         close F;
 
-        $test = "#!/usr/bin/perl -w\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
+        $test = "$shbang\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
 
         my $new_file = File::Spec->catfile( 't', "zz_$file" );
         open F, ">$new_file" or die "Cannot write $new_file: $!";
