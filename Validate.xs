@@ -326,7 +326,7 @@ get_called(HV* options)
 
         caller = perl_eval_pv(SvPV_nolen(buffer), 1);
         if(SvTYPE(caller) == SVt_NULL) {
-            caller = sv_2mortal(newSVpv("N/A", 0));
+            sv_setpv(caller, "N/A");
         }
 
         return caller;
