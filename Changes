@@ -1,3 +1,8 @@
+0.11
+
+- Accidentally removed the set_options function (in 0.08).  Though
+this will go away in the future it isn't happening quite yet.
+
 0.10
 
 - Apparently making a tarball for CPAN is beyond my limited abilities.

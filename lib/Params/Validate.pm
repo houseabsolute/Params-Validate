@@ -356,6 +356,7 @@ sub _validate_one_param
 		     on_fail => sub { require Carp;  Carp::confess(shift()) },
 		   );
 
+    *set_options = \&validation_options;
     sub validation_options
     {
 	my %opts = @_;

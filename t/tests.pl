@@ -264,7 +264,7 @@ sub run_tests
     {
 	{
 	    package Foo;
-	    validation_options( ignore_case => 1 );
+	    Params::Validate::set_options( ignore_case => 1 );
 	}
 	eval { Foo::sub18( FOO => 1 ) };
 	check();
