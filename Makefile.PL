@@ -76,9 +76,12 @@ EOF
 
     my $zz = join ' ', glob File::Spec->catfile( 't', 'zz_*.t' );
 
+    my %prereq = ( 'Test::More' => 0 );
+    $prereq{'Attribute::Handlers'} = 0 if $] >= 5.006;
+
     WriteMakefile( VERSION_FROM    => "lib/Params/Validate.pm",
                    NAME            => "Params::Validate",
-                   PREREQ_PM       => $] >= 5.006 ? { 'Attribute::Handlers' => 0 } : {},
+                   PREREQ_PM       => \%prereq,
                    CONFIGURE       => \&init,
                    clean           => { FILES => "test.c test.o $zz" },
                    ( $] >= 5.005 ?
