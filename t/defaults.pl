@@ -1,4 +1,4 @@
-print "1..20\n";
+print "1..21\n";
 
 {
     my %def = eval { foo() };
@@ -74,6 +74,17 @@ print "1..20\n";
 
     ok( $def->[3] == 0,
         "No default (or incorrect default) assigned for 4rd parameter: $def->[0]\n" );
+}
+
+{
+    my $spec = { foobar => { default => [] } };
+    my $test1 = validate_with(params => [], spec => $spec);
+    $test1->{foobar} = ['x'];
+
+    my $test2 = validate_with(params => [], spec => $spec);
+    $test2->{foobar} = ['y'];
+
+    ok($test1->{foobar}[0] eq 'x');
 }
 
 sub foo

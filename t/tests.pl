@@ -2,7 +2,7 @@ use strict;
 
 use Params::Validate qw(:all);
 
-print "1..80\n";
+print "1..90\n";
 
 sub run_tests
 {
@@ -295,13 +295,17 @@ sub run_tests
 	    package Foo;
 	    validation_options( allow_extra => 1 );
 	}
-	eval { Foo::sub18( foo => 1, bar => 1 ) };
+	my %ret = eval { Foo::sub18( foo => 1, bar => 1 ) };
 	check();
+        ok($ret{foo} == 1);
+        ok($ret{bar} == 1);
 	eval { sub18( foo => 1, bar => 1 ) };
 	check();
 
-	eval { Foo::sub19( 1, 2 ) };
+	my @ret = eval { Foo::sub19( 1, 2 ) };
 	check();
+        ok($ret[0] == 1);
+        ok($ret[1] == 2);
 	eval { sub19( 1, 2 ) };
 	check();
 
@@ -333,7 +337,21 @@ sub run_tests
     eval { sub22( foo => bless [1], 'object' ) };
     check();
 
+    eval { sub22a( ) };
+    check();
+    eval { sub22a( foo => [1] ) };
+    check();
+    eval { sub22a( foo => bless [1], 'object' ) };
+    check();
+
     eval { sub23( '1 element' ) };
+    check();
+
+    eval { sub24( ) };
+    check();
+    eval { sub24( '1 element' ) };
+    check();
+    eval { sub24( bless [1], 'object' ) };
     check();
 }
 
@@ -535,9 +553,19 @@ sub sub22
     validate( @_, { foo => { type => OBJECT } } );
 }
 
+sub sub22a
+{
+    validate( @_, { foo => { type => OBJECT, optional => 1 } } );
+}
+
 sub sub23
 {
     validate_pos( @_, 1 );
+}
+
+sub sub24
+{
+    validate_pos( @_, { type => OBJECT, optional => 1 } );
 }
 
 {

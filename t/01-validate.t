@@ -126,6 +126,14 @@ use vars qw(@expect);
 	   0,
 
            0,
+           q|^The 'foo' parameter to .* was an 'arrayref'.*|,
+           0,
+
+           0,
+
+           0,
+           q|^Parameter #1 to .* was a 'scalar'.*|,
+           0,
 	  );
 
 # 5.6.0 core dumps all over during the tests
