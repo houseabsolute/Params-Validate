@@ -42,33 +42,25 @@ my %tags =
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
 @EXPORT = qw( validate validate_pos );
 
-=pod
-
-=begin internals
-
-Various internals notes (for me and any future readers of this
-monstrosity):
-
-- A lot of the weirdness is _intentional_, because it optimizes for
-  the _success_ case.  It does not really matter how slow the code is
-  after it enters a path that leads to reporting failure.  But the
-  "success" path should be as fast as possible.
-
--- We only calculate $called as needed for this reason, even though it
-   means copying code all over.
-
-- All the validation routines need to be careful never to alter the
-  references that are passed.
-
--- The code assumes that _most_ callers will not be using the
-   skip_leading or ignore_case features.  In order to not alter the
-   references passed in, we copy them wholesale when normalizing them
-   to make these features work.  This is slower but lets us be faster
-   when not using them.
-
-=end internal
-
-=cut
+# Various internals notes (for me and any future readers of this
+# monstrosity):
+#
+# - A lot of the weirdness is _intentional_, because it optimizes for
+#   the _success_ case.  It does not really matter how slow the code is
+#   after it enters a path that leads to reporting failure.  But the
+#   "success" path should be as fast as possible.
+#
+# -- We only calculate $called as needed for this reason, even though it
+#    means copying code all over.
+#
+# - All the validation routines need to be careful never to alter the
+#   references that are passed.
+#
+# -- The code assumes that _most_ callers will not be using the
+#    skip_leading or ignore_case features.  In order to not alter the
+#    references passed in, we copy them wholesale when normalizing them
+#    to make these features work.  This is slower but lets us be faster
+#    when not using them.
 
 
 # Matt Sergeant came up with this prototype, which slickly takes the
@@ -574,6 +566,10 @@ __END__
 =head1 NAME
 
 Params::ValidatePP - pure Perl implementation of Params::Validate
+
+=head1 SYNOPSIS
+
+  See Params::Validate
 
 =head1 DESCRIPTION
 
