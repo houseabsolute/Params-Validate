@@ -12,7 +12,7 @@
 
 /* not defined in 5.00503 _or_ ppport.h! */
 #ifndef SvPV_nolen
-#  define SvPV_nolen(sv) SvPV(sv, PL_na)
+#  define SvPV_nolen(sv)          SvPV(sv, PL_na)
 #endif
 #ifndef CopSTASHPV
 #  ifdef USE_ITHREADS
@@ -22,6 +22,10 @@
 #    define CopSTASHPV(c)         (CopSTASH(c) ? HvNAME(CopSTASH(c)) : Nullch)
 #  endif /* USE_ITHREADS */
 #endif /* CopSTASHPV */
+
+#ifndef PERL_MAGIC_qr
+#  define PERL_MAGIC_qr          'r'
+#endif /* PERL_MAGIC_qr */
 
 /* type constants */
 #define SCALAR    1
