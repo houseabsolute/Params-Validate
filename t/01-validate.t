@@ -75,10 +75,10 @@ use vars qw(@expect);
 
 	   # positional - 1
 	   q|^1 parameter was passed to .* but 2 were expected|,
-	   q|^Parameter #1 did not pass the '5 elements' callback|,
+	   q|^Parameter #2 did not pass the '5 elements' callback|,
 
 	   # positional - 2
-	   q|^Parameter #2 is not a 'Bar'|,
+	   q|^Parameter #3 is not a 'Bar'|,
 	   0,
 
 	   # hashref named params
@@ -113,6 +113,12 @@ use vars qw(@expect);
 
 	   q|^ERROR WAS: The following parameter .* bar|,
 	   q|^The following parameter .* bar|,
+
+	   q|^The 'foo' parameter is an 'undef'.*|,
+	   0,
+
+	   q|^The 'foo' parameter is an 'arrayref'.*|,
+	   0,
 	  );
 
 require 'tests.pl';

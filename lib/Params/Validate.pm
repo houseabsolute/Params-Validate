@@ -4,15 +4,18 @@ use strict;
 
 BEGIN
 {
-    sub SCALAR    () { 1; };
-    sub ARRAYREF  () { 2; };
-    sub HASHREF   () { 4; };
-    sub CODEREF   () { 8; };
-    sub GLOB      () { 16; };
-    sub GLOBREF   () { 32; };
-    sub SCALARREF () { 64; };
-    sub UNKNOWN   () { 128; };
-    sub HANDLE    () { 16 | 32 };
+    sub SCALAR    () { 1 }
+    sub ARRAYREF  () { 2 }
+    sub HASHREF   () { 4 }
+    sub CODEREF   () { 8 }
+    sub GLOB      () { 16 }
+    sub GLOBREF   () { 32 }
+    sub SCALARREF () { 64 }
+    sub UNKNOWN   () { 128 }
+    sub UNDEF     () { 256 }
+    sub OBJECT    () { 512 }
+
+    sub HANDLE    () { 16 | 32 }
 
     if ( $ENV{NO_VALIDATE} )
     {
@@ -33,7 +36,7 @@ require Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @ISA = qw(Exporter);
 
-my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE ) ],
+my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
 	   );
 
 %EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos ), map { @{ $tags{$_} } } keys %tags ],

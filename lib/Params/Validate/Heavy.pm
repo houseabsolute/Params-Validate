@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.5 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -39,9 +39,9 @@ sub _validate_pos (\@@)
 	$options->{on_fail}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
     }
 
-    foreach ( 0..$#specs )
+    foreach ( 0..$#$p )
     {
-	_validate_one_param( $p->[$_], $specs[$_], "Parameter #$_" )
+	_validate_one_param( $p->[$_], $specs[$_], "Parameter #" . ($_ + 1) )
 	    if ref $specs[$_];
     }
 }
@@ -140,10 +140,10 @@ sub _validate_one_param
 	my $type = _get_type($value);
 	unless ( $type & $spec->{type} )
 	{
-	    my $is = (_typemask_to_strings($type))[0];
+	    my @is = _typemask_to_strings($type);
 	    my @allowed = _typemask_to_strings($spec->{type});
-	    my $article = $is =~ /^[aeiou]/ ? 'an' : 'a';
-	    $options->{on_fail}->( "$id is $article '$is', which is not one of the allowed types: @allowed\n" );
+	    my $article = $is[0] =~ /^[aeiou]/i ? 'an' : 'a';
+	    $options->{on_fail}->( "$id is $article '@is', which is not one of the allowed types: @allowed\n" );
 	}
     }
 
@@ -197,6 +197,8 @@ sub _validate_one_param
     {
 	my $value = shift;
 
+	return UNDEF unless defined $value;
+	warn "UNDEF\n" unless defined $value;
 	unless (ref $value)
 	{
 	    # catches things like:  my $fh = do { local *FH; };
@@ -204,9 +206,15 @@ sub _validate_one_param
 	    return SCALAR;
 	}
 
+	my $or = 0;
+	if ( ! grep { ref $value eq $_ } qw( SCALAR ARRAY HASH CODE GLOB ) )
+	{
+	    $or = OBJECT;
+	}
+
 	foreach ( keys %isas )
 	{
-	    return $isas{$_} if UNIVERSAL::isa( $value, $_ );
+	    return $isas{$_} | $or if UNIVERSAL::isa( $value, $_ );
 	}
 
 	# I really hope this never happens.
@@ -222,6 +230,8 @@ sub _validate_one_param
 			   GLOB()      => 'glob',
 			   GLOBREF()   => 'globref',
 			   SCALARREF() => 'scalarref',
+			   UNDEF()     => 'undef',
+			   OBJECT()    => 'object',
 			   UNKNOWN()   => 'unknown',
 			 );
 
@@ -230,7 +240,7 @@ sub _validate_one_param
 	my $mask = shift;
 
 	my @types;
-	foreach ( SCALAR, ARRAYREF, HASHREF, CODEREF, GLOB, GLOBREF, SCALARREF, UNKNOWN )
+	foreach ( SCALAR, ARRAYREF, HASHREF, CODEREF, GLOB, GLOBREF, SCALARREF, UNDEF, OBJECT, UNKNOWN )
 	{
 	    push @types, $type_to_string{$_} if $mask & $_;
 	}

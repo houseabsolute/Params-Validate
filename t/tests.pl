@@ -1,6 +1,6 @@
 use strict;
 
-print "1..73\n";
+print "1..77\n";
 
 sub run_tests
 {
@@ -313,6 +313,16 @@ sub run_tests
 	eval { sub18( bar => 1 ) };
 	check();
     }
+
+    eval { sub20( foo => undef ) };
+    check();
+    eval { sub21( foo => undef ) };
+    check();
+
+    eval { sub22( foo => [1] ) };
+    check();
+    eval { sub22( foo => bless [1], 'object' ) };
+    check();
 }
 
 sub sub1
@@ -503,6 +513,21 @@ sub sub19
 		$@ ? "$@ did not match:\n$expect" : 'no error when error was expected' ) :
 	    ok( ! $@, $@ );
     }
+}
+
+sub sub20
+{
+    validate( @_, { foo => { type => SCALAR } } );
+}
+
+sub sub21
+{
+    validate( @_, { foo => { type => UNDEF | SCALAR } } );
+}
+
+sub sub22
+{
+    validate( @_, { foo => { type => OBJECT } } );
 }
 
 sub ok
