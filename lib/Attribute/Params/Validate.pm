@@ -22,9 +22,9 @@ my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARR
 our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } } keys %tags ],
 		     %tags,
 		   );
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'validation_options' );
 
-$VERSION = sprintf '%2d.%02d', q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$VERSION = sprintf '%2d.%02d', q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT)
