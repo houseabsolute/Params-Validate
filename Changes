@@ -1,3 +1,12 @@
+0.05
+
+- Added Attribute::Params::Validate - do validation via attributes!
+
+- Rename set_options to validation_options.  This can now be exported
+safely and is included in the :all export tag.  set_options is
+deprecated and will be removed in a future release.  Thanks to Jon
+Swartz for the suggestion.
+
 0.04
 
 - tweaks to make the code work under 5.00404
