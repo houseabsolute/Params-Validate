@@ -300,7 +300,8 @@ sub _validate_one_param
 
 	return UNDEF unless defined $value;
 
-	unless (ref $value)
+	my $ref = ref $value;
+	unless ($ref)
 	{
 	    # catches things like:  my $fh = do { local *FH; };
 	    return GLOB if UNIVERSAL::isa( \$value, 'GLOB' );
@@ -308,7 +309,7 @@ sub _validate_one_param
 	}
 
 	my $or = 0;
-	if ( ! grep { ref $value eq $_ } keys %isas )
+	if ( ! grep { $ref eq $_ } keys %isas )
 	{
 	    $or = OBJECT;
 	}
