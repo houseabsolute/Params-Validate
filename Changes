@@ -1,3 +1,8 @@
+0.17
+
+- Fix a doc nit where I had a wrong code example.  Reported by Britton
+Kerin.
+
 0.16 May 11, 2002
 
 - Improve skipping of tests when run with 5.6.0.  Patch by Ken
