@@ -1,3 +1,9 @@
+0.18
+
+- Added a new function, validate_with(), that allow you to set various
+options on a per-invocation basis, rather than on a per-package basis.
+Patch by Ken Williams.
+
 0.17
 
 - Fix a doc nit where I had a wrong code example.  Reported by Britton
