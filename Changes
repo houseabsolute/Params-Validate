@@ -1,6 +1,8 @@
-Revision history for Perl extension Params::Validate.
+0.02  Tue Mar 06 18:30 2001
 
-0.01  Sun Feb 11 16:10:22 2001
-	- original version; created by h2xs 1.21 with options
-		-AX -b 5.5.3 -c -n Params::Validate
+- fix a bug in the test suite that caused failures in 5.6.0.
+
+0.01  Sun Feb 11 16:10 2001
+
+- Original release
 
