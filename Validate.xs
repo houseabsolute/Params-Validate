@@ -313,6 +313,7 @@ get_called(HV* options)
     } else {
         IV frame;
         SV* buffer;
+        SV* caller;
 
         if(temp = hv_fetch(options, "stack_skip", 10, 0)) {
             SvGETMAGIC(*temp);
@@ -323,7 +324,12 @@ get_called(HV* options)
 
         buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
 
-        return perl_eval_pv(SvPV_nolen(buffer), 1);
+        caller = perl_eval_pv(SvPV_nolen(buffer), 1);
+        if(SvTYPE(caller) == SVt_NULL) {
+            caller = sv_2mortal(newSVpv("N/A", 0));
+        }
+
+        return caller;
     }
 }
 
