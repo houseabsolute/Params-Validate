@@ -2,7 +2,7 @@ package Params::Validate;
 
 use strict;
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -40,14 +40,28 @@ sub _validate_positional
     my $called = shift;
 
     my $actual = scalar @$p;
-    my $expect = scalar @$opts;
 
-    die "$actual parameter" . ($actual > 1 ? 's' : '') . " " . ($actual > 1 ? 'were' : 'was' ) . " passed to $called but $expect " . ($expect > 1 ? 'were' : 'was') . " expected\n"
-	unless $actual == $expect;
+    my $min = 0;
+    while (1)
+    {
+	last if ( ( ref $opts->[$min] && $opts->[$min]{optional} ) ||
+		  ! $opts->[$min] );
+	$min++;
+    }
+
+    my $max = scalar @$opts;
+
+    unless ($actual >= $min && $actual <= $max )
+    {
+	my $minmax = $min != $max ? "$min - $max" : $max;
+	$minmax .= $max != 1 ? ' were' : ' was';
+	die "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n";
+    }
 
     foreach ( 0..$#{ $opts } )
     {
-	_validate_one_param( $p->[$_], $opts->[$_], "Parameter #$_", $called );
+	_validate_one_param( $p->[$_], $opts->[$_], "Parameter #$_", $called )
+	    if ref $opts->[$_];
     }
 }
 
@@ -143,9 +157,11 @@ sub _validate_one_param
 }
 
 {
-    my %isas = ( ARRAY => ARRAY,
-		 HASH  => HASH,
-		 CODE  => CODE,
+    # if it UNIVERSAL::isa the string on the left then its the type on
+    # the right
+    my %isas = ( ARRAY  => ARRAYREF,
+		 HASH   => HASHREF,
+		 CODE   => CODEREF,
 		 GLOB   => GLOBREF,
 		 SCALAR => SCALARREF,
 	       );
@@ -173,9 +189,9 @@ sub _validate_one_param
 
 {
     my %type_to_string = ( SCALAR()    => 'scalar',
-			   ARRAY()     => 'arrayref',
-			   HASH()      => 'hashref',
-			   CODE()      => 'coderef',
+			   ARRAYREF()  => 'arrayref',
+			   HASHREF()   => 'hashref',
+			   CODEREF()   => 'coderef',
 			   GLOB()      => 'glob',
 			   GLOBREF()   => 'globref',
 			   SCALARREF() => 'scalarref',
@@ -187,35 +203,10 @@ sub _validate_one_param
 	my $mask = shift;
 
 	my @types;
-	foreach ( SCALAR, ARRAY, HASH, CODE, GLOB, GLOBREF, SCALARREF, UNKNOWN )
+	foreach ( SCALAR, ARRAYREF, HASHREF, CODEREF, GLOB, GLOBREF, SCALARREF, UNKNOWN )
 	{
 	    push @types, $type_to_string{$_} if $mask & $_;
 	}
 	return @types ? @types : ('unknown');
     }
 }
-
-__END__
-
-=head1 NAME
-
-Params::Validate - Validate method/function parameters
-
-=head1 SYNOPSIS
-
-  use Params::Validate;
-
-
-=head1 DESCRIPTION
-
-
-=head2 EXPORT
-
-None by default.
-
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=cut

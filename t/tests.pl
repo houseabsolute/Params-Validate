@@ -1,6 +1,6 @@
 use strict;
 
-print "1..51\n";
+print "1..62\n";
 
 sub run_tests
 {
@@ -63,7 +63,7 @@ sub run_tests
 		     quux => 'yadda',
 		     brax => 'a',
 		   ) };
-	check(); # 10
+	check();
     }
 
     {
@@ -84,7 +84,7 @@ sub run_tests
 	check();
 
 	eval { sub4( foo => \$foo,
-		     bar => do { local *FH; *FH; },
+		     bar => *GLOBBY,
 		     baz => do { local *FH; *FH; },
 		     quux => sub { 'a coderef' },
 		   ) };
@@ -100,9 +100,19 @@ sub run_tests
 	eval { sub4( foo => \$foo,
 		     bar => do { local *FH; *FH; },
 		     baz => \*BAZZY,
-		     quux => \*CODE,
+		     quux => \*CODEREF,
 		   ) };
-	check(); # 15
+	check();
+
+	# test HANDLE type
+	eval { sub4a( foo => \*HANDLE) };
+	check();
+
+	eval { sub4a( foo => *HANDLE) };
+	check();
+
+	eval { sub4a( foo => ['not a handle'] ) };
+	check();
     }
 
     {
@@ -223,6 +233,30 @@ sub run_tests
 	eval { sub15( { foo => 1 } ) };
 	check();
     }
+
+    {
+	# positional - 3
+	eval { sub16( 1, 2, 3 ) };
+	check();
+	eval { sub16( 1, 2 ) };
+	check();
+	eval { sub16( 1 ) };
+	check();
+	eval { sub16() };
+	check();
+    }
+
+    {
+	# positional - 4
+	eval { sub17( 1, 2, 3 ) };
+	check();
+	eval { sub17( 1, 2 ) };
+	check();
+	eval { sub17( 1 ) };
+	check();
+	eval { sub17() };
+	check();
+    }
 }
 
 sub sub1
@@ -245,13 +279,13 @@ sub sub3
     validate( @_, { foo =>
 		    { type => SCALAR },
 		    bar =>
-		    { type => ARRAY },
+		    { type => ARRAYREF },
 		    baz =>
-		    { type => HASH },
+		    { type => HASHREF },
 		    quux =>
-		    { type => SCALAR | ARRAY },
+		    { type => SCALAR | ARRAYREF },
 		    brax =>
-		    { type => SCALAR | HASH },
+		    { type => SCALAR | HASHREF },
 		  }
 	    );
 }
@@ -265,9 +299,14 @@ sub sub4
 		    baz =>
 		    { type => GLOBREF },
 		    quux =>
-		    { type => CODE },
+		    { type => CODEREF },
 		  }
 	    );
+}
+
+sub sub4a
+{
+    validate( @_, { foo => { type => HANDLE } } );
 }
 
 sub sub5
@@ -328,6 +367,52 @@ sub sub11
 		    } } );
 }
 
+sub sub12
+{
+    validate( @_, { foo =>
+		    { type => ARRAYREF,
+		      callbacks =>
+		      { '5 elements' => sub { @{shift()} == 5 } }
+		    } } );
+}
+
+sub sub13
+{
+    validate( @_,
+	      { type => SCALAR },
+	      { type => ARRAYREF,
+		callbacks => 
+		{ '5 elements' => sub { @{shift()} == 5 } }
+	      } );
+}
+
+sub sub14
+{
+    validate( @_,
+	      { type => SCALAR },
+	      { type => ARRAYREF },
+	      { isa => 'Bar' },
+	    );
+}
+
+sub sub15
+{
+    validate( @_,
+	      { foo => 1,
+		bar => { type => ARRAYREF }
+	      } );
+}
+
+sub sub16
+{
+    validate( @_, 1, 0 );
+}
+
+sub sub17
+{
+    validate( @_, { type => SCALAR }, { type => SCALAR, optional => 1 } );
+}
+
 {
     my $x = 0;
     sub check
@@ -339,43 +424,6 @@ sub sub11
 	    ok( ! $@, $@ );
     }
 }
-
-sub sub12
-{
-    validate( @_, { foo =>
-		    { type => ARRAY,
-		      callbacks =>
-		      { '5 elements' => sub { @{shift()} == 5 } }
-		    } } );
-}
-
-sub sub13
-{
-    validate( @_,
-	      { type => SCALAR },
-	      { type => ARRAY,
-		callbacks => 
-		{ '5 elements' => sub { @{shift()} == 5 } }
-	      } );
-}
-
-sub sub14
-{
-    validate( @_,
-	      { type => SCALAR },
-	      { type => ARRAY },
-	      { isa => 'Bar' },
-	    );
-}
-
-sub sub15
-{
-    validate( @_,
-	      { foo => 1,
-		bar => { type => ARRAY }
-	      } );
-}
-
 
 sub ok
 {

@@ -17,6 +17,14 @@ To install this module type the following:
    make test
    make install
 
+BUGS/ISSUES
+
+Trying to run the test suite with Perl 5.6.0 on my machine caused
+repeated core dumps, though 5.00405 and 5.00503 were both fine.  In
+addition, 5.6.1-trial1 did not core dump so I can only presume that
+the problem is Perl's, not this module's.  I do not know if the
+problem is caused by the test code or the module itself.
+
 COPYRIGHT AND LICENCE
 
 Copyright (c) 2000-2001 Dave Rolsky

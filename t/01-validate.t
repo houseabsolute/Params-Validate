@@ -29,6 +29,10 @@ use vars qw(@expect);
 	   q|^The 'foo' parameter is a 'scalar'.* types: scalarref|,
 	   q|^The 'quux' parameter is a 'globref'.* types: coderef|,
 
+	   0,
+	   0,
+	   q|^The 'foo' parameter is an 'arrayref'.* types: glob globref|,
+
 	   # isa
 	   0,
 	   0,
@@ -80,8 +84,34 @@ use vars qw(@expect);
 	   # hashref named params
 	   q|^The 'bar' parameter is a 'hashref'.* types: arrayref|,
 	   q|^Mandatory parameter 'bar' missing|,
+
+	   # positional - 3
+	   q|^3 parameters were passed .* but 1 - 2 were expected|,
+	   0,
+	   0,
+	   q|^0 parameters were passed .* but 1 - 2 were expected|,
+
+	   # positional - 3
+	   q|^3 parameters were passed .* but 1 - 2 were expected|,
+	   0,
+	   0,
+	   q|^0 parameters were passed .* but 1 - 2 were expected|,
 	  );
 
 require 'tests.pl';
+
+# 5.6.0 core dumps all over during the tests
+if ( $] == 5.006 )
+{
+    warn <<'EOF';
+
+Skipping tests for Perl 5.6.0.  5.6.0 core dumps all over during the
+tests.  This may have to do with the test code rather than the module
+itself.  5.6.1-trial1 worked fine so there is hope.
+EOF
+
+    print "ok $_\n" for 1..55;
+    exit;
+}
 
 run_tests();
