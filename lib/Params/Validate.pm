@@ -110,17 +110,18 @@ arguments.
 The module always exports the C<validate> and C<validate_pos> methods.
 In addition, it can export the following constants, which are used as
 part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
-C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>, and
-C<HANDLE>.  These are explained in more detail later on.  These
+C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>,
+C<UNDEF>, C<OBJECT>, and C<HANDLE>.  These are explained in the
+section on L<Type Validation|Params::Validate/Type Validation>.  These
 constants are available via the tag C<:types>.  There is also a
 C<:all> tag, which for now is equivalent to the C<:types> tag.
 
 Finally, it is possible to import the L<C<set_options>|"GLOBAL"
 OPTIONS> function, but only by requesting it explicitly, as it is not
-included in C<:all>.  The reason being that this function only needs
-to be called once per module and its name is potentially common enough
-that exporting it without an explicit request to do so seems bound to
-cause trouble.
+included in C<:all>.  The reason for this is that this function only
+needs to be called once per module and its name is potentially common
+enough that exporting it without an explicit request to do so seems
+bound to cause trouble.
 
 =head1 PARAMETER VALIDATION
 
@@ -198,7 +199,10 @@ L<exported as constants|EXPORT>:
 
 =item * SCALAR
 
-A scalar which is not a reference, such as C<10> or C<'hello'>.
+A scalar which is not a reference, such as C<10> or C<'hello'>.  A
+paramater that is undefined is B<not> treated as a scalar.  If you
+want to allow undefined values, you will have to specify C<SCALAR |
+UNDEF>.
 
 =item * ARRAYREF
 
@@ -232,6 +236,14 @@ for more details.
 =item * SCALARREF
 
 A reference to a scalar such as C<\$x>.
+
+=item * UNDEF
+
+An undefined value
+
+=item * OBJECT
+
+A blessed reference.
 
 =item * HANDLE
 
@@ -281,7 +293,7 @@ have rather than what class it should be of (or a child of).  This
 will make your API much more flexible.
 
 With that said, if you want to verify that an incoming parameter
-belongs to a class (or a child class) or classes, do:
+belongs to a class (or child class) or classes, do:
 
  validate( @_,
            { foo =>
@@ -291,7 +303,7 @@ belongs to a class (or a child class) or classes, do:
 
  validate( @_,
            { foo =>
-             { can => [ qw( My::Frobnicator IO::Handle ) ] } } );
+             { isa => [ qw( My::Frobnicator IO::Handle ) ] } } );
  # must be both, not either!
 
 =head2 Callback Validation

@@ -4,7 +4,7 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.6 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
@@ -198,7 +198,7 @@ sub _validate_one_param
 	my $value = shift;
 
 	return UNDEF unless defined $value;
-	warn "UNDEF\n" unless defined $value;
+
 	unless (ref $value)
 	{
 	    # catches things like:  my $fh = do { local *FH; };
