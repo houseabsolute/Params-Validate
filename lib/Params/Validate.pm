@@ -513,7 +513,7 @@ This says that you expect at least 2 and no more than 4 parameters.
 If you have a subroutine that has a minimum number of parameters but
 can take any maximum number, you can do this:
 
- validate_pos( @_, 1, 1, (0) x @_ - 2 );
+ validate_pos( @_, 1, 1, (0) x (@_ - 2) );
 
 This will always be valid as long as at least two parameters are
 given.  A similar construct could be used for the more complex
