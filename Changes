@@ -2,9 +2,9 @@
 
 - The key normalization feature introduced in 0.66 leaked one SV*
 every time a parameter _hash_ was run through the XS version of
-validate() or validate_with().  This happened regardless of whether
-normalization was actually being done.  Upgrading is strongly
-recommended!  Reported by Ruslan.
+validate() or validate_with().  This happened if one of
+normalize_keys, allow_extra, or ignore_case was set.  Upgrading is
+strongly recommended!  Reported by Ruslan.
 
 
 0.68 Oct 21, 2003
