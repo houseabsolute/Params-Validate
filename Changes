@@ -1,3 +1,8 @@
+0.16
+
+- Improve skipping of tests when run with 5.6.0.  Patch by Ken
+Williams.
+
 0.15 Apr 19, 2002
 
 - validate_pos would die stupidly when it received an array with an
