@@ -1,3 +1,9 @@
+0.14
+
+- validate_pos used exists on an array element, which only works with
+5.6.0.  This releaes makes it work 5.00503 again.  Reported by Jon
+Swartz.
+
 0.13
 
 - Apply some of the same optimizations to positional parameters.  The
