@@ -1,6 +1,6 @@
 use strict;
 
-print "1..71\n";
+print "1..73\n";
 
 sub run_tests
 {
@@ -258,6 +258,7 @@ sub run_tests
 	check();
     }
 
+    # set_options
     {
 	{
 	    package Foo;
@@ -290,38 +291,27 @@ sub run_tests
 	eval { sub18( foo => 1, bar => 1 ) };
 	check();
 
+	eval { Foo::sub19( 1, 2 ) };
+	check();
+	eval { sub19( 1, 2 ) };
+	check();
+
 	Params::Validate::set_options( strip_leading => '-' );
 	eval { Foo::sub18( -foo => 1 ) };
 	check();
     }
 
+    Params::Validate::set_options();
+
     {
 	{
 	    package Foo;
-	    Params::Validate::set_options( die => sub { die { error => shift } } );
+	    Params::Validate::set_options( die => sub { die "ERROR WAS: $_[0]" } );
 	}
 	eval { Foo::sub18( bar => 1 ) };
-
-	if ($Params::Validate::Heavy::VERSION)
-	{
-	    ok( $@ && ref $@ && $@->{error},
-		"\$\@ should be a reference but it is $@" );
-	}
-	else
-	{
-	    ok( ! $@ );
-	}
-
+	check();
 	eval { sub18( bar => 1 ) };
-	if ($Params::Validate::Heavy::VERSION)
-	{
-	    ok( $@ && ! ref $@,
-		"\$\@ should not be a reference but it is" );
-	}
-	else
-	{
-	    ok( ! $@ );
-	}
+	check();
     }
 }
 
@@ -444,21 +434,21 @@ sub sub12
 
 sub sub13
 {
-    validate( @_,
-	      { type => SCALAR },
-	      { type => ARRAYREF,
-		callbacks => 
-		{ '5 elements' => sub { @{shift()} == 5 } }
-	      } );
+    validate_pos( @_,
+		  { type => SCALAR },
+		  { type => ARRAYREF,
+		    callbacks => 
+		    { '5 elements' => sub { @{shift()} == 5 } }
+		  } );
 }
 
 sub sub14
 {
-    validate( @_,
-	      { type => SCALAR },
-	      { type => ARRAYREF },
-	      { isa => 'Bar' },
-	    );
+    validate_pos( @_,
+		  { type => SCALAR },
+		  { type => ARRAYREF },
+		  { isa => 'Bar' },
+		);
 }
 
 sub sub15
@@ -471,12 +461,12 @@ sub sub15
 
 sub sub16
 {
-    validate( @_, 1, 0 );
+    validate_pos( @_, 1, 0 );
 }
 
 sub sub17
 {
-    validate( @_, { type => SCALAR }, { type => SCALAR, optional => 1 } );
+    validate_pos( @_, { type => SCALAR }, { type => SCALAR, optional => 1 } );
 }
 
 {
@@ -486,11 +476,21 @@ sub sub17
     {
 	validate( @_, { foo => 1 } );
     }
+
+    sub sub19
+    {
+	validate_pos( @_, 1 );
+    }
 }
 
 sub sub18
 {
     validate( @_, { foo => 1 } );
+}
+
+sub sub19
+{
+    validate_pos( @_, 1 );
 }
 
 {

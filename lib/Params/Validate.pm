@@ -17,12 +17,14 @@ BEGIN
     if ( $ENV{NO_VALIDATE} )
     {
 	*validate = sub { 1 };
+	*validate_pos = sub { 1 };
 	*set_options = sub { 1 };
     }
     else
     {
 	require Params::Validate::Heavy;
 	*validate = \&_validate;
+	*validate_pos = \&_validate_pos;
 	*set_options = \&_set_options;
     }
 }
@@ -34,11 +36,11 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE ) ],
 	   );
 
-%EXPORT_TAGS = ( 'all' => [ qw( validate ), map { @{ $tags{$_} } } keys %tags ],
+%EXPORT_TAGS = ( 'all' => [ qw( validate validate_pos ), map { @{ $tags{$_} } } keys %tags ],
 		 %tags,
 	       );
 @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-@EXPORT = qw( validate );
+@EXPORT = qw( validate validate_pos );
 
 $VERSION = '0.01';
 
@@ -66,7 +68,7 @@ Params::Validate - Validate method/function parameters
   # takes positional params
   sub bar
   {
-       validate( @_, 1, 1, 0 ); # first two are mandatory, third is optional
+       validate_pos( @_, 1, 1, 0 ); # first two are mandatory, third is optional
   }
 
 
@@ -95,19 +97,20 @@ call parameters to an arbitrary level of specificity.  At the simplest
 level, it is capable of validating the required parameters were given
 and that no unspecified additional parameters were passed in.
 
-It is also capable of referring that a parameter is of a specific
+It is also capable of determining that a parameter is of a specific
 type, that it is an object of a certain class hierarchy, that it
-possesses certain methods, etc.
+possesses certain methods, or applying validation callbacks to
+arguments.
 
 =head2 EXPORT
 
-The module always exports the C<validate> method.  In addition, it can
-export the following constants, which are used as part of the type
-checking.  These are C<SCALAR>, C<ARRAYREF>, C<HASHREF>, C<CODEREF>,
-C<GLOB>, C<GLOBREF>, and C<SCALARREF>, and C<HANDLE>.  These are
-explained in more detail later on.  These constants are available via
-the tag C<:types>.  There is also a C<:all> tag, which for now is
-equivalent to C<:types> tag.
+The module always exports the C<validate> and C<validate_pos> methods.
+In addition, it can export the following constants, which are used as
+part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
+C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>, and
+C<HANDLE>.  These are explained in more detail later on.  These
+constants are available via the tag C<:types>.  There is also a
+C<:all> tag, which for now is equivalent to the C<:types> tag.
 
 Finally, it is possible to import the L<C<set_options>|"GLOBAL"
 OPTIONS> function, but only by requesting it explicitly, as it is not
@@ -118,17 +121,18 @@ cause trouble.
 
 =head1 PARAMETER VALIDATION
 
-The validation mechanism provided by this module can handle both named
-parameters or positional.  For the most part, the same features are
-available for each.  The biggest difference is the way that the
-C<validate> subroutine is called by the subroutine that wants the
-validation done.  The other difference is in the error messages
-produced when validation checks fail.
+The validation mechanisms provided by this module can handle both
+named or positional parameters.  For the most part, the same features
+are available for each.  The biggest difference is the way that the
+validation specification is given to the relevant subroutine.  The
+other difference is in the error messages produced when validation
+checks fail.
 
 When handling named parameters, the module is capable of handling
 either a hash or a hash reference transparently.
 
-All calls to the C<validate> subroutine start like this:
+All calls to the C<validate> subroutine start like this when using
+named parameters:
 
  validate( @_, ... );
 
@@ -138,15 +142,15 @@ and whether you are using named or positional parameters.
 Subroutines expecting named parameters should call the C<validate>
 subroutine like this:
 
- validate( @_, { parameter1 => ... validation,
-                 parameter2 => ... validation,
+ validate( @_, { parameter1 => validation spec,
+                 parameter2 => validation spec,
                  ...
                } );
 
-Subroutines expected positional parameters should call the C<validate>
-subroutine like this:
+Subroutines expected positional parameters should call the
+C<validate_post> subroutine like this:
 
- validate( @_, { validation }, { validation }, { validation } );
+ validate_pos( @_, { validation spec }, { validation spec } );
 
 =head2 Mandatory/Optional Parameters
 
@@ -163,13 +167,13 @@ parameters will cause an error.
 
 For a subroutine expecting positional parameters, you would do this:
 
- validate( @_, 1, 1, 0, 0 );
+ validate_pos( @_, 1, 1, 0, 0 );
 
 This says that you expect at least 2 and no more than 4 parameters.
 If you have a subroutine that has a minimum number of parameters but
 can take any maximum number, you can do this:
 
- validate( @_, 1, 1, (0) x @_ );
+ validate_pos( @_, 1, 1, (0) x @_ );
 
 This will always be valid as long as at least two parameters are
 given.  A similar construct could be used for the more complex
@@ -177,7 +181,7 @@ validation parameters described further on.
 
 Please note that this:
 
- validate( @_, 1, 1, 0, 1, 1 );
+ validate_pos( @_, 1, 1, 0, 1, 1 );
 
 makes absolutely no sense, so don't do it.  Any zeros must come at the
 end of the validation specification.
@@ -249,7 +253,7 @@ If a parameter can be of more than one type, just use the bitwise or
 
 For positional parameters, this can be specified as follows:
 
- validate( @_, { type => SCALAR | ARRAYREF }, { type => CODEREF } );
+ validate_pos( @_, { type => SCALAR | ARRAYREF }, { type => CODEREF } );
 
 =head2 Interface Validation
 
@@ -319,7 +323,7 @@ fact that a parameter can be optional, do this:
 
 or this for positional parameters:
 
- validate( @_, { type => SCALAR }, { type => ARRAYREF, optional => 1 } );
+ validate_pos( @_, { type => SCALAR }, { type => ARRAYREF, optional => 1 } );
 
 By default, parameters are assumed to be mandatory unless specified as
 optional.
@@ -330,12 +334,13 @@ optional.
 
 When using this module to validate the parameters passed to a method
 call, you will probably want to remove the class/object from the
-parameter list B<before> calling C<validate>.  If your method expects
-named parameters, then this is necessary for the C<validate> function
-to actually work, otherwise C<@_> will not contain a hash, but rather
-your object (or class) B<followed> by a hash.
+parameter list B<before> calling C<validate> or C<validate_pos>.  If
+your method expects named parameters, then this is necessary for the
+C<validate> function to actually work, otherwise C<@_> will not
+contain a hash, but rather your object (or class) B<followed> by a
+hash.
 
-Thus the idiomatic usage of C<validate. in a method call will look
+Thus the idiomatic usage of C<validate> in a method call will look
 something like this:
 
  sub method
@@ -366,7 +371,7 @@ While this is quite different from how most other modules operate, I
 feel that this is necessary in able to make it possible for one
 module/application to use Params::Validate while still using other
 modules that also use Params::Validate, perhaps with different
-options.
+options set;
 
 The downside to this is that if you are writing an app with a standard
 calling style for all functions, and your app has ten modules, B<each
@@ -416,6 +421,9 @@ Right now there is no way (short of a callback) to specify that
 something must be of one of a list of classes, or that it must possess
 one of a list of methods.  If this is desired, it can be added in the
 future.
+
+Ideally, there would be only one validation function.  If someone
+figures out how to do this, please let me know.
 
 =head1 SEE ALSO
 

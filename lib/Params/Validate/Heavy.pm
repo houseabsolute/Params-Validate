@@ -4,57 +4,33 @@ use strict;
 
 use vars qw(%OPTIONS $called $options);
 
-$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.3 $ =~ /(\d+)\.(\d+)/;
+$Params::Validate::Heavy::VERSION = sprintf '%2d.%02d', q$Revision: 1.4 $ =~ /(\d+)\.(\d+)/;
 
 1;
 
 # Matt Sergeant came up with this prototype, which slickly takes the
 # first array (which should be the caller's @_), and makes it a
 # reference.  Everything after is the parameters for validation.
-sub _validate (\@@)
+sub _validate_pos (\@@)
 {
-    # params passed to sub as reference
     my $p = shift;
+    my @specs = @_;
 
     # I'm too lazy to pass these around all over the place.
     local $called = (caller(1))[3];
     local $options = _get_options( (caller(0))[0] );
 
-    # positional parameters
-    if (@_ > 1)
-    {
-	_validate_positional($p, \@_);
-    }
-    else
-    {
-	# hashref of named params
-	if ( ref $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
-	{
-	    $p = [ %{ $p->[0] } ];
-	}
-	$options->{die}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
-	    if @$p % 2;
-	_validate_named( {@$p}, shift);
-    }
-}
-
-sub _validate_positional
-{
-    my $p = shift;
-    my $specs = shift;
-
-    my $actual = scalar @$p;
-
     my $min = 0;
     while (1)
     {
-	last if ( ( ref $specs->[$min] && $specs->[$min]{optional} ) ||
-		  ! $specs->[$min] );
+	last if ( ( ref $specs[$min] && $specs[$min]{optional} ) ||
+		  ! $specs[$min] );
 	$min++;
     }
 
-    my $max = scalar @$specs;
+    my $max = scalar @specs;
 
+    my $actual = scalar @$p;
     unless ($actual >= $min && ( $options->{allow_extra} || $actual <= $max ) )
     {
 	my $minmax = $options->{allow_extra} ? "at least $min" : ( $min != $max ? "$min - $max" : $max );
@@ -63,17 +39,29 @@ sub _validate_positional
 	$options->{die}->( "$actual parameter" . ($actual != 1 ? 's' : '') . " " . ($actual != 1 ? 'were' : 'was' ) . " passed to $called but $minmax expected\n" );
     }
 
-    foreach ( 0..$#{ $specs } )
+    foreach ( 0..$#specs )
     {
-	_validate_one_param( $p->[$_], $specs->[$_], "Parameter #$_" )
-	    if ref $specs->[$_];
+	_validate_one_param( $p->[$_], $specs[$_], "Parameter #$_" )
+	    if ref $specs[$_];
     }
 }
 
-sub _validate_named
+sub _validate (\@@)
 {
     my $p = shift;
     my $specs = shift;
+
+    local $called = (caller(1))[3];
+    local $options = _get_options( (caller(0))[0] );
+
+    if ( ref $p->[0] && UNIVERSAL::isa( $p->[0], 'HASH' ) )
+    {
+	$p = [ %{ $p->[0] } ];
+    }
+    $options->{die}->( "Odd number of parameters in call to $called when named parameters were expected\n" )
+	if @$p % 2;
+
+    $p = {@$p};
 
     if ( $options->{ignore_case} || $options->{strip_leading} )
     {

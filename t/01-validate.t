@@ -97,6 +97,7 @@ use vars qw(@expect);
 	   0,
 	   q|^0 parameters were passed .* but 1 - 2 were expected|,
 
+	   # set_options
 	   0,
 	   q|^The following parameter .* FOO|,
 
@@ -106,7 +107,12 @@ use vars qw(@expect);
 	   0,
 	   q|^The following parameter .* bar|,
 
+	   '',
+	   q|^2 parameters were passed .* but 1.*|,
 	   q|^Mandatory parameter 'foo' missing|,
+
+	   q|^ERROR WAS: The following parameter .* bar|,
+	   q|^The following parameter .* bar|,
 	  );
 
 require 'tests.pl';
