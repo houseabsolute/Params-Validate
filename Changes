@@ -1,8 +1,8 @@
 0.69 Nov 3, 2003
 
 - The key normalization feature introduced in 0.66 leaked one SV*
-every time a parameter _hash_ was run through validate() or
-validate_with().  Reported by Ruslan.
+every time a parameter _hash_ was run through the XS version of
+validate() or validate_with().  Reported by Ruslan.
 
 
 0.68 Oct 21, 2003
