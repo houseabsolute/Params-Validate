@@ -48,7 +48,7 @@ sub foo
     my @params = ( a => 1, b => 2 );
     my %def = validate( @params, { a => 1,
 				   b => { default => 99 },
-				   c => { default => 42 },
+				   c => { optional => 1, default => 42 },
                                    d => { default => 0 },
 				 } );
 
