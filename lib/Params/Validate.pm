@@ -306,16 +306,11 @@ sub _validate_one_param
 	    return SCALAR;
 	}
 
-	if ( $simple_refs{$ref} )
+	return $isas{$ref} if $simple_refs{$ref};
+
+	foreach ( keys %isas )
 	{
-	    return $isas{$ref};
-	}
-	else
-	{
-	    foreach ( keys %isas )
-	    {
-		return $isas{$_} | OBJECT if UNIVERSAL::isa( $value, $_ );
-	    }
+	    return $isas{$_} | OBJECT if UNIVERSAL::isa( $value, $_ );
 	}
 
 	# I really hope this never happens.
