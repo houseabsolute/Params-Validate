@@ -4,6 +4,10 @@
 validate_pos() by about 20-25%.  Improved the speed of the 'no
 validation' mode for validation() by over 30%.
 
+The speed of validate_with() has been improved by over 100%, but this
+was at the expense of not validating its own incoming arguments, thus
+making it a little more fragile.
+
 - The PERL_NO_VALIDATION env var is now _only_ checked when the module
 is loaded.  This means you cannot change it mid-stream.  This is a
 backwards incompatibility.
