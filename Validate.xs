@@ -79,6 +79,33 @@
         }                                             \
     } STMT_END
 
+#if (PERL_VERSION == 5) /* 5.00503 */
+#  define CALL_FATAL_WITH_MESSAGE(message, call_func, callee)        \
+        ENTER;                                          \
+        SAVETMPS;                                       \
+        PUSHMARK(SP);                                   \
+        XPUSHs(message);                                \
+        PUTBACK;                                        \
+        call_func(callee, G_DISCARD|G_VOID);
+#else /* 5.6.0+ */
+#  define CALL_FATAL_WITH_MESSAGE(message, call_func, callee)        \
+        ENTER;                                          \
+        SAVETMPS;                                       \
+        PUSHMARK(SP);                                   \
+        XPUSHs(message);                                \
+        PUTBACK;                                        \
+        call_func(callee, G_DISCARD|G_VOID|G_EVAL);     \
+        if (ERRSV != &PL_sv_undef) {                    \
+            if (SvROK(ERRSV)) {                         \
+                croak(Nullch);                          \
+            } else {                                    \
+                croak(SvPV_nolen(ERRSV));               \
+            }                                           \
+        } else {                                        \
+            croak(SvPV_nolen(message));                 \
+        }
+#endif
+
 /* enable/disable validation */
 static int NO_VALIDATE ;
 
@@ -244,7 +271,8 @@ validation_failure(SV* message, HV* options)
 {
     SV** temp;
     SV* on_fail;
-    I32 flags = PERL_VERSION >= 6 ? G_DISCARD | G_EVAL : G_DISCARD;
+
+    I32 flags = G_DISCARD;
 
     if(temp = hv_fetch(options, "on_fail", 7, 0)) {
         SvGETMAGIC(*temp);
@@ -255,47 +283,18 @@ validation_failure(SV* message, HV* options)
 
     /* use user defined callback if avialable */
     if(on_fail) {
+        SV* errsv;
         dSP;
-        PUSHMARK(SP);
-        XPUSHs(message);
-        PUTBACK;
-        perl_call_sv(on_fail, flags);
-        /* for some reason, 5.00503 segfaults if we use the G_EVAL
-           flag, get a ref in ERRSV, and then call Nullch.  5.6.1
-           segfaults if we _don't_ use the G_EVAL flag */
-#if (PERL_VERSION >= 6)
-        if (SvTRUE(ERRSV)) {
-            if (SvROK(ERRSV)) {
-                croak(Nullch);
-            } else {
-                croak(SvPV_nolen(ERRSV));
-            }
-        } else {
-            croak(SvPV_nolen(message));
-        }
-#endif
-        return;
-    }
 
-    /* by default resort to Carp::confess for error reporting */
-    {
+        CALL_FATAL_WITH_MESSAGE(message, perl_call_sv, on_fail);
+    } else {
+      /* by default resort to Carp::confess for error reporting */
+        SV* errsv;
+
         dSP;
         perl_require_pv("Carp.pm");
-        PUSHMARK(SP);
-        XPUSHs(message);
-        PUTBACK;
-        perl_call_pv("Carp::croak", flags);
-#if (PERL_VERSION >= 6)
-        if (SvTRUE(ERRSV)) {
-            if (SvROK(ERRSV)) {
-                croak(Nullch);
-            } else {
-                croak(SvPV_nolen(ERRSV));
-            }
-        } else {
-            croak(SvPV_nolen(message));
-        }
-#endif
+
+        CALL_FATAL_WITH_MESSAGE(message, perl_call_pv, "Carp::croak");
     }
 
     return;
@@ -600,9 +599,20 @@ append_hash2hash(HV* in, HV* out)
 
 /* convert array to hash */
 static HV*
-convert_array2hash(AV* in) {
+convert_array2hash(AV* in, HV* options) {
     IV i;
     HV* out;
+    I32 len;
+
+    len = av_len(in);
+    if (len > -1 && len % 2 != 1) {
+      SV* buffer;
+      buffer = sv_2mortal(newSVpv("Odd number of parameters in call to ", 0));
+      sv_catsv(buffer, get_called(options));
+      sv_catpv(buffer, " when named parameters were expected\n");
+
+      validation_failure(buffer, options);
+    }
 
     out = (HV*) sv_2mortal((SV*) newHV());
     for(i = 0; i <= av_len(in); i += 2) {
@@ -751,8 +761,14 @@ validate(HV* p, HV* specs, HV* options)
     if(!NO_VALIDATE) unmentioned = (AV*) sv_2mortal((SV*) newAV());
     hv_iterinit(p);
     while(he = hv_iternext(p)) {
-        SvGETMAGIC(HeVAL(he));
 
+        /* This may be related to bug #7387 on bugs.perl.org */
+#if (PERL_VERSION == 5)
+        if (! PL_tainting)
+#endif
+            SvGETMAGIC(HeVAL(he));
+
+        
         /* put the parameter into return hash */
         if(GIMME_V != G_VOID) {
             if(!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
@@ -1021,6 +1037,7 @@ validate(p, specs)
         HV* ret;
         AV* pa;
         HV* ph;
+        HV* options;
 
         if(NO_VALIDATE && GIMME_V == G_VOID) return;
 
@@ -1044,11 +1061,14 @@ validate(p, specs)
                 ph = (HV*) SvRV(value);
             }
         }
+
+        options = get_options(NULL);
+
         if(!ph) {
-            ph = convert_array2hash(pa);
+            ph = convert_array2hash(pa, options);
         }
 
-        ret = validate(ph, (HV*) SvRV(specs), get_options(NULL));
+        ret = validate(ph, (HV*) SvRV(specs), options);
         RETURN_HASH(ret);
 
 void
@@ -1123,16 +1143,19 @@ validate_with(...)
         } else if(SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV) {
             HV* hv;
             HV* ret;
+            HV* options;
+
+            options = get_options(p);
 
             if(SvROK(params) && SvTYPE(SvRV(params)) == SVt_PVHV) {
                 hv = (HV*) SvRV(params);
             } else if(SvROK(params) && SvTYPE(SvRV(params)) == SVt_PVAV) {
-                hv = convert_array2hash((AV*) SvRV(params));
+                hv = convert_array2hash((AV*) SvRV(params), options);
             } else {
                 croak("Expecting array or hash reference in 'params'");
             }
 
-            ret = validate(hv, (HV*) SvRV(spec), get_options(p));
+            ret = validate(hv, (HV*) SvRV(spec), options);
             RETURN_HASH(ret);
         } else {
             croak("Expecting array or hash reference in 'spec'");
