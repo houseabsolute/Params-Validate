@@ -1,0 +1,6 @@
+.*CVS.*
+Makefile
+\.\#.*
+~$
+MANIFEST.SKIP
+.*\.tar\.gz
