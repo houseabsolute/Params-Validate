@@ -211,19 +211,20 @@ sub validate (\@$)
     {
 	if ( ! exists $p->{$key} &&
              ( ref $spec ?
-               ! ( do
-                   {
-                       $spec->{optional} && next OUTER
-                   }
-                   ||
-                   do
-                   {
-                       if ( exists $spec->{default} )
-                       {
-                           $p->{$key} = $spec->{default};
-                           next OUTER;
+               ! (
+                  do
+                  {
+                      if ( exists $spec->{default} )
+                      {
+                          $p->{$key} = $spec->{default};
+                          next OUTER;
                        }
-                   }
+                  }
+                  ||
+                  do
+                  {
+                      $spec->{optional} && next OUTER
+                  }
                  ) :
                $spec )
            )
