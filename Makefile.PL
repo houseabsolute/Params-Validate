@@ -33,7 +33,7 @@ EOF
 close F or no_cc();
 
 my $make = $^O =~ /win32/i ? 'nmake' : 'make';
-system("$make test$Config{obj_ext}") and no_cc();
+system("$Config{make} test$Config{obj_ext}") and no_cc();
 
 if ( -d 'CVS' )
 {
