@@ -1,4 +1,4 @@
-0.77
+0.77 Apr 29, 2005
 
 - Neither --xs or --pm worked with the Makefile.PL the way they were
 supposed to.  Reported by Doug Treder.
