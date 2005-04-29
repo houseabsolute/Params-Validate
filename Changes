@@ -6,6 +6,9 @@ supposed to.  Reported by Doug Treder.
 - Moved source to my personal SVN repo.
 https://svn.urth.org/svn/Params-Validate
 
+- Updated ppport.h, which allows XS version to work with 5.00504.
+This was broken since 0.75, at least.
+
 
 0.76 Nov 13, 2004 (The "Cancan some more" release)
 
