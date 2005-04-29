@@ -217,7 +217,7 @@ it is considered optional.
 =head2 Type Validation
 
 This module supports the following simple types, which can be
-L<exported as constants|EXPORT>:
+L<exported as constants|/EXPORT>:
 
 =over 4
 
