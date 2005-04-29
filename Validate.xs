@@ -383,7 +383,6 @@ validate_isa(SV* value, SV* package, SV* id, HV* options)
   FAIL(buffer, options);
 }
 
-/* UNIVERSAL::can alike validation */
 static IV
 validate_can(SV* value, SV* method, SV* id, HV* options)
 {
