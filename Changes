@@ -1,3 +1,9 @@
+0.78 Jul 19, 2005
+
+- If an overloaded object returned false in boolean context, then it
+would always fail "can" tests.  Patch by Chi-Fung Fan.
+
+
 0.77 Apr 29, 2005
 
 - Neither --xs or --pm worked with the Makefile.PL the way they were

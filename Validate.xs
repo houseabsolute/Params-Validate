@@ -389,7 +389,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
   char* name;
   IV ok = 1;
 
-  if (SvTRUE(value)) {
+  if (SvOK(value)) {
     dSP;
 
     SV* ret;
