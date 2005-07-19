@@ -30,7 +30,7 @@ t/17-callbacks.t
 t/18-depends.t
 t/19-untaint.t
 t/21-can.t
-t/22-overload-can.t
+t/22-overload-can-bug.t
 t/callbacks.pl
 t/defaults.pl
 t/regex.pl
