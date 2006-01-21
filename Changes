@@ -1,3 +1,14 @@
+0.79 Jan 13, 2006
+
+- The XS version of Params::Validate did not work if a spec hash
+reference was marked Readonly using Readonly::XS.
+
+- Added some tests for using tied values for params or spec, and
+discovered that a tied spec causes a segfault, but could not figure
+out how to fix this (Grr, Perl magic is a huge pain in the nether
+regions).
+
+
 0.78 Jul 19, 2005
 
 - If an overloaded object returned false in boolean context, then it

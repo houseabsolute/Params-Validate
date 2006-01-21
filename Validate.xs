@@ -1098,10 +1098,13 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
   hv_iterinit(specs);
   while (he = hv_iternext(specs)) {
     HV* spec;
+    SV* val;
+
+    val = HeVAL(he);
 
     /* get extended param spec if available */
-    if (SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVHV) {
-      spec = (HV*) SvRV(HeVAL(he));
+    if (SvROK(val) && SvTYPE(SvRV(val)) == SVt_PVHV) {
+      spec = (HV*) SvRV(val);
     } else {
       spec = NULL;
     }
@@ -1384,10 +1387,13 @@ _validate(p, specs)
 
     if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
-    if (!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
+    SvGETMAGIC(p);
+    if (! (SvROK(p) && SvTYPE(SvRV(p)) == SVt_PVAV)) {
       croak("Expecting array reference as first parameter");
     }
-    if (!SvROK(specs) || !(SvTYPE(SvRV(specs)) == SVt_PVHV)) {
+
+    SvGETMAGIC(specs);
+    if (! (SvROK(specs) && SvTYPE(SvRV(specs)) == SVt_PVHV)) {
       croak("Expecting hash reference as second parameter");
     }
 
@@ -1417,6 +1423,7 @@ _validate(p, specs)
         
     if (GIMME_V != G_VOID)
       ret = (HV*) sv_2mortal((SV*) newHV());
+
     if (! validate(ph, (HV*) SvRV(specs), options, ret))
       XSRETURN(0);
 
@@ -1436,9 +1443,11 @@ _validate_pos(p, ...)
 
     if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
+    SvGETMAGIC(p);
     if (!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
       croak("Expecting array reference as first parameter");
     }
+
     specs = (AV*) sv_2mortal((SV*) newAV());
     av_extend(specs, items);
     for(i = 1; i < items; i++) {
@@ -1449,6 +1458,7 @@ _validate_pos(p, ...)
     }
 
     if (GIMME_V != G_VOID) ret = (AV*) sv_2mortal((SV*) newAV());
+
     if (! validate_pos((AV*) SvRV(p), specs, get_options(NULL), ret))
       XSRETURN(0);
 
