@@ -78,17 +78,6 @@ write_makefile();
 
 sub write_makefile
 {
-    print <<'EOF';
-
-*** NOTE ***
-
-You can safely ignore the warnings below about 'Too late to run
-CHECK/INIT blocks'.
-
-*************
-
-EOF
-
     my %prereq = ( 'Test::More' => 0 );
     $prereq{'Attribute::Handlers'} = 0 if $] >= 5.006;
 
