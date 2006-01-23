@@ -1,3 +1,9 @@
+0.80 Jan 22, 2006
+
+- If a undef value was given for a parameter that had a regex in its
+spec, a warning was emitted. RT #15196.
+
+
 0.79 Jan 13, 2006
 
 - The XS version of Params::Validate did not work if a spec hash
