@@ -1,3 +1,13 @@
+0.81 Apr 1, 2006
+
+- Speed up no validation in XS version by short-circuiting immediately
+if validation is off. This gives a noticeable speed boost when
+$ENV{NO_VALIDATION} is in use. Patch by Daisuke Maki.
+
+- Inlined some C functions for additional speed in the XS
+version. Patch by Daisuke Maki.
+
+
 0.80 Jan 22, 2006
 
 - If a undef value was given for a parameter that had a regex in its

@@ -131,7 +131,7 @@ bootinit()
   newCONSTSUB(stash, "BOOLEAN", newSViv(BOOLEAN));
 }
 
-static bool
+inline static bool
 no_validation()
 {
   SV* no_v;
@@ -144,7 +144,7 @@ no_validation()
 }
     
 /* return type string that corresponds to typemask */
-static SV*
+inline static SV*
 typemask_to_string(IV mask)
 {
   SV* buffer;
@@ -197,7 +197,7 @@ typemask_to_string(IV mask)
 }
 
 /* compute numberic datatype for variable */
-static IV
+inline static IV
 get_type(SV* sv)
 {
   IV type = 0;
@@ -242,6 +242,7 @@ get_type(SV* sv)
 }
 
 /* get an article for given string */
+inline
 #if (PERL_VERSION >= 6) /* Perl 5.6.0+ */
 static const char*
 #else
@@ -954,146 +955,11 @@ cat_string_representation(SV* buffer, SV* value)
   }
 }
 
-static IV
-validate(HV* p, HV* specs, HV* options, HV* ret)
+void
+apply_defaults(HV *ret, HV *p, HV *specs, AV *missing)
 {
-  AV* missing;
-  AV* unmentioned;
   HE* he;
-  HE* he1;
-  IV ignore_case;
-  SV* strip_leading;
-  IV allow_extra;
   SV** temp;
-  SV* normalize_func;
-  AV* untaint_keys = (AV*) sv_2mortal((SV*) newAV());
-  IV i;
-
-  if (temp = hv_fetch(options, "ignore_case", 11, 0)) {
-    SvGETMAGIC(*temp);
-    ignore_case = SvTRUE(*temp);
-  } else {
-    ignore_case = 0;
-  }
-  if (temp = hv_fetch(options, "strip_leading", 13, 0)) {
-    SvGETMAGIC(*temp);
-    if (SvOK(*temp)) strip_leading = *temp;
-  } else {
-    strip_leading = NULL;
-  }
-
-  if(temp = hv_fetch(options, "normalize_keys", 14, 0)) {
-    SvGETMAGIC(*temp);
-    if(SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVCV) {
-      normalize_func = *temp;
-    } else {
-      normalize_func = NULL;
-    }
-  } else {
-    normalize_func = NULL;
-  }
-
-  if (normalize_func || ignore_case || strip_leading) {
-    p = normalize_hash_keys(p, normalize_func, strip_leading, ignore_case);
-    specs = normalize_hash_keys(specs, normalize_func, strip_leading, ignore_case);
-  }
-
-  if (temp = hv_fetch(options, "allow_extra", 11, 0)) {
-    SvGETMAGIC(*temp);
-    allow_extra = SvTRUE(*temp);
-  } else {
-    allow_extra = 0;
-  }
-
-  /* find extra parameters and validate good parameters */
-  if (! no_validation())
-    unmentioned = (AV*) sv_2mortal((SV*) newAV());
-
-  hv_iterinit(p);
-  while (he = hv_iternext(p)) {
-    /* This may be related to bug #7387 on bugs.perl.org */
-#if (PERL_VERSION == 5)
-    if (! PL_tainting)
-#endif
-      SvGETMAGIC(HeVAL(he));
-
-        
-    /* put the parameter into return hash */
-    if (GIMME_V != G_VOID) {
-      if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
-                        HeHASH(he))) {
-        SvREFCNT_dec(HeVAL(he));
-        croak("Cannot add new key to hash");
-      }
-    }
-
-    if (!no_validation()) {
-      /* check if this parameter is defined in spec and if it is
-         then validate it using spec */
-      he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he));
-      if(he1) {
-        if (SvROK(HeVAL(he1)) && SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
-          SV* buffer;
-          HV* spec;
-          char* value;
-          IV untaint = 0;
-
-          spec = (HV*) SvRV(HeVAL(he1));
-          buffer = sv_2mortal(newSVpv("The '", 0));
-          sv_catsv(buffer, HeSVKEY_force(he));
-          sv_catpv(buffer, "' parameter (");
-          cat_string_representation(buffer, HeVAL(he));
-          sv_catpv(buffer, ")");
-
-          if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options, &untaint))
-            return 0;
-
-          /* The value stored here is meaningless, we're just tracking
-             keys to untaint later */
-          if (untaint){
-            av_push(untaint_keys, SvREFCNT_inc(HeSVKEY_force(he1)));
-          }
-        }
-      } else if (! allow_extra) {
-        av_push(unmentioned, SvREFCNT_inc(HeSVKEY_force(he)));
-      }
-    }
-
-    if (!no_validation() && av_len(unmentioned) > -1) {
-      SV* buffer;
-
-      buffer = sv_2mortal(newSVpv("The following parameter", 0));
-      if (av_len(unmentioned) != 0) {
-        sv_catpv(buffer, "s were ");
-      } else {
-        sv_catpv(buffer, " was ");
-      }
-      sv_catpv(buffer, "passed in the call to ");
-      sv_catsv(buffer, get_called(options));
-      sv_catpv(buffer, " but ");
-      if (av_len(unmentioned) != 0) {
-        sv_catpv(buffer, "were ");
-      } else {
-        sv_catpv(buffer, "was ");
-      }
-      sv_catpv(buffer, "not listed in the validation options: ");
-      for(i = 0; i <= av_len(unmentioned); i++) {
-        sv_catsv(buffer, *av_fetch(unmentioned, i, 1));
-        if (i < av_len(unmentioned)) {
-          sv_catpv(buffer, " ");
-        }
-      }
-      sv_catpv(buffer, "\n");
-
-      FAIL(buffer, options);
-    }
-  }
-
-  validate_named_depends(p, specs, options);
-
-  /* find missing parameters */
-  if (! no_validation())
-    missing = (AV*) sv_2mortal((SV*) newAV());
 
   hv_iterinit(specs);
   while (he = hv_iternext(specs)) {
@@ -1149,8 +1015,171 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
       av_push(missing, SvREFCNT_inc(HeSVKEY_force(he)));
     }
   }
+}
 
-  if (! no_validation() && av_len(missing) > -1) {
+static IV
+validate(HV* p, HV* specs, HV* options, HV* ret)
+{
+  AV* missing;
+  AV* unmentioned;
+  HE* he;
+  HE* he1;
+  IV ignore_case;
+  SV* strip_leading;
+  IV allow_extra;
+  SV** temp;
+  SV* normalize_func;
+  AV* untaint_keys = (AV*) sv_2mortal((SV*) newAV());
+  IV i;
+
+  if (temp = hv_fetch(options, "ignore_case", 11, 0)) {
+    SvGETMAGIC(*temp);
+    ignore_case = SvTRUE(*temp);
+  } else {
+    ignore_case = 0;
+  }
+  if (temp = hv_fetch(options, "strip_leading", 13, 0)) {
+    SvGETMAGIC(*temp);
+    if (SvOK(*temp)) strip_leading = *temp;
+  } else {
+    strip_leading = NULL;
+  }
+
+  if(temp = hv_fetch(options, "normalize_keys", 14, 0)) {
+    SvGETMAGIC(*temp);
+    if(SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVCV) {
+      normalize_func = *temp;
+    } else {
+      normalize_func = NULL;
+    }
+  } else {
+    normalize_func = NULL;
+  }
+
+  if (normalize_func || ignore_case || strip_leading) {
+    p = normalize_hash_keys(p, normalize_func, strip_leading, ignore_case);
+    specs = normalize_hash_keys(specs, normalize_func, strip_leading, ignore_case);
+  }
+
+  /* short-circuit everything else when no_validation is true */
+  if (no_validation()) {
+    if (GIMME_V != G_VOID) {
+      while (he = hv_iternext(p)) {
+      /* This may be related to bug #7387 on bugs.perl.org */
+#if (PERL_VERSION == 5)
+        if (! PL_tainting)
+#endif
+          SvGETMAGIC(HeVAL(he));
+  
+          
+        /* put the parameter into return hash */
+        if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
+                          HeHASH(he))) {
+          SvREFCNT_dec(HeVAL(he));
+          croak("Cannot add new key to hash");
+        }
+      }
+      apply_defaults(ret, p, specs, NULL);
+    }
+
+    return 1;
+  }
+
+  if (temp = hv_fetch(options, "allow_extra", 11, 0)) {
+    SvGETMAGIC(*temp);
+    allow_extra = SvTRUE(*temp);
+  } else {
+    allow_extra = 0;
+  }
+
+  /* find extra parameters and validate good parameters */
+  unmentioned = (AV*) sv_2mortal((SV*) newAV());
+
+  hv_iterinit(p);
+  while (he = hv_iternext(p)) {
+    /* This may be related to bug #7387 on bugs.perl.org */
+#if (PERL_VERSION == 5)
+    if (! PL_tainting)
+#endif
+      SvGETMAGIC(HeVAL(he));
+
+    /* put the parameter into return hash */
+    if (GIMME_V != G_VOID) {
+      if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
+                        HeHASH(he))) {
+        SvREFCNT_dec(HeVAL(he));
+        croak("Cannot add new key to hash");
+      }
+    }
+
+      /* check if this parameter is defined in spec and if it is
+         then validate it using spec */
+      he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he));
+      if(he1) {
+        if (SvROK(HeVAL(he1)) && SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
+          SV* buffer;
+          HV* spec;
+          char* value;
+          IV untaint = 0;
+
+          spec = (HV*) SvRV(HeVAL(he1));
+          buffer = sv_2mortal(newSVpv("The '", 0));
+          sv_catsv(buffer, HeSVKEY_force(he));
+          sv_catpv(buffer, "' parameter (");
+          cat_string_representation(buffer, HeVAL(he));
+          sv_catpv(buffer, ")");
+
+          if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options, &untaint))
+            return 0;
+
+          /* The value stored here is meaningless, we're just tracking
+             keys to untaint later */
+          if (untaint){
+            av_push(untaint_keys, SvREFCNT_inc(HeSVKEY_force(he1)));
+          }
+        }
+      } else if (! allow_extra) {
+        av_push(unmentioned, SvREFCNT_inc(HeSVKEY_force(he)));
+      }
+
+    if (av_len(unmentioned) > -1) {
+      SV* buffer;
+
+      buffer = sv_2mortal(newSVpv("The following parameter", 0));
+      if (av_len(unmentioned) != 0) {
+        sv_catpv(buffer, "s were ");
+      } else {
+        sv_catpv(buffer, " was ");
+      }
+      sv_catpv(buffer, "passed in the call to ");
+      sv_catsv(buffer, get_called(options));
+      sv_catpv(buffer, " but ");
+      if (av_len(unmentioned) != 0) {
+        sv_catpv(buffer, "were ");
+      } else {
+        sv_catpv(buffer, "was ");
+      }
+      sv_catpv(buffer, "not listed in the validation options: ");
+      for(i = 0; i <= av_len(unmentioned); i++) {
+        sv_catsv(buffer, *av_fetch(unmentioned, i, 1));
+        if (i < av_len(unmentioned)) {
+          sv_catpv(buffer, " ");
+        }
+      }
+      sv_catpv(buffer, "\n");
+
+      FAIL(buffer, options);
+    }
+  }
+
+  validate_named_depends(p, specs, options);
+
+  /* find missing parameters */
+  missing = (AV*) sv_2mortal((SV*) newAV());
+
+  apply_defaults(ret, p, specs, missing);
+
+  if (av_len(missing) > -1) {
     SV* buffer;
 
     buffer = sv_2mortal(newSVpv("Mandatory parameter", 0));
@@ -1260,6 +1289,34 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
   IV min = -1;
   AV* untaint_indexes = (AV*) sv_2mortal((SV*) newAV());
 
+  if (no_validation()) {
+    IV spec_count = av_len(specs);
+    IV p_count    = av_len(p);
+    IV max        = spec_count > p_count ? spec_count : p_count;
+
+    if (GIMME_V == G_VOID)
+      return 1;
+    
+    for (i = 0; i <= max; i++) {
+      if (i <= spec_count) {
+        spec = *av_fetch(specs, i, 1);
+        SvGETMAGIC(spec);
+        complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
+      }
+
+      if (i <= av_len(p)) {
+        value = *av_fetch(p, i, 1);
+        SvGETMAGIC(value);
+        av_push(ret, SvREFCNT_inc(value));
+      } else if (complex_spec &&
+                (temp = hv_fetch((HV*) SvRV(spec), "default", 7, 0))) {
+        SvGETMAGIC(*temp);
+        av_push(ret, SvREFCNT_inc(*temp));
+      }
+    }
+    return 1;
+  }
+
   /* iterate through all parameters and validate them */
   for (i = 0; i <= av_len(specs); i++) {
     spec = *av_fetch(specs, i, 1);
@@ -1277,7 +1334,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret)
       value = *av_fetch(p, i, 1);
       SvGETMAGIC(value);
 
-      if (! no_validation() && complex_spec) {
+      if (complex_spec) {
         IV untaint = 0;
 
         buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
