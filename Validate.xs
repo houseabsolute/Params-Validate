@@ -130,7 +130,7 @@ bootinit()
   newCONSTSUB(stash, "BOOLEAN", newSViv(BOOLEAN));
 }
 
-inline static bool
+static inline bool
 no_validation()
 {
   SV* no_v;
@@ -143,7 +143,7 @@ no_validation()
 }
     
 /* return type string that corresponds to typemask */
-inline static SV*
+static inline SV*
 typemask_to_string(IV mask)
 {
   SV* buffer;
@@ -196,7 +196,7 @@ typemask_to_string(IV mask)
 }
 
 /* compute numberic datatype for variable */
-inline static IV
+static inline IV
 get_type(SV* sv)
 {
   IV type = 0;
