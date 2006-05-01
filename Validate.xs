@@ -112,7 +112,6 @@
 static void
 bootinit()
 {
-  char* str;
   HV* stash;
 
   /* define constants */
