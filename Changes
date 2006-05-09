@@ -1,7 +1,7 @@
 0.82 May 9, 2006
 
-- Changed inline declarations from "inline static" to "static inline",
-which will hopefully make more compilers happy.
+- Disabled function inlining if _MSC_VER is defined. Patch from Audrey
+Tang.
 
 - Check isa by calling it as a method on the thing being checked.
 

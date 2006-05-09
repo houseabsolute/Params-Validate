@@ -10,6 +10,12 @@
 #define NEED_newCONSTSUB
 #include "ppport.h"
 
+#ifdef _MSC_VER
+#define INLINE 
+#else
+#define INLINE inline
+#endif
+
 /* not defined in 5.00503 _or_ ppport.h! */
 #ifndef CopSTASHPV
 #  ifdef USE_ITHREADS
@@ -130,7 +136,7 @@ bootinit()
   newCONSTSUB(stash, "BOOLEAN", newSViv(BOOLEAN));
 }
 
-static inline bool
+INLINE static bool
 no_validation()
 {
   SV* no_v;
@@ -143,7 +149,7 @@ no_validation()
 }
     
 /* return type string that corresponds to typemask */
-static inline SV*
+INLINE static SV*
 typemask_to_string(IV mask)
 {
   SV* buffer;
@@ -196,7 +202,7 @@ typemask_to_string(IV mask)
 }
 
 /* compute numberic datatype for variable */
-static inline IV
+INLINE static IV
 get_type(SV* sv)
 {
   IV type = 0;
@@ -241,7 +247,7 @@ get_type(SV* sv)
 }
 
 /* get an article for given string */
-inline
+INLINE
 #if (PERL_VERSION >= 6) /* Perl 5.6.0+ */
 static const char*
 #else
