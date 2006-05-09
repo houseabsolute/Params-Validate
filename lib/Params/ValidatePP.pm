@@ -478,7 +478,7 @@ sub _validate_one_param
     {
 	foreach ( ref $spec->{isa} ? @{ $spec->{isa} } : $spec->{isa} )
 	{
-	    unless ( UNIVERSAL::isa( $value, $_ ) )
+	    unless ( eval { $value->isa($_) } )
 	    {
 		my $is = ref $value ? ref $value : 'plain scalar';
 		my $article1 = $_ =~ /^[aeiou]/i ? 'an' : 'a';
@@ -497,7 +497,7 @@ sub _validate_one_param
     {
 	foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} )
 	{
-            unless ( defined $value && $value->can($_) )
+            unless ( eval { $value->can($_) } )
             {
                 my $called = _get_called(1);
 
