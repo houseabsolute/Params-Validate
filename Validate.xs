@@ -364,23 +364,63 @@ static IV
 validate_isa(SV* value, SV* package, SV* id, HV* options)
 {
   SV* buffer;
+  IV ok = 1;
 
-  /* quick test directly from Perl internals */
-  if (sv_derived_from(value, SvPV_nolen(package))) return 1;
+  if (SvOK(value)) {
+    dSP;
 
-  buffer = sv_2mortal(newSVsv(id));
-  sv_catpv(buffer, " to ");
-  sv_catsv(buffer, get_called(options));
-  sv_catpv(buffer, " was not ");
-  sv_catpv(buffer, article(package));
-  sv_catpv(buffer, " '");
-  sv_catsv(buffer, package);
-  sv_catpv(buffer, "' (it is ");
-  sv_catpv(buffer, article(value));
-  sv_catpv(buffer, " ");
-  sv_catsv(buffer, value);
-  sv_catpv(buffer, ")\n");
-  FAIL(buffer, options);
+    SV* ret;
+    IV count;
+
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK(SP);
+    EXTEND(SP, 2);
+    PUSHs(value);
+    PUSHs(package);
+    PUTBACK;
+
+    count = call_method("isa", G_SCALAR);
+
+    if (! count)
+      croak("Calling can did not return a value");
+
+    SPAGAIN;
+    
+    ret = POPs;
+    SvGETMAGIC(ret);
+
+    ok = SvTRUE(ret);
+
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
+  } else {
+    ok = 0;
+  }
+
+  if (! ok) {
+    buffer = sv_2mortal(newSVsv(id));
+    sv_catpv(buffer, " to ");
+    sv_catsv(buffer, get_called(options));
+    sv_catpv(buffer, " was not ");
+    sv_catpv(buffer, article(package));
+    sv_catpv(buffer, " '");
+    sv_catsv(buffer, package);
+    sv_catpv(buffer, "' (it is ");
+    if ( SvOK(value) ) {
+      sv_catpv(buffer, article(value));
+      sv_catpv(buffer, " ");
+      sv_catsv(buffer, value);
+    } else {
+      sv_catpv(buffer, "undef");
+    }
+    sv_catpv(buffer, ")\n");
+    FAIL(buffer, options);
+  }
+
+  return 1;
 }
 
 static IV
