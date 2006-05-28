@@ -1,4 +1,4 @@
-0.83
+0.83 May 28, 2006
 
 - Change how C compiler detection is done in the Makefile.PL so it
 does not rely on having make on the system. The new way should work on
