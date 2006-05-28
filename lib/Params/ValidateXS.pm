@@ -49,7 +49,7 @@ my $default_fail = sub { require Carp;
     }
 }
 
-sub _check_regex_from_xs { return 0 unless defined $_[0]; return $_[0] =~ /$_[1]/ ? 1 : 0 }
+sub _check_regex_from_xs { return ( defined $_[0] ? $_[0] : '' ) =~ /$_[1]/ ? 1 : 0 }
 
 BEGIN
 {

@@ -537,7 +537,7 @@ sub _validate_one_param
 
     if ( exists $spec->{regex} )
     {
-        unless ( defined $value && $value =~ /$spec->{regex}/ )
+        unless ( ( defined $value ? $value : '' ) =~ /$spec->{regex}/ )
         {
             my $called = _get_called(1);
 

@@ -16,7 +16,7 @@ BEGIN
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.82';
+    $VERSION = '0.83';
 
     my %tags =
         ( types =>
@@ -349,6 +349,10 @@ example:
 
 The value of the "regex" key may be either a string or a pre-compiled
 regex created via C<qr>.
+
+If the value being checked against a regex is undefined, the regex is
+explicitly checked against the empty string ('') instead, in order to
+avoid "Use of uninitialized value" warnings.
 
 The C<Regexp::Common> module on CPAN is an excellent source of regular
 expressions suitable for validating input.

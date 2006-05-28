@@ -1,3 +1,18 @@
+0.83
+
+- Change how C compiler detection is done in the Makefile.PL so it
+does not rely on having make on the system. The new way should work on
+(most?) Unix and Win32 systems. Suggested by David Golden. See RT
+18969 (for DateTime.pm, but equally applicable to this module). Will
+hopefully fix RT 17644.
+
+- Previously, if a parameter was undefined, regex checks for that
+parameter were simply skipped. However, it's quite possible for a
+regex to successfully match an undefined value (qr/^$/, for
+example). Now the code treats undef as an empty string ('') in regex
+checks. Reported by Duncan Salada.
+
+
 0.82 May 9, 2006
 
 - Disabled function inlining if _MSC_VER is defined. Patch from Audrey

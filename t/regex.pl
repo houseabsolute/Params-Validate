@@ -1,5 +1,5 @@
 use Test;
-BEGIN { plan test => 6 }
+BEGIN { plan test => 7 }
 my $r = '^bar$';
 
 eval
@@ -48,6 +48,13 @@ eval
     validate( @a, { foo => { regex => qr/^baz$/ },
                     bar => { regex => qr/^(?:not this|quux)$/ },
                   } );
+};
+ok( ! $@ );
+
+eval
+{
+    my @a = ( foo => undef );
+    validate( @a, { foo => { regex => qr/^$|^bubba$/ } } );
 };
 ok( ! $@ );
 
