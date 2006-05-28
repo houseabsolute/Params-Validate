@@ -12,7 +12,7 @@ my $force_xs;
 for (@ARGV)
 {
     /^--pm/ and $no_xs = 1;
-    /^--xs/ and $force_xs = 1;
+    /^--xs/ and $no_xs = 0;
 }
 
 if ($no_xs)
@@ -21,56 +21,39 @@ if ($no_xs)
     exit;
 }
 
-my @clean;
-unless ($force_xs)
+unless (defined $no_xs)
 {
-    print "Testing if you have a C compiler\n";
+    check_for_compiler()
+        or no_cc();
 
-    unless ( open F, ">test.c" )
+    if ( -d '.svn' )
     {
-        warn "Cannot write test.c, skipping test compilation and install pure Perl version.\n";
-        no_cc();
-    }
+        local *DIR;
+        opendir DIR, "t" or die "Cannot read t: $!";
 
-    print F <<'EOF';
-int main() { return 0; }
-EOF
+        foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
+        {
+            next if $file eq '99-pod.t';
 
-    close F or no_cc();
+            my $real_file = File::Spec->catfile( 't', $file );
 
-    system("$Config{make} test$Config{obj_ext}") and no_cc();
+            local *F;
+            open F, "<$real_file" or die "Cannot read $real_file: $!";
 
-}
+            my $shbang = <F>;
+            my $test = do { local $/; <F> };
 
-if ( -d '.svn' )
-{
-    local *DIR;
-    opendir DIR, "t" or die "Cannot read t: $!";
+            close F;
 
-    foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
-    {
-        next if $file eq '99-pod.t';
+            $test = "$shbang\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
 
-        my $real_file = File::Spec->catfile( 't', $file );
+            my $new_file = File::Spec->catfile( 't', "zz_$file" );
+            open F, ">$new_file" or die "Cannot write $new_file: $!";
 
-        local *F;
-        open F, "<$real_file" or die "Cannot read $real_file: $!";
+            print F $test;
 
-        my $shbang = <F>;
-        my $test = do { local $/; <F> };
-
-        close F;
-
-        $test = "$shbang\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
-
-        my $new_file = File::Spec->catfile( 't', "zz_$file" );
-        open F, ">$new_file" or die "Cannot write $new_file: $!";
-
-        print F $test;
-
-        close F;
-
-        push @clean, $new_file;
+            close F;
+        }
     }
 }
 
@@ -81,11 +64,13 @@ sub write_makefile
     my %prereq = ( 'Test::More' => 0 );
     $prereq{'Attribute::Handlers'} = 0 if $] >= 5.006;
 
+    my $zz = join ' ', glob File::Spec->catfile( 't', 'zz_*.t' );
+
     WriteMakefile( VERSION_FROM    => "lib/Params/Validate.pm",
                    NAME            => "Params::Validate",
                    PREREQ_PM       => \%prereq,
                    CONFIGURE       => \&init,
-                   clean           => { FILES => "test.c test.o @clean" },
+                   clean           => { FILES => "test.c test.o $zz" },
                    ( $] >= 5.005 ?
                      ( ABSTRACT_FROM => 'lib/Params/Validate.pm',
                        AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
@@ -122,4 +107,43 @@ EOF
 
     write_makefile();
     exit;
+}
+
+sub check_for_compiler
+{
+    print "Testing if you have a C compiler\n";
+
+    eval { require ExtUtils::CBuilder };
+    if ($@)
+    {
+        return _check_for_compiler_manually();
+    }
+    else
+    {
+        return _check_for_compiler_with_cbuilder();
+    }
+}
+
+sub _check_for_compiler_with_cbuilder
+{
+    my $cb = ExtUtils::CBuilder->new( quiet => 1 );
+
+    return $cb->have_compiler;
+}
+
+sub _check_for_compiler_manually
+{
+    unless ( open F, ">test.c" )
+    {
+        warn "Cannot write test.c, skipping test compilation and installing pure Perl version.\n";
+        return 0;
+    }
+
+    print F <<'EOF';
+int main() { return 0; }
+EOF
+
+    close F or return 0;
+
+    system( "$Config{cc} -o test$Config{obj_ext} test.c" ) and return 0;
 }
