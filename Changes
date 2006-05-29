@@ -1,8 +1,11 @@
-0.84
+0.84 May29, 2006
 
 - The XS version of the code used Carp::croak to report failures,
 while the Perl version used Carp::confess. The module has always been
 documented as using confess, so now the XS version uses this.
+
+- The new compiler detection code always returned false if you didn't
+have ExtUtils::CBuilder installed.
 
 
 0.83 May 28, 2006
