@@ -1,3 +1,10 @@
+0.84
+
+- The XS version of the code used Carp::croak to report failures,
+while the Perl version used Carp::confess. The module has always been
+documented as using confess, so now the XS version uses this.
+
+
 0.83 May 28, 2006
 
 - Change how C compiler detection is done in the Makefile.PL so it
@@ -7,10 +14,10 @@ does not rely on having make on the system. The new way should work on
 hopefully fix RT 17644.
 
 - Previously, if a parameter was undefined, regex checks for that
-parameter were simply skipped. However, it's quite possible for a
-regex to successfully match an undefined value (qr/^$/, for
-example). Now the code treats undef as an empty string ('') in regex
-checks. Reported by Duncan Salada.
+parameter always failed. However, it's quite possible for a regex to
+successfully match an undefined value (qr/^$/, for example). Now the
+code treats undef as an empty string ('') in regex checks. Reported by
+Duncan Salada.
 
 
 0.82 May 9, 2006
