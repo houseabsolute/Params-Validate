@@ -865,11 +865,10 @@ normalize_hash_keys(HV* p, SV* normalize_func, SV* strip_leading, IV ignore_case
 static IV
 validate_pos_depends(AV* p, AV* specs, HV* options)
 {
-  IV p_idx, d_idx;
+  IV p_idx;
   SV** depends;
   SV** p_spec;
   SV* buffer;
-  SV* temp;
 
   for (p_idx = 0; p_idx <= av_len(p); p_idx++) {
     p_spec = av_fetch(specs, p_idx, 0);
