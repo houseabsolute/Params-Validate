@@ -319,7 +319,7 @@ validation_failure(SV* message, HV* options)
     PUSHMARK(SP);
     XPUSHs(message);
     PUTBACK;
-    perl_call_pv("Carp::croak", G_DISCARD);
+    perl_call_pv("Carp::confess", G_DISCARD);
   }
 
   return;
