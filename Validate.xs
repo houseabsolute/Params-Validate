@@ -11,9 +11,11 @@
 #include "ppport.h"
 
 #ifdef _MSC_VER
-#define INLINE 
+#  define INLINE 
+#elif __hpux
+#  define INLINE 
 #else
-#define INLINE inline
+#  define INLINE inline
 #endif
 
 /* not defined in 5.00503 _or_ ppport.h! */

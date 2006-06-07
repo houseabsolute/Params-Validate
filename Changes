@@ -3,6 +3,8 @@
 - Compiles without warnings under gcc's -Wall. Warnings reported by
 Scott Godin.
 
+- Turned off inlining with HP-UX compiler. RT #19763.
+
 
 0.84 May29, 2006
 
