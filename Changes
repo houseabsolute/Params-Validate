@@ -1,4 +1,4 @@
-0.85
+0.85 June 7, 2006
 
 - Compiles without warnings under gcc's -Wall. Warnings reported by
 Scott Godin.
@@ -6,7 +6,7 @@ Scott Godin.
 - Turned off inlining with HP-UX compiler. RT #19763.
 
 
-0.84 May29, 2006
+0.84 May 29, 2006
 
 - The XS version of the code used Carp::croak to report failures,
 while the Perl version used Carp::confess. The module has always been
