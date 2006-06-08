@@ -7,6 +7,8 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+#define NEED_eval_pv
+#define NEED_sv_2pv_nolen
 #define NEED_newCONSTSUB
 #include "ppport.h"
 
@@ -313,7 +315,7 @@ validation_failure(SV* message, HV* options)
     PUSHMARK(SP);
     XPUSHs(message);
     PUTBACK;
-    perl_call_sv(on_fail, G_DISCARD);
+    call_sv(on_fail, G_DISCARD);
   }
 
   /* by default resort to Carp::confess for error reporting */
@@ -323,7 +325,7 @@ validation_failure(SV* message, HV* options)
     PUSHMARK(SP);
     XPUSHs(message);
     PUTBACK;
-    perl_call_pv("Carp::confess", G_DISCARD);
+    call_pv("Carp::confess", G_DISCARD);
   }
 
   return;
@@ -360,7 +362,7 @@ get_called(HV* options)
     buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
     SvTAINTED_off(buffer);
 
-    caller = perl_eval_pv(SvPV_nolen(buffer), 1);
+    caller = eval_pv(SvPV_nolen(buffer), 1);
     if (SvTYPE(caller) == SVt_NULL) {
       sv_setpv(caller, "N/A");
     }
@@ -587,7 +589,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
           PUSHs(sv_2mortal(newRV_inc(params)));
           PUTBACK;
 
-          count = perl_call_sv(SvRV(HeVAL(he)), G_SCALAR);
+          count = call_sv(SvRV(HeVAL(he)), G_SCALAR);
 
           SPAGAIN;
 
@@ -667,7 +669,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
     PUSHs(value);
     PUSHs(*temp);
     PUTBACK;
-    perl_call_pv("Params::Validate::_check_regex_from_xs", G_SCALAR);
+    call_pv("Params::Validate::_check_regex_from_xs", G_SCALAR);
     SPAGAIN;
     ok = POPi;
     PUTBACK;
@@ -762,7 +764,7 @@ get_options(HV* options)
   }
 #endif
   /* get package specific options */
-  OPTIONS = perl_get_hv("Params::Validate::OPTIONS", 1);
+  OPTIONS = get_hv("Params::Validate::OPTIONS", 1);
   if ((temp = hv_fetch(OPTIONS, pkg, strlen(pkg), 0))) {
     SvGETMAGIC(*temp);
     if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV) {
@@ -800,7 +802,7 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
     PUSHMARK(SP);
     XPUSHs(copy);
     PUTBACK;
-    if (! perl_call_sv(SvRV(normalize_func), G_SCALAR)) {
+    if (! call_sv(SvRV(normalize_func), G_SCALAR)) {
       croak("The normalize_keys callback did not return anything");
     }
     SPAGAIN;
