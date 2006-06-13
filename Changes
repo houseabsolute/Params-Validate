@@ -14,7 +14,7 @@ documented as using confess, so now the XS version uses this.
 
 - The new compiler detection code always returned false if you didn't
 have ExtUtils::CBuilder installed.
-vv
+
 
 0.83 May 28, 2006
 
