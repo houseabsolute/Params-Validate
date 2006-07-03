@@ -1,3 +1,11 @@
+0.86
+
+- Turned off inlining with osf1 compiler. Patch from Peter Marquardt.
+
+- Removed spaces in #define, #ifdef, etc. Suggested by Peter
+Marquardt.
+
+
 0.85 June 7, 2006
 
 - Compiles without warnings under gcc's -Wall. Warnings reported by

@@ -13,25 +13,27 @@
 #include "ppport.h"
 
 #ifdef _MSC_VER
-#  define INLINE 
+#define INLINE 
 #elif __hpux
-#  define INLINE 
+#define INLINE 
+#elif defined(__alpha)
+#define INLINE 
 #else
-#  define INLINE inline
+#define INLINE inline
 #endif
 
 /* not defined in 5.00503 _or_ ppport.h! */
 #ifndef CopSTASHPV
-#  ifdef USE_ITHREADS
-#    define CopSTASHPV(c)         ((c)->cop_stashpv)
-#  else
-#    define CopSTASH(c)           ((c)->cop_stash)
-#    define CopSTASHPV(c)         (CopSTASH(c) ? HvNAME(CopSTASH(c)) : Nullch)
-#  endif /* USE_ITHREADS */
+#ifdef USE_ITHREADS
+#define CopSTASHPV(c)         ((c)->cop_stashpv)
+#else  /* USE_ITHREADS */
+#define CopSTASH(c)           ((c)->cop_stash)
+#define CopSTASHPV(c)         (CopSTASH(c) ? HvNAME(CopSTASH(c)) : Nullch)
+#endif /* USE_ITHREADS */
 #endif /* CopSTASHPV */
 
 #ifndef PERL_MAGIC_qr
-#  define PERL_MAGIC_qr          'r'
+#define PERL_MAGIC_qr          'r'
 #endif /* PERL_MAGIC_qr */
 
 /* type constants */
@@ -98,7 +100,7 @@
    check the globals afterwards. */
 
 #if (PERL_VERSION == 6) /* 5.6.0 or 5.6.1 */
-#  define FAIL(message, options)    \
+#define FAIL(message, options)    \
             {                       \
               SV* perl_error;       \
               SV* perl_on_fail;     \
@@ -115,7 +117,7 @@
               return 0;             \
             }
 #else /* any other version*/
-#  define FAIL(message, options)                \
+#define FAIL(message, options)                \
         validation_failure(message, options);
 #endif /* PERL_VERSION */
 
