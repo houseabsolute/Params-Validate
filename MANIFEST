@@ -34,6 +34,7 @@ t/23-readonly.t
 t/24-tied.t
 t/25-undef-regex.t
 t/26-isa.t
+t/27-string-as-type.t
 t/callbacks.pl
 t/defaults.pl
 t/regex.pl
