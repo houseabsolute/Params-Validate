@@ -1,10 +1,17 @@
-0.86
+0.86 August 9, 2006
+
+* I cannot get this module to compile with Perl 5.00504 any more. I
+  get errors from including CORE/perl.h, so the problem may be outside
+  my control, but help is welcome.
 
 - Only turn inlining on if __GNUC__ is defined, since it seems that so
-  many other compilers don't support this.
+  many other compilers don't support this. RT #20881.
 
 - Removed spaces in #define, #ifdef, etc. Suggested by Peter
   Marquardt.
+
+- If a type is specified as a sting ('SCALAR', not SCALAR), this is
+  now caught and a useful error is thrown. RT #9660.
 
 
 0.85 June 7, 2006
