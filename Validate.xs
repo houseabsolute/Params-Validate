@@ -12,29 +12,11 @@
 #define NEED_newCONSTSUB
 #include "ppport.h"
 
-#ifdef _MSC_VER
-#define INLINE 
-#elif __hpux
-#define INLINE 
-#elif defined(__alpha)
-#define INLINE 
-#else
+#ifdef __GNUC__
 #define INLINE inline
+#else
+#define INLINE 
 #endif
-
-/* not defined in 5.00503 _or_ ppport.h! */
-#ifndef CopSTASHPV
-#ifdef USE_ITHREADS
-#define CopSTASHPV(c)         ((c)->cop_stashpv)
-#else  /* USE_ITHREADS */
-#define CopSTASH(c)           ((c)->cop_stash)
-#define CopSTASHPV(c)         (CopSTASH(c) ? HvNAME(CopSTASH(c)) : Nullch)
-#endif /* USE_ITHREADS */
-#endif /* CopSTASHPV */
-
-#ifndef PERL_MAGIC_qr
-#define PERL_MAGIC_qr          'r'
-#endif /* PERL_MAGIC_qr */
 
 /* type constants */
 #define SCALAR    1
@@ -398,7 +380,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options)
     count = call_method("isa", G_SCALAR);
 
     if (! count)
-      croak("Calling can did not return a value");
+      croak("Calling isa did not return a value");
 
     SPAGAIN;
     
@@ -501,6 +483,24 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
   /* check type */
   if ((temp = hv_fetch(spec, "type", 4, 0))) {
     IV type;
+
+    if ( ! ( looks_like_number(*temp)
+             && SvIV(*temp) > 0 ) ) {
+      SV* buffer;
+
+      buffer = sv_2mortal(newSVsv(id));
+      sv_catpv( buffer, " has a type specification which is not a number. It is ");
+      if ( SvOK(*temp) ) {
+        sv_catpv( buffer, "a string - " );
+        sv_catsv( buffer, *temp );
+      }
+      else {
+        sv_catpv( buffer, "undef");
+      }
+      sv_catpv( buffer, ".\n Use the constants exported by Params::Validate to declare types." );
+
+      FAIL(buffer, options);
+    }
 
     SvGETMAGIC(*temp);
     type = get_type(value);

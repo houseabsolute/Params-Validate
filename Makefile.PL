@@ -61,7 +61,10 @@ write_makefile();
 
 sub write_makefile
 {
-    my %prereq = ( 'Test::More' => 0 );
+    my %prereq =
+        ( 'Test::More' => 0,
+          'Scalar::Util' => 0,
+        );
     $prereq{'Attribute::Handlers'} = 0 if $] >= 5.006;
 
     my $zz = join ' ', glob File::Spec->catfile( 't', 'zz_*.t' );

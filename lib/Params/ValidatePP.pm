@@ -8,6 +8,9 @@ package Params::Validate;
 
 use strict;
 
+use Scalar::Util ();
+
+
 BEGIN
 {
     sub SCALAR    () { 1 }
@@ -454,6 +457,25 @@ sub _validate_one_param
 
     if ( exists $spec->{type} )
     {
+        unless ( defined $spec->{type}
+                 && Scalar::Util::looks_like_number( $spec->{type} )
+                 && $spec->{type} > 0 )
+        {
+            my $msg = "$id has a type specification which is not a number. It is ";
+            if ( defined $spec->{type} )
+            {
+                $msg .= "a string - $spec->{type}";
+            }
+            else
+            {
+                $msg .= "undef";
+            }
+
+            $msg .= ".\n Use the constants exported by Params::Validate to declare types.";
+
+            $options->{on_fail}->($msg);
+        }
+
 	unless ( _get_type($value) & $spec->{type} )
 	{
             my $type = _get_type($value);
