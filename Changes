@@ -10,7 +10,7 @@
 - Removed spaces in #define, #ifdef, etc. Suggested by Peter
   Marquardt.
 
-- If a type is specified as a sting ('SCALAR', not SCALAR), this is
+- If a type is specified as a string ('SCALAR', not SCALAR), this is
   now caught and a useful error is thrown. RT #9660.
 
 
