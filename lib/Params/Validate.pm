@@ -702,19 +702,13 @@ figures out how to do this, please let me know.
 
 =head1 SUPPORT
 
-For now, support questions should be sent to Dave at autarch@urth.org.
+Please submit bugs and patches to the CPAN RT system at
+http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Params%3A%3AValidate or
+via email at bug-params-validate@rt.cpan.org.
+
+Support questions can be sent to Dave at autarch@urth.org.
 
 The code repository is at https://svn.urth.org/svn/Params-Validate/
-
-=head1 SEE ALSO
-
-Getargs::Long - similar capabilities with a different interface.  If
-you like what Params::Validate does but not its 'feel' try this one
-instead.
-
-Carp::Assert and Class::Contract - other modules in the general spirit
-of validating that certain things are true before/while/after
-executing actual program code.
 
 =head1 AUTHORS
 
@@ -722,8 +716,8 @@ Dave Rolsky, <autarch@urth.org> and Ilya Martynov <ilya@martynov.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004 David Rolsky.  All rights reserved.  This program
-is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself.
+Copyright (c) 2004-2006 David Rolsky.  All rights reserved.  This
+program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =cut
