@@ -753,16 +753,25 @@ get_options(HV* options)
   HV* ret;
   SV** temp;
   char* pkg;
+#if (PERL_VERSION != 6)
+  SV* buffer;
+  SV* caller;
+#endif
 
   ret = (HV*) sv_2mortal((SV*) newHV());
 
 #if (PERL_VERSION == 6)
   pkg = SvPV_nolen(get_sv("Params::Validate::CALLER", 0));
 #else
-  /* gets caller's package name */
-  pkg = CopSTASHPV(PL_curcop);
-  if (pkg == Nullch) {
+  buffer = sv_2mortal(newSVpv("(caller(0))[0]", 0)); 
+  SvTAINTED_off(buffer);
+
+  caller = eval_pv(SvPV_nolen(buffer), 1);
+  if (SvTYPE(caller) == SVt_NULL) {
     pkg = "main";
+  }
+  else {
+    pkg = SvPV_nolen(caller);
   }
 #endif
   /* get package specific options */

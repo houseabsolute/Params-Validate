@@ -1,3 +1,13 @@
+0.87
+
+- When determining the caller of a function in the XS version, use
+  Perl's caller() function rather than CopSTASHPV. The caller()
+  function apparently ignores the DB package, whereas the latter
+  doesn't. This caused validate_options to be ignored when running
+  under profiling (and probably the debugger as well). Thanks to Jeff
+  Weisberg for pointing this out.
+
+
 0.86 August 9, 2006
 
 * I cannot get this module to compile with Perl 5.00504 any more. I
