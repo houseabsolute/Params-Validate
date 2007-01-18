@@ -1,4 +1,4 @@
-0.87
+0.87 January 18, 2007
 
 - When determining the caller of a function in the XS version, use
   Perl's caller() function rather than CopSTASHPV. The caller()
