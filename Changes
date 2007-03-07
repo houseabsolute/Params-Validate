@@ -1,3 +1,10 @@
+0.88 March 7, 2007
+
+- The XS version threw an error when it attempted to do "isa" or "can"
+  validation on a value that was not a string or object, such as undef
+  or a number. Reported by Steffen Winkler. RT #25229.
+
+
 0.87 January 18, 2007
 
 - When determining the caller of a function in the XS version, use

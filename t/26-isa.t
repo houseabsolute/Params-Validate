@@ -3,7 +3,7 @@
 use strict;
 
 use Params::Validate qw(validate);
-use Test::More tests => 9;
+use Test::More tests => 13;
 
 {
     my @p = ( foo => 'ClassISA' );
@@ -99,6 +99,44 @@ use Test::More tests => 9;
     };
 
     like( $@, qr/was not a 'Thingy'/ );
+}
+
+{
+    my @p = ( foo => {} );
+    eval
+    {
+        validate( @p,
+                  { foo => { isa => 'Thingy' } },
+                );
+    };
+    like( $@, qr/was not a 'Thingy'/, 'unblessed ref ->isa' );
+
+    @p = ( foo => 27 );
+    eval
+    {
+        validate( @p,
+                  { foo => { isa => 'Thingy' } },
+                );
+    };
+    like( $@, qr/was not a 'Thingy'/, 'number isa' );
+
+    @p = ( foo => 'A String' );
+    eval
+    {
+        validate( @p,
+                  { foo => { isa => 'Thingy' } },
+                );
+    };
+    like( $@, qr/was not a 'Thingy'/, 'string isa' );
+
+    @p = ( foo => undef );
+    eval
+    {
+        validate( @p,
+                  { foo => { isa => 'Thingy' } },
+                );
+    };
+    like( $@, qr/was not a 'Thingy'/, 'undef isa' );
 }
 
 

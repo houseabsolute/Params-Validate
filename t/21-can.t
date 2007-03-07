@@ -3,7 +3,7 @@
 use strict;
 
 use Params::Validate qw(validate);
-use Test::More tests => 9;
+use Test::More tests => 13;
 
 {
     my @p = ( foo => 'ClassCan' );
@@ -105,6 +105,44 @@ use Test::More tests => 9;
     };
 
     like( $@, qr/does not have the method: 'thingy'/ );
+}
+
+{
+    my @p = ( foo => {} );
+    eval
+    {
+        validate( @p,
+                  { foo => { can => 'thingy' } },
+                );
+    };
+    like( $@, qr/does not have the method: 'thingy'/, 'unblessed ref ->can' );
+
+    @p = ( foo => 27 );
+    eval
+    {
+        validate( @p,
+                  { foo => { can => 'thingy' } },
+                );
+    };
+    like( $@, qr/does not have the method: 'thingy'/, 'number can' );
+
+    @p = ( foo => 'A String' );
+    eval
+    {
+        validate( @p,
+                  { foo => { can => 'thingy' } },
+                );
+    };
+    like( $@, qr/does not have the method: 'thingy'/, 'string can' );
+
+    @p = ( foo => undef );
+    eval
+    {
+        validate( @p,
+                  { foo => { can => 'thingy' } },
+                );
+    };
+    like( $@, qr/does not have the method: 'thingy'/, 'undef can' );
 }
 
 

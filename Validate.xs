@@ -209,7 +209,9 @@ get_type(SV* sv)
     case SVt_PVMG:
     case SVt_PVIV:
     case SVt_PVNV:
+#if PERL_VERSION <= 8
     case SVt_PVBM:
+#endif
       type = SCALARREF;
       break;
     case SVt_PVAV:
@@ -355,14 +357,15 @@ get_called(HV* options)
   }
 }
 
-/* UNIVERSAL::isa alike validation */
+/* $value->isa alike validation */
 static IV
 validate_isa(SV* value, SV* package, SV* id, HV* options)
 {
   SV* buffer;
   IV ok = 1;
 
-  if (SvOK(value)) {
+  SvGETMAGIC(value);
+  if (SvOK(value) && (sv_isobject(value) || (SvPOK(value) && ! looks_like_number(value)))) {
     dSP;
 
     SV* ret;
@@ -424,7 +427,8 @@ validate_can(SV* value, SV* method, SV* id, HV* options)
 {
   IV ok = 1;
 
-  if (SvOK(value)) {
+  SvGETMAGIC(value);
+  if (SvOK(value) && (sv_isobject(value) || (SvPOK(value) && ! looks_like_number(value)))) {
     dSP;
 
     SV* ret;
