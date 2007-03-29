@@ -33,7 +33,7 @@ unless (defined $no_xs)
 
         foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
         {
-            next if $file eq '99-pod.t';
+            next if $file =~ /^99/;
 
             my $real_file = File::Spec->catfile( 't', $file );
 
