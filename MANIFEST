@@ -6,7 +6,6 @@ lib/Params/ValidateXS.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
-META.yml			Module meta-data in YAML
 ppport.h
 README
 t/01-validate.t
