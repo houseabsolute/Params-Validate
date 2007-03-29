@@ -71,17 +71,15 @@ sub write_makefile
 
     my $ccflags = -d '.svn' ? '-Wall' : '';
 
-    WriteMakefile( VERSION_FROM    => "lib/Params/Validate.pm",
-                   NAME            => "Params::Validate",
-                   PREREQ_PM       => \%prereq,
-                   CONFIGURE       => \&init,
-                   CCFLAGS         => $ccflags,
-                   clean           => { FILES => "test.c test.o $zz" },
-                   ( $] >= 5.005 ?
-                     ( ABSTRACT_FROM => 'lib/Params/Validate.pm',
-                       AUTHOR        => 'Dave Rolsky, <autarch@urth.org>') :
-                     ()
-                   ),
+    WriteMakefile( VERSION_FROM  => "lib/Params/Validate.pm",
+                   NAME          => "Params::Validate",
+                   PREREQ_PM     => \%prereq,
+                   CONFIGURE     => \&init,
+                   CCFLAGS       => $ccflags,
+                   clean         => { FILES => "test.c test.o $zz" },
+                   ABSTRACT_FROM => 'lib/Params/Validate.pm',
+                   AUTHOR        => 'Dave Rolsky, <autarch@urth.org>',
+                   LICENSE       => 'perl',
                  );
 }
 
