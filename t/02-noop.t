@@ -7,5 +7,6 @@ use lib File::Spec->catdir( 't', 'lib' );
 
 BEGIN { $ENV{PERL_NO_VALIDATION} = 1 }
 
-use PVTests;
-PVTests::run_tests();
+use PVTests::Standard;
+PVTests::Standard::run_tests();
+

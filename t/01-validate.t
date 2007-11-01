@@ -5,5 +5,5 @@ use strict;
 use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
 
-use PVTests;
-PVTests::run_tests();
+use PVTests::Standard;
+PVTests::Standard::run_tests();

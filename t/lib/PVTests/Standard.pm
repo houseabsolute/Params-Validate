@@ -1,4 +1,4 @@
-package PVTests;
+package PVTests::Standard;
 
 use strict;
 use warnings;
@@ -85,7 +85,7 @@ my @Tests =
                     brax => { qw( a b c d ) },
                   ],
         expect =>
-        qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to PVTests::sub3 was an 'arrayref'.* types: scalar|,
+        qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to [\w:]+sub3 was an 'arrayref'.* types: scalar|,
       },
 
       { sub    => 'sub3',
@@ -96,7 +96,7 @@ my @Tests =
                     brax => [ qw( a b c d ) ],
                   ],
         expect =>
-        qr|^The 'brax' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to PVTests::sub3 was an 'arrayref'.* types: scalar hash|,
+        qr|^The 'brax' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to [\w:]+sub3 was an 'arrayref'.* types: scalar hash|,
       },
 
       { sub    => 'sub3',
@@ -107,7 +107,7 @@ my @Tests =
                     brax => 'a',
                   ],
         expect =>
-        qr|^The 'bar' parameter \("HASH\(0x[a-f0-9]+\)"\) to PVTests::sub3 was a 'hashref'.* types: arrayref|,
+        qr|^The 'bar' parameter \("HASH\(0x[a-f0-9]+\)"\) to [\w:]+sub3 was a 'hashref'.* types: arrayref|,
       },
 
       # more unusual types
@@ -127,7 +127,7 @@ my @Tests =
                     quux => sub { 'a coderef' },
                   ],
         expect =>
-        qr|^The 'bar' parameter \("GLOB\(0x[a-f0-9]+\)"\) to PVTests::sub4 was a 'globref'.* types: glob|,
+        qr|^The 'bar' parameter \("GLOB\(0x[a-f0-9]+\)"\) to [\w:]+sub4 was a 'globref'.* types: glob|,
       },
 
       { sub    => 'sub4',
@@ -137,7 +137,7 @@ my @Tests =
                     quux => sub { 'a coderef' },
                   ],
         expect =>
-        qr|^The 'baz' parameter \((?:"\*PVTests::FH"\|GLOB)\) to PVTests::sub4 was a 'glob'.* types: globref|,
+        qr|^The 'baz' parameter \((?:"\*[\w:]+FH"\|GLOB)\) to [\w:]+sub4 was a 'glob'.* types: globref|,
       },
 
       { sub    => 'sub4',
@@ -147,7 +147,7 @@ my @Tests =
                     quux => sub { 'a coderef' },
                   ],
         expect =>
-        qr|^The 'foo' parameter \("foo"\) to PVTests::sub4 was a 'scalar'.* types: scalarref|,
+        qr|^The 'foo' parameter \("foo"\) to [\w:]+sub4 was a 'scalar'.* types: scalarref|,
       },
 
       { sub     => 'sub4',
@@ -157,7 +157,7 @@ my @Tests =
                      quux => \*CODEREF,
                    ],
         expect =>
-        qr|^The 'quux' parameter \("GLOB\(0x[a-f0-9]+\)"\) to PVTests::sub4 was a 'globref'.* types: coderef|,
+        qr|^The 'quux' parameter \("GLOB\(0x[a-f0-9]+\)"\) to [\w:]+sub4 was a 'globref'.* types: coderef|,
       },
 
       # test HANDLE type
@@ -173,7 +173,7 @@ my @Tests =
 
       { sub    => 'sub4a',
         p      => [ foo => ['not a handle'] ],
-        expect => qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to PVTests::sub4a was an 'arrayref'.* types: glob globref|,
+        expect => qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to [\w:]+sub4a was an 'arrayref'.* types: glob globref|,
       },
 
       # test BOOLEAN type
@@ -204,7 +204,7 @@ my @Tests =
       { sub    => 'sub6',
         p      => [ foo => $Foo ],
         expect =>
-        qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub6 was not a 'Bar'|,
+        qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub6 was not a 'Bar'|,
       },
       { sub    => 'sub6',
         p      => [ foo => $Bar ],
@@ -217,11 +217,11 @@ my @Tests =
 
       { sub    => 'sub7',
         p      => [ foo => $Foo ],
-        expect => qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub7 was not a 'Baz'|,
+        expect => qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub7 was not a 'Baz'|,
       },
       { sub    => 'sub7',
         p      => [ foo => $Bar ],
-        expect => qr|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub7 was not a 'Baz'|,
+        expect => qr|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub7 was not a 'Baz'|,
       },
       { sub    => 'sub7',
         p      => [ foo => $Baz ],
@@ -230,7 +230,7 @@ my @Tests =
 
       { sub    => 'sub8',
         p      => [ foo => $Foo ],
-        expect => qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub8 was not a 'Yadda'|,
+        expect => qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub8 was not a 'Yadda'|,
       },
 
       { sub    => 'sub8',
@@ -251,7 +251,7 @@ my @Tests =
       { sub    => 'sub9a',
         p      => [ foo => $Foo ],
         expect =>
-        qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub9a does not have the method: 'barify'|,
+        qr|^The 'foo' parameter \("Foo=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub9a does not have the method: 'barify'|,
       },
       { sub    => 'sub9a',
         p      => [ foo => $Bar ],
@@ -261,18 +261,18 @@ my @Tests =
       { sub    => 'sub9b',
         p      => [ foo => $Baz ],
         expect =>
-        qr|^The 'foo' parameter \("Baz=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub9b does not have the method: 'yaddaify'|,
+        qr|^The 'foo' parameter \("Baz=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub9b does not have the method: 'yaddaify'|,
       },
       { sub    => 'sub9b',
         p      => [ foo => $Quux ],
         expect =>
-        qr|^The 'foo' parameter \("Quux=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub9b does not have the method: 'barify'|,
+        qr|^The 'foo' parameter \("Quux=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub9b does not have the method: 'barify'|,
       },
 
       { sub    => 'sub9c',
         p      => [ foo => $Bar ],
         expect =>
-        qr|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to PVTests::sub9c does not have the method: 'yaddaify'|,
+        qr|^The 'foo' parameter \("Bar=SCALAR\(0x[a-f0-9]+\)"\) to [\w:]+sub9c does not have the method: 'yaddaify'|,
       },
 
       { sub    => 'sub9c',
@@ -294,7 +294,7 @@ my @Tests =
       { sub    => 'sub10',
         p      => [ foo => 20 ],
         expect =>
-        qr|^The 'foo' parameter \("20"\) to PVTests::sub10 did not pass the 'less than 20' callback|,
+        qr|^The 'foo' parameter \("20"\) to [\w:]+sub10 did not pass the 'less than 20' callback|,
       },
 
       { sub    => 'sub11',
@@ -304,26 +304,26 @@ my @Tests =
       { sub    => 'sub11',
         p      => [ foo => 20 ],
         expect =>
-        qr|^The 'foo' parameter \("20"\) to PVTests::sub11 did not pass the 'less than 20' callback|,
+        qr|^The 'foo' parameter \("20"\) to [\w:]+sub11 did not pass the 'less than 20' callback|,
       },
 
       { sub    => 'sub11',
         p      => [ foo => 0 ],
         expect =>
-        qr|^The 'foo' parameter \("0"\) to PVTests::sub11 did not pass the 'more than 0' callback|,
+        qr|^The 'foo' parameter \("0"\) to [\w:]+sub11 did not pass the 'more than 0' callback|,
       },
 
       # mix n' match
       { sub    => 'sub12',
         p      => [ foo => 1 ],
         expect =>
-        qr|^The 'foo' parameter \("1"\) to PVTests::sub12 was a 'scalar'.* types: arrayref|,
+        qr|^The 'foo' parameter \("1"\) to [\w:]+sub12 was a 'scalar'.* types: arrayref|,
       },
 
       { sub    => 'sub12',
         p      => [ foo => [ 1, 2, 3 ] ],
         expect =>
-        qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to PVTests::sub12 did not pass the '5 elements' callback|,
+        qr|^The 'foo' parameter \("ARRAY\(0x[a-f0-9]+\)"\) to [\w:]+sub12 did not pass the '5 elements' callback|,
       },
 
       { sub    => 'sub12',
