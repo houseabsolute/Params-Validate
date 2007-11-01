@@ -16,7 +16,7 @@ like( $@, /parameter 'foo'/ );
     local $Params::Validate::NO_VALIDATION = 1;
 
     eval { foo() };
-    is( $@, {} );
+    is( $@, q{} );
 }
 
 unless ( $] == 5.006 )

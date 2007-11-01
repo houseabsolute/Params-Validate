@@ -16,7 +16,7 @@ sub run_tests
     {
         my %def = eval { foo() };
 
-        is( $@, {},
+        is( $@, q{},
             'No error calling foo()' );
 
         is( $def{a}, 1,
@@ -35,7 +35,7 @@ sub run_tests
     {
         my $def = eval { foo() };
 
-        is( $@, {},
+        is( $@, q{},
             'No error calling foo()' );
 
         is( $def->{a}, 1,
@@ -54,7 +54,7 @@ sub run_tests
     {
         my @def = eval { bar() };
 
-        is( $@, {},
+        is( $@, q{},
             'No error calling bar()' );
 
         is( $def[0], 1,
@@ -73,7 +73,7 @@ sub run_tests
     {
         my $def = eval { bar() };
 
-        is( $@, {},
+        is( $@, q{},
             'No error calling bar()' );
 
         is( $def->[0], 1,

@@ -20,7 +20,7 @@ my $Quux = bless \$v4, 'Quux';
 my @Tests =
     ( { sub    => 'sub1',
         p      => [ foo => 'a', bar => 'b' ],
-        expect => {},
+        expect => q{},
       },
 
       {
@@ -41,22 +41,22 @@ my @Tests =
 
       { sub    => 'sub2',
         p      => [ foo => 'a', bar => 'b', baz => 'c' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub2',
         p      => [ foo => 'a', bar => 'b' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub2a',
         p      => [ foo => 'a', bar => 'b' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub2a',
         p      => [ foo => 'a' ],
-        expect => {},
+        expect => q{},
       },
 
       # simple types
@@ -67,7 +67,7 @@ my @Tests =
                     quux => 'yadda',
                     brax => { qw( a b c d ) },
                   ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub3',
@@ -110,7 +110,7 @@ my @Tests =
                     baz => \*BAZZY,
                     quux => sub { 'a coderef' },
                   ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub4',
@@ -156,12 +156,12 @@ my @Tests =
       # test HANDLE type
       { sub    => 'sub4a',
         p      => [ foo => \*HANDLE ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub4a',
         p      => [ foo => *HANDLE ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub4a',
@@ -172,26 +172,26 @@ my @Tests =
       # test BOOLEAN type
       { sub    => 'sub4b',
         p      => [ foo => undef ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub4b',
         p      => [ foo => 124125 ],
-        expect => {},
+        expect => q{},
       },
 
       # isa
       { sub    => 'sub5',
         p      => [ foo => $Foo ],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub5',
         p      => [ foo => $Bar ],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub5',
         p      => [ foo => $Baz ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub6',
@@ -201,11 +201,11 @@ my @Tests =
       },
       { sub    => 'sub6',
         p      => [ foo => $Bar ],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub7',
         p      => [ foo => $Baz ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub7',
@@ -218,7 +218,7 @@ my @Tests =
       },
       { sub    => 'sub7',
         p      => [ foo => $Baz ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub8',
@@ -228,17 +228,17 @@ my @Tests =
 
       { sub    => 'sub8',
         p      => [ foo => $Quux ],
-        expect => {},
+        expect => q{},
       },
 
       # can
       { sub    => 'sub9',
         p      => [ foo => $Foo ],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub9',
         p      => [ foo => $Quux ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub9a',
@@ -248,7 +248,7 @@ my @Tests =
       },
       { sub    => 'sub9a',
         p      => [ foo => $Bar ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub9b',
@@ -270,18 +270,18 @@ my @Tests =
 
       { sub    => 'sub9c',
         p      => [ foo => $Quux ],
-        expect => {},
+        expect => q{},
       },
 
       # callbacks
       { sub    => 'sub10',
         p      => [ foo => 1 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub10',
         p      => [ foo => 19 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub10',
@@ -292,7 +292,7 @@ my @Tests =
 
       { sub    => 'sub11',
         p      => [ foo => 1 ],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub11',
         p      => [ foo => 20 ],
@@ -321,7 +321,7 @@ my @Tests =
 
       { sub    => 'sub12',
         p      => [ foo => [ 1, 2, 3, 4, 5 ] ],
-        expect => {},
+        expect => q{},
       },
 
       # positional - 1
@@ -344,7 +344,7 @@ my @Tests =
 
       { sub    => 'sub14',
         p      => [ 'a', [ 1, 2, 3 ], $Bar ],
-        expect => {},
+        expect => q{},
       },
 
       # hashref named params
@@ -367,12 +367,12 @@ my @Tests =
 
       { sub    => 'sub16',
         p      => [ 1, 2 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub16',
         p      => [ 1 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub16',
@@ -388,12 +388,12 @@ my @Tests =
 
       { sub    => 'sub17',
         p      => [ 1, 2 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub17',
         p      => [ 1 ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub17',
@@ -426,7 +426,7 @@ my @Tests =
       { sub     => 'Foo::sub18',
         p       => [ FOO => 1 ],
         options => { ignore_case => 1 },
-        expect  => {},
+        expect  => q{},
       },
 
       { sub    => 'sub18',
@@ -438,7 +438,7 @@ my @Tests =
       { sub     => 'Foo::sub18',
         p       => [ -foo => 1 ],
         options => { strip_leading => '-' },
-        expect  => {},
+        expect  => q{},
       },
 
       { sub    => 'sub18',
@@ -450,7 +450,7 @@ my @Tests =
       { sub     => 'Foo::sub18',
         p       => [ foo => 1, bar => 1 ],
         options => { allow_extra => 1 },
-        expect  =>  {},
+        expect  =>  q{},
         return  => { foo => 1, bar => 1 },
       },
 
@@ -462,7 +462,7 @@ my @Tests =
       { sub    => 'Foo::sub19',
         p      => [ 1, 2 ],
         options => { allow_extra => 1 },
-        expect => {},
+        expect => q{},
         return => [ 1, 2 ],
       },
 
@@ -490,7 +490,7 @@ my @Tests =
 
       { sub    => 'sub21',
         p      => [ foo => undef ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub22',
@@ -500,12 +500,12 @@ my @Tests =
 
       { sub    => 'sub22',
         p      => [ foo => bless [1], 'object' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub22a',
         p      => [],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub22a',
         p      => [ foo => [1] ],
@@ -513,17 +513,17 @@ my @Tests =
       },
       { sub    => 'sub22a',
         p      => [ foo => bless [1], 'object' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub23',
         p      => [ '1 element' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub    => 'sub24',
         p      => [],
-        expect => {},
+        expect => q{},
       },
       { sub    => 'sub24',
         p      => [ '1 element' ],
@@ -532,7 +532,7 @@ my @Tests =
 
       { sub    => 'sub24',
         p      => [ bless [1], 'object' ],
-        expect => {},
+        expect => q{},
       },
 
       { sub           => 'sub25',
@@ -544,7 +544,7 @@ my @Tests =
       # optional glob
       { sub    => 'sub26',
         p      => [ foo => 1, bar => do { local *BAR; *BAR } ],
-        expect => {},
+        expect => q{},
       },
     );
 
@@ -575,7 +575,7 @@ sub run_tests
         }
         else
         {
-            is( $@, {}, "no error with $sub" );
+            is( $@, q{}, "no error with $sub" );
         }
 
         next unless $test->{return};

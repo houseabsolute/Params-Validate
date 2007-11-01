@@ -15,7 +15,7 @@ use Test::More tests => 13;
                 );
     };
 
-    is( $@, {}, 'no error checking if ClassISA->isa(FooBar)' );
+    is( $@, q{}, 'no error checking if ClassISA->isa(FooBar)' );
 
     eval
     {

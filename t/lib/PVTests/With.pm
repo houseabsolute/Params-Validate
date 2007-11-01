@@ -19,7 +19,7 @@ sub run_tests
                        spec => [ SCALAR ],
                      );
     };
-    is( $@, {} );
+    is( $@, q{} );
 
     eval
     {
@@ -29,7 +29,7 @@ sub run_tests
                                  bar => HASHREF },
                      );
     };
-    is( $@, {} );
+    is( $@, q{} );
 
     eval
     {
@@ -40,7 +40,7 @@ sub run_tests
     };
     if ( $ENV{PERL_NO_VALIDATION} )
     {
-        is( $@, {} );
+        is( $@, q{} );
     }
     else
     {
@@ -90,7 +90,7 @@ sub run_tests
                            spec => { a => 1, b => 1 },
                          );
         };
-        PVTests::With::is( $@, {} );
+        PVTests::With::is( $@, q{} );
 
         eval
         {
@@ -101,7 +101,7 @@ sub run_tests
         };
         if ( $ENV{PERL_NO_VALIDATION} )
         {
-            PVTests::With::is( $@, {} );
+            PVTests::With::is( $@, q{} );
         }
         else
         {
@@ -120,7 +120,7 @@ sub run_tests
                               );
         };
 
-        is( $@, {} );
+        is( $@, q{} );
         is( $p{foo}, 1 );
     }
 
