@@ -4,5 +4,5 @@ use warnings;
 use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
 
-use PVTests::Defaults;
-PVTests::Defaults::run_tests();
+use PVTests::Standard;
+PVTests::Standard::run_tests();
