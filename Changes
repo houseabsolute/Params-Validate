@@ -1,5 +1,10 @@
 0.89
 
+- With validation turned off, the pure Perl version incorrectly
+  ignored an odd number of parameters when a hash was expected (no
+  validation still does the bare minimum of checks needed to set
+  defaults).
+
 - Added pod & pod coverage tests.
 
 - Modernized test suite to use Test::More and fixed some test suite
