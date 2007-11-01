@@ -488,7 +488,8 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
   if ((temp = hv_fetch(spec, "type", 4, 0))) {
     IV type;
 
-    if ( ! ( looks_like_number(*temp)
+    if ( ! ( SvOK(*temp)
+             && looks_like_number(*temp)
              && SvIV(*temp) > 0 ) ) {
       SV* buffer;
 
