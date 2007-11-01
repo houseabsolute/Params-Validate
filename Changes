@@ -1,4 +1,4 @@
-0.89
+0.89 October 31, 2007
 
 - With validation turned off, the pure Perl version incorrectly
   ignored an odd number of parameters when a hash was expected (no
