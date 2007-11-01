@@ -22,7 +22,7 @@ sub run_tests
                                }
                       } );
     };
-    is( $@, '' );
+    is( $@, {} );
 
     eval
     {
@@ -36,7 +36,7 @@ sub run_tests
 
     if ( $ENV{PERL_NO_VALIDATION} )
     {
-        is( $@, '' );
+        is( $@, {} );
     }
     else
     {
@@ -49,7 +49,7 @@ sub run_tests
     {
         Foo->new( storage => 'InMemory', file => 'something' );
     };
-    is( $@, '' )
+    is( $@, {} )
 }
 
 

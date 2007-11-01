@@ -41,7 +41,7 @@ sub quux :ValidatePos( { type => SCALAR }, 1 )
 }
 
 my $res = eval { foo( c => 1 ) };
-is( $@, '',
+is( $@, {},
     "Call foo with a scalar" );
 
 is( $res, 1,
@@ -53,7 +53,7 @@ like( $@, qr/The 'c' parameter .* was an 'arrayref'/,
       'Check exception thrown from foo( c => [] )' );
 
 $res = eval { main->bar( c => 1 ) };
-is( $@, '',
+is( $@, {},
     'Call bar with a scalar' );
 
 is( $res, 1,
@@ -66,7 +66,7 @@ like( $@, qr/The 'foo' parameter .* did not pass the '5 elements' callback/,
 
 $res = eval { baz( foo => [5,4,3,2,1] ) };
 
-is( $@, '',
+is( $@, {},
     'Call baz( foo => [5,4,3,2,1] )' );
 
 is( $res, 5,
@@ -79,5 +79,5 @@ like( $@, qr/2 parameters were passed to .* but 1 was expected/,
 
 $res = eval { quux( 1, [] ) };
 
-is( $@, '',
+is( $@, {},
     'Call quux' );

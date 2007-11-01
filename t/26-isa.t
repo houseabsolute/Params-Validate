@@ -15,7 +15,7 @@ use Test::More tests => 13;
                 );
     };
 
-    is( $@, '', 'no error checking if ClassISA->isa(FooBar)' );
+    is( $@, {}, 'no error checking if ClassISA->isa(FooBar)' );
 
     eval
     {
@@ -49,7 +49,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass->isa(ClassISA)' );
+    is( $@, q{}, 'SubClass->isa(ClassISA)' );
 
     eval
     {
@@ -58,7 +58,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass->isa(FooBar)' );
+    is( $@, q{}, 'SubClass->isa(FooBar)' );
 
     eval
     {
@@ -80,7 +80,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass->isa(ClassISA)' );
+    is( $@, q{}, 'SubClass->isa(ClassISA)' );
 
     eval
     {
@@ -89,7 +89,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass->isa(FooBar)' );
+    is( $@, q{}, 'SubClass->isa(FooBar)' );
 
     eval
     {

@@ -15,7 +15,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@ );
+    is( $@, q{} );
 
     eval
     {
@@ -50,7 +50,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@ );
+    is( $@, q{} );
 
     eval
     {
@@ -72,7 +72,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass->can(cancan)' );
+    is( $@, q{}, 'SubClass->can(cancan)' );
 
     eval
     {
@@ -95,7 +95,7 @@ use Test::More tests => 13;
                 );
     };
 
-    ok( ! $@, 'SubClass object->can(cancan)' );
+    is( $@, q{}, 'SubClass object->can(cancan)' );
 
     eval
     {

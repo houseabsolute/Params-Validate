@@ -18,14 +18,14 @@ sub run_tests
         my @a = ( foo => 'bar' );
         validate( @a, { foo => { regex => '^bar$' } } );
     };
-    is( $@, '' );
+    is( $@, {} );
 
     eval
     {
         my @a = ( foo => 'bar' );
         validate( @a, { foo => { regex => qr/^bar$/ } } );
     };
-    is( $@, '' );
+    is( $@, {} );
 
     eval
     {
@@ -35,7 +35,7 @@ sub run_tests
 
     if ( $ENV{PERL_NO_VALIDATION} )
     {
-        is( $@, '' );
+        is( $@, {} );
     }
     else
     {
@@ -50,7 +50,7 @@ sub run_tests
 
     if ( $ENV{PERL_NO_VALIDATION} )
     {
-        is( $@, '' );
+        is( $@, {} );
     }
     else
     {
@@ -67,7 +67,7 @@ sub run_tests
 
     if ( $ENV{PERL_NO_VALIDATION} )
     {
-        is( $@, '' );
+        is( $@, {} );
     }
     else
     {
@@ -81,14 +81,14 @@ sub run_tests
                         bar => { regex => qr/^(?:not this|quux)$/ },
                       } );
     };
-    is( $@, '' );
+    is( $@, {} );
 
     eval
     {
         my @a = ( foo => undef );
         validate( @a, { foo => { regex => qr/^$|^bubba$/ } } );
     };
-    is( $@, '' );
+    is( $@, {} );
 }
 
 
