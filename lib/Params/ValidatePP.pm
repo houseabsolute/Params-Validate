@@ -1,12 +1,7 @@
-# Copyright (c) 2000-2004 Dave Rolsky
-# All rights reserved.
-# This program is free software; you can redistribute it and/or
-# modify it under the same terms as Perl itself.  See the LICENSE
-# file that comes with this distribution for more details.
-
 package Params::Validate;
 
 use strict;
+use warnings;
 
 use Scalar::Util ();
 
@@ -712,8 +707,8 @@ Params::Validate documentation for details.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004 David Rolsky.  All rights reserved.  This program
-is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself.
+Copyright (c) 2004-2007 David Rolsky.  All rights reserved.  This
+program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =cut
