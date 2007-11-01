@@ -1,3 +1,14 @@
+0.89
+
+- Added pod & pod coverage tests.
+
+- Modernized test suite to use Test::More and fixed some test suite
+  bugs along the way.
+
+- Attribute::Params::Validate would die when given a ValidatePos
+  attribute containing one element.
+
+
 0.88 March 7, 2007
 
 - The XS version threw an error when it attempted to do "isa" or "can"

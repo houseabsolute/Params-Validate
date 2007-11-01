@@ -41,7 +41,7 @@ sub _wrap_sub
 {
     my ($type, $package, $symbol, $referent, $attr, $params) = @_;
 
-    my @p = @$params;
+    my @p = ref $params ? @{ $params } : $params;
     $params = {@p};
 
     my $subname = $package . '::' . *{$symbol}{NAME};
