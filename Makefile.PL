@@ -1,7 +1,9 @@
 # The perl/C checking voodoo is stolen from Graham Barr's
 # Scalar-List-Utils distribution.
+use 5.006;
 
 use strict;
+use warnings;
 
 use ExtUtils::MakeMaker;
 use Config qw(%Config);

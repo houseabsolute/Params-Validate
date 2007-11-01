@@ -2,15 +2,10 @@
 
 use strict;
 
-use lib './t';
+use File::Spec;
+use lib File::Spec->catdir( 't', 'lib' );
 
-$ENV{PERL_NO_VALIDATION} = 1;
-require Params::Validate;
-Params::Validate->import(':all');
+BEGIN { $ENV{PERL_NO_VALIDATION} = 1 }
 
-use vars qw(@expect);
-
-require 'tests.pl';
-
-# everything should pass
-run_tests();
+use PVTests;
+PVTests::run_tests();
