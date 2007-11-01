@@ -5,6 +5,10 @@ use warnings;
 
 use Scalar::Util ();
 
+# suppress subroutine redefined warnings if we tried to load the XS
+# version and failed.
+no warnings 'redefine';
+
 
 BEGIN
 {

@@ -33,8 +33,6 @@ BEGIN
 
     if ( $@ || $ENV{PV_TEST_PERL} )
     {
-        # suppress subroutine redefined warnings
-        local $^W = 0;
         require Params::ValidatePP;
     }
 }
