@@ -213,28 +213,25 @@ sub validate (\@$)
     my $specs = $_[1];
     local $options = _get_options( (caller(0))[0] ) unless defined $options;
 
-    unless ( $NO_VALIDATION )
+    if ( ref $p eq 'ARRAY' )
     {
-        if ( ref $p eq 'ARRAY' )
+        # we were called as validate( @_, ... ) where @_ has a
+        # single element, a hash reference
+        if ( ref $p->[0] )
         {
-            # we were called as validate( @_, ... ) where @_ has a
-            # single element, a hash reference
-            if ( ref $p->[0] )
-            {
-                $p = $p->[0];
-            }
-            elsif ( @$p % 2 )
-            {
-                my $called = _get_called();
+            $p = $p->[0];
+        }
+        elsif ( @$p % 2 )
+        {
+            my $called = _get_called();
 
-                $options->{on_fail}->
-                    ( "Odd number of parameters in call to $called " .
-                      "when named parameters were expected\n" );
-            }
-            else
-            {
-                $p = {@$p};
-            }
+            $options->{on_fail}->
+                ( "Odd number of parameters in call to $called " .
+                  "when named parameters were expected\n" );
+        }
+        else
+        {
+            $p = {@$p};
         }
     }
 
@@ -431,7 +428,7 @@ sub _normalize_callback
 sub _normalize_named
 {
     # intentional copy so we don't destroy original
-    my %h = %{ $_[0] };
+    my %h = ( ref $_[0] ) =~ /ARRAY/ ? @{ $_[0] } : %{ $_[0] };
 
     if ( $options->{ignore_case} )
     {
