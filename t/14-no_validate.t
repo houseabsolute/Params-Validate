@@ -10,7 +10,7 @@ use Test::More;
 plan tests => $] == 5.006 ? 2 : 3;
 
 eval { foo() };
-like( $@, /parameter 'foo'/ );
+like( $@, qr/parameter 'foo'/ );
 
 {
     local $Params::Validate::NO_VALIDATION = 1;
@@ -22,7 +22,7 @@ like( $@, /parameter 'foo'/ );
 unless ( $] == 5.006 )
 {
     eval { foo() };
-    like( $@, /parameter 'foo'/ );
+    like( $@, qr/parameter 'foo'/ );
 }
 
 sub foo
