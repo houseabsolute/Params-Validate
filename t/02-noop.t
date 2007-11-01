@@ -1,6 +1,5 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
