@@ -226,6 +226,12 @@ get_type(SV* sv)
     case SVt_PVGV:
       type = GLOBREF;
       break;
+    /* Perl 5.10 has a bunch of new types that I don't think will ever
+       actually show up here (I hope), but not handling them makes the
+       C compiler cranky. */
+    default:
+      type = UNKNOWN;
+      break;
   }
 
   if (type) {
@@ -233,7 +239,7 @@ get_type(SV* sv)
     return type;
   }
 
-  /* I really hope this never happens */
+  /* Getting here should not be possible */
   return UNKNOWN;
 }
 
