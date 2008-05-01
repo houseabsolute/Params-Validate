@@ -36,6 +36,7 @@
 /* return data macros */
 #define RETURN_ARRAY(ret) \
     STMT_START {                                        \
+        I32 i;                                          \
         switch(GIMME_V) {                               \
           case G_VOID:                                  \
               return;                                   \
