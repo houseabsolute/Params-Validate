@@ -205,12 +205,16 @@ get_type(SV* sv)
     case SVt_IV:
     case SVt_NV:
     case SVt_PV:
+#if PERL_VERSION <= 10
     case SVt_RV:
+#endif
     case SVt_PVMG:
     case SVt_PVIV:
     case SVt_PVNV:
 #if PERL_VERSION <= 8
     case SVt_PVBM:
+#elif PERL_VERSION >= 11
+    case SVt_REGEXP:
 #endif
       type = SCALARREF;
       break;
@@ -663,9 +667,15 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
 
       svp = (SV*)SvRV(*temp);
 
+#if PERL_VERSION <= 10
       if (SvMAGICAL(svp) && mg_find(svp, PERL_MAGIC_qr)) {
         has_regex = 1;
       }
+#else
+      if (SvTYPE(svp) == SVt_REGEXP) {
+        has_regex = 1;
+      }
+#endif
     }
 
     if (!has_regex) {

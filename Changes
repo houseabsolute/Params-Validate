@@ -1,3 +1,9 @@
+0.90
+
+- Make the XS version of Params::Validate recognize regexp objects
+  with Perl 5.11.0-to-be. Patch by Andreas Koenig. RT #32872.
+
+
 0.89 October 31, 2007
 
 - With validation turned off, the pure Perl version incorrectly
