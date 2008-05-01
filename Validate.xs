@@ -767,8 +767,13 @@ convert_array2hash(AV* in, HV* options, HV* out)
 
     key = *av_fetch(in, i, 1);
     SvGETMAGIC(key);
-    value = *av_fetch(in, i + 1, 1);
-    SvGETMAGIC(value);
+
+    /* We need to make a copy because if the array was @_, then the
+       values in the array are marked as readonly, which causes
+       problems when the hash being made gets returned to the
+       caller. */
+    value = newSVsv( *av_fetch(in, i + 1, 1) ); SvGETMAGIC(value);
+
     if (! hv_store_ent(out, key, SvREFCNT_inc(value), 0)) {
       SvREFCNT_dec(value);
       croak("Cannot add new key to hash");

@@ -1,7 +1,11 @@
-0.90
+0.90 May 1, 2008
 
 - Make the XS version of Params::Validate recognize regexp objects
   with Perl 5.11.0-to-be. Patch by Andreas Koenig. RT #32872.
+
+- With the XS version, when you passed @_ directly to validate() and
+  then got a hash reference back, the values of that hash reference
+  would be marked readonly. Reported by W J Moore. RT #34410.
 
 
 0.89 October 31, 2007
