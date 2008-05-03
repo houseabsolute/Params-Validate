@@ -1,11 +1,24 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Test::More;
+
+BEGIN
+{
+    eval 'use File::Temp';
+    if ($@)
+    {
+        plan skip_all => 'Need File::Temp for this test';
+    }
+    else
+    {
+        plan tests => 9;
+    }
+}
 
 use Devel::Peek qw( SvREFCNT );
 use File::Temp qw( tempfile );
 use Params::Validate qw( validate SCALAR HANDLE );
-use Test::More tests => 9;
 
 {
     my $fh = tempfile();
