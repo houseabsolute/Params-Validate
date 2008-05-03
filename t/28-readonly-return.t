@@ -2,19 +2,23 @@
 
 use strict;
 
-use Params::Validate qw( validate SCALAR );
-use Test::More tests => 7;
+use Devel::Peek qw( SvREFCNT );
+use File::Temp qw( tempfile );
+use Params::Validate qw( validate SCALAR HANDLE );
+use Test::More tests => 9;
 
 {
-    my @p = ( foo => 1 );
+    my $fh = tempfile();
+    my @p = ( foo => 1,
+              bar => $fh,
+            );
 
-    my $ref = validate( @p,
-                        { foo => { type => SCALAR } },
-                      );
+    my $ref = val1(@p);
 
     eval { $ref->{foo} = 2 };
     ok( ! $@, 'returned hashref values are not read only' );
     is( $ref->{foo}, 2, 'double check that setting value worked' );
+    is( $fh, $ref->{bar}, 'filehandle is not copied during validation' );
 }
 
 {
@@ -34,9 +38,7 @@ use Test::More tests => 7;
     is( ScopeTest->Live(), 1,
         'one live object' );
 
-    my $ref = validate( @p,
-                        { foo => 1 },
-                      );
+    my $ref = val2(@p);
 
     isa_ok( $ref->{foo}, 'ScopeTest' );
 
@@ -47,9 +49,32 @@ use Test::More tests => 7;
 
     ok( defined $ref->{foo},
         'foo key stays in scope after original version goes out of scope' );
+    is( SvREFCNT( $ref->{foo} ), 1,
+        'ref count for reference is 1' );
 
     undef $ref->{foo};
 
     is( ScopeTest->Live(), 0,
         'no live objects' );
+}
+
+sub val1
+{
+    my $ref = validate( @_,
+                        { foo => { type => SCALAR },
+                          bar => { type => HANDLE, optional => 1 },
+                        },
+                      );
+
+    return $ref;
+}
+
+sub val2
+{
+    my $ref = validate( @_,
+                        { foo => 1,
+                        },
+                      );
+
+    return $ref;
 }

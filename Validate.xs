@@ -772,7 +772,8 @@ convert_array2hash(AV* in, HV* options, HV* out)
        values in the array are marked as readonly, which causes
        problems when the hash being made gets returned to the
        caller. */
-    value = newSVsv( *av_fetch(in, i + 1, 1) ); SvGETMAGIC(value);
+    value = sv_2mortal( newSVsv( *av_fetch(in, i + 1, 1) ) );
+    SvGETMAGIC(value);
 
     if (! hv_store_ent(out, key, SvREFCNT_inc(value), 0)) {
       SvREFCNT_dec(value);

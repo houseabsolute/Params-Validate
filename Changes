@@ -1,3 +1,10 @@
+0.91 May 3, 2008
+
+- The fix for handling @_'s readonly-ness introduced a refcounting
+  bug. One symptom of this was a failing Log::Dispatch test. Reported
+  by Andreas Koenig. RT #35608.
+
+
 0.90 May 1, 2008
 
 - Make the XS version of Params::Validate recognize regexp objects
