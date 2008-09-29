@@ -1045,12 +1045,7 @@ validate_named_depends(HV* p, HV* specs, HV* options)
 void
 cat_string_representation(SV* buffer, SV* value)
 {
-#if (PERL_VERSION == 5)
-  if (SvTYPE(value) == SVt_PVGV) {
-    sv_catpv(buffer, "GLOB");
-  } else
-#endif
-         if(SvOK(value)) {
+  if(SvOK(value)) {
     sv_catpv(buffer, "\"");
     sv_catpv(buffer, SvPV_nolen(value));
     sv_catpv(buffer, "\"");
@@ -1162,13 +1157,9 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
   if (no_validation()) {
     if (GIMME_V != G_VOID) {
       while ((he = hv_iternext(p))) {
-      /* This may be related to bug #7387 on bugs.perl.org */
-#if (PERL_VERSION == 5)
-        if (! PL_tainting)
-#endif
-          SvGETMAGIC(HeVAL(he));
-  
-          
+
+        SvGETMAGIC(HeVAL(he));
+
         /* put the parameter into return hash */
         if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
                           HeHASH(he))) {
@@ -1192,11 +1183,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret)
 
   hv_iterinit(p);
   while ((he = hv_iternext(p))) {
-    /* This may be related to bug #7387 on bugs.perl.org */
-#if (PERL_VERSION == 5)
-    if (! PL_tainting)
-#endif
-      SvGETMAGIC(HeVAL(he));
+    SvGETMAGIC(HeVAL(he));
 
     /* put the parameter into return hash */
     if (GIMME_V != G_VOID) {
