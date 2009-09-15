@@ -288,10 +288,10 @@ sub validate (\@$)
 
     unless ( $options->{allow_extra} )
     {
-        my $called = _get_called();
-
 	if ( my @unmentioned = grep { ! exists $specs->{$_} } keys %$p )
 	{
+            my $called = _get_called();
+
 	    $options->{on_fail}->
                 ( "The following parameter" . (@unmentioned > 1 ? 's were' : ' was') .
                   " passed in the call to $called but " .
@@ -653,15 +653,16 @@ sub _validate_one_param
 
     sub _get_options
     {
-	my ( $caller, %override ) = @_;
+        my $caller = shift;
 
-        if ( %override )
+        if (@_)
         {
+
             return
                 ( $OPTIONS{$caller} ?
                   { %{ $OPTIONS{$caller} },
-                    %override } :
-                  { %defaults, %override }
+                    @_ } :
+                  { %defaults, @_ }
                 );
         }
         else
