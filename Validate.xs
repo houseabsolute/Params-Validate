@@ -802,7 +802,7 @@ get_options(HV* options)
 #if (PERL_VERSION == 6)
   pkg = SvPV_nolen(get_sv("Params::Validate::CALLER", 0));
 #else
-  buffer = sv_2mortal(newSVpv("(caller(0))[0]", 0)); 
+  buffer = sv_2mortal(newSVpv("caller(0)", 0)); 
   SvTAINTED_off(buffer);
 
   caller = eval_pv(SvPV_nolen(buffer), 1);
