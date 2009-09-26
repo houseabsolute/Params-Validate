@@ -22,6 +22,7 @@ my $builder = Module::Build->new(
         'Pod::Man'           => '1.14',
         'Test::More'         => '0.34',
     },
+    c_source       => 'c',
     add_to_cleanup => \@pp,
     create_readme  => 1,
     sign           => 1,
