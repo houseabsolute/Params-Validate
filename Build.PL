@@ -1,0 +1,71 @@
+use 5.006;
+
+use strict;
+use warnings;
+
+use Module::Build;
+
+my $force_pp = grep { $_ eq '--pp' } @ARGV;
+
+my @pp = _make_pp_tests();
+
+my %prereqs = (
+    'Test::More'   => '0',
+    'Scalar::Util' => '0',
+);
+$prereqs{'Attribute::Handlers'} = 0 if $] >= 5.006;
+
+my $builder = Module::Build->new(
+    module_name    => 'Params::Validate',
+    license        => 'perl',
+    requires       => \%prereqs,
+    build_requires => {
+        'ExtUtils::CBuilder' => '0',
+        'Pod::Man'           => '1.14',
+        'Test::More'         => '0.34',
+    },
+    add_to_cleanup => \@pp,
+    create_readme  => 1,
+    sign           => 1,
+    meta_merge     => {
+        resources => {
+            bugtracker =>
+                'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate',
+            repository =>
+                'https://svn.urth.org/svn/Params-Validate',
+        },
+    },
+);
+
+if ($force_pp) {
+    $builder->build_elements(
+        [ grep { $_ ne 'xs' } @{ $builder->build_elements() } ] );
+}
+
+$builder->create_build_script();
+
+sub _make_pp_tests {
+    return unless -d '.svn';
+
+    require File::Slurp;
+    File::Slurp->import(qw( read_file write_file ));
+
+    opendir my $dh, 't'
+        or die "Cannot read t: $!";
+
+    my @pp;
+    foreach my $file ( grep {/^\d.+\.t$/} readdir $dh ) {
+        next if $file !~ /^\d/;
+
+        my $test = read_file("t/$file");
+        $test
+            = "#!/usr/bin/perl -w\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
+
+        my $new_file = "t/pp_$file";
+        write_file( $new_file, $test );
+
+        push @pp, $new_file;
+    }
+
+    return @pp;
+}
