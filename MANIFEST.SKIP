@@ -39,6 +39,8 @@
 
 ^Params-Validate-
 
+^lib/Params/Validate\.[co]
+
 # No need to ship this
 \.shipit
 
