@@ -13,9 +13,9 @@ my $builder = Module::Build->new(
     module_name => 'Params::Validate',
     license     => 'perl',
     requires    => {
-        'Attribute::Handlers' => '0',
+        'Attribute::Handlers' => '0.79',
         'Test::More'          => '0',
-        'Scalar::Util'        => '0',
+        'Scalar::Util'        => '1.10',
     },
     build_requires => {
         'ExtUtils::CBuilder' => '0',
