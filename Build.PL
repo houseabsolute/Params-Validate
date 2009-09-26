@@ -58,8 +58,10 @@ sub _make_pp_tests {
         next if $file !~ /^\d/;
 
         my $test = read_file("t/$file");
+
+        my $bang_flags = $test =~ /perl -Tw/ ? '-Tw' : '-w';
         $test
-            = "#!/usr/bin/perl -w\n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
+            = "#!/usr/bin/perl $bang_flags \n\nBEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
 
         my $new_file = "t/pp_$file";
         write_file( $new_file, $test );
