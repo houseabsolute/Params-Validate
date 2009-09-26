@@ -1,3 +1,15 @@
+0.92 Sep 25, 2009
+
+- Switched to Module::Build and don't try to detect a compiler. If you want to
+  force a Perl-only build, run the Build.PL as "perl Build.PL --pp". Addresses
+  RT #44719 (more or less), Reported by Olivier Mengué.
+
+- Require Scalar::Util 1.10, since that is the first version with
+  looks_like_number. Reported by Olivier Mengué. RT #45103.
+
+- Require Attribute::Handlers 0.79. Reported by Olivier Mengué. RT #44066.
+
+
 0.91 May 3, 2008
 
 - The fix for handling @_'s readonly-ness introduced a refcounting
