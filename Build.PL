@@ -9,16 +9,14 @@ my $force_pp = grep { $_ eq '--pp' } @ARGV;
 
 my @pp = _make_pp_tests();
 
-my %prereqs = (
-    'Test::More'   => '0',
-    'Scalar::Util' => '0',
-);
-$prereqs{'Attribute::Handlers'} = 0 if $] >= 5.006;
-
 my $builder = Module::Build->new(
-    module_name    => 'Params::Validate',
-    license        => 'perl',
-    requires       => \%prereqs,
+    module_name => 'Params::Validate',
+    license     => 'perl',
+    requires    => {
+        'Attribute::Handlers' => '0',
+        'Test::More'          => '0',
+        'Scalar::Util'        => '0',
+    },
     build_requires => {
         'ExtUtils::CBuilder' => '0',
         'Pod::Man'           => '1.14',
