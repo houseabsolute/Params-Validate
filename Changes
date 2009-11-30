@@ -3,6 +3,8 @@
 - If the pure Perl version of validate() received a hash reference it would
   alter that reference directly. Reported by Paul Eckhardt. RT #51155.
 
+- Author-only tests now only run if $ENV{AUTHOR_TESTING} is true. RT #49890.
+
 
 0.92 Sep 25, 2009
 
