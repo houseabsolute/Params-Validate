@@ -8,9 +8,7 @@ use Test::More tests => 1;
 use File::Basename;
 use Params::Validate qw( validate );
 
-
-sub test
-{
+sub test {
     my $def = $0;
 
     # The spec is irrelevant, all that matters is that there's a
@@ -24,6 +22,8 @@ TODO:
         unless $ENV{PV_TEST_PERL};
 
     eval { test() };
-    is( $@, '',
-        'no taint error when we validate with tainted value in caller sub' );
+    is(
+        $@, '',
+        'no taint error when we validate with tainted value in caller sub'
+    );
 }

@@ -9,8 +9,8 @@ use Test::More tests => 2;
     my @w;
     local $SIG{__WARN__} = sub { push @w, @_ };
 
-    my @p = ( foo => undef);
+    my @p = ( foo => undef );
     eval { validate( @p, { foo => { regex => qr/^bar/ } } ) };
-    ok( $@, 'validation failed' );
-    ok( ! @w, 'no warnings' );
+    ok( $@,  'validation failed' );
+    ok( !@w, 'no warnings' );
 }

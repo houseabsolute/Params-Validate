@@ -5,15 +5,12 @@ use strict;
 use Params::Validate qw(validate validate_pos SCALAR);
 use Test::More;
 
-BEGIN
-{
+BEGIN {
     eval "use Readonly";
-    if ( $@ || ! defined $Readonly::XS::VERSION )
-    {
+    if ( $@ || !defined $Readonly::XS::VERSION ) {
         plan skip_all => 'Need Readonly::XS and Readonly for this test';
     }
-    else
-    {
+    else {
         plan tests => 2;
     }
 }

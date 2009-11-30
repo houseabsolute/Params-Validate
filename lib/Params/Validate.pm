@@ -2,27 +2,29 @@ package Params::Validate;
 
 use strict;
 
-BEGIN
-{
+BEGIN {
     use Exporter;
     use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK
-                 %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
+        %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
 
     @ISA = 'Exporter';
 
     $VERSION = '0.92';
 
-    my %tags =
-        ( types =>
-          [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
-                SCALARREF HANDLE BOOLEAN UNDEF OBJECT ) ],
-        );
+    my %tags = (
+        types => [
+            qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
+                SCALARREF HANDLE BOOLEAN UNDEF OBJECT )
+        ],
+    );
 
-    %EXPORT_TAGS =
-        ( 'all' => [ qw( validate validate_pos validation_options validate_with ),
-                     map { @{ $tags{$_} } } keys %tags ],
-          %tags,
-        );
+    %EXPORT_TAGS = (
+        'all' => [
+            qw( validate validate_pos validation_options validate_with ),
+            map { @{ $tags{$_} } } keys %tags
+        ],
+        %tags,
+    );
 
     @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
     @EXPORT = qw( validate validate_pos );
@@ -31,12 +33,10 @@ BEGIN
 
     eval { require Params::ValidateXS; } unless $ENV{PV_TEST_PERL};
 
-    if ( $@ || $ENV{PV_TEST_PERL} )
-    {
+    if ( $@ || $ENV{PV_TEST_PERL} ) {
         require Params::ValidatePP;
     }
 }
-
 
 1;
 

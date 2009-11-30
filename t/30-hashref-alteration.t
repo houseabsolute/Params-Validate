@@ -40,7 +40,7 @@ sub val2 {
     validate(
         @_, {
             foo => { optional => 1 },
-            bar => { default => 42 },
+            bar => { default  => 42 },
             baz => { optional => 1 },
             buz => { optional => 1 },
         },

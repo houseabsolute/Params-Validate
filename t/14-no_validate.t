@@ -19,13 +19,11 @@ like( $@, qr/parameter 'foo'/ );
     is( $@, q{} );
 }
 
-unless ( $] == 5.006 )
-{
+unless ( $] == 5.006 ) {
     eval { foo() };
     like( $@, qr/parameter 'foo'/ );
 }
 
-sub foo
-{
+sub foo {
     validate( @_, { foo => 1 } );
 }
