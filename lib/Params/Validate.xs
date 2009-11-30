@@ -1143,6 +1143,8 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
     AV* unmentioned;
     HE* he;
     HE* he1;
+    SV* hv;
+    SV* hv1;
     IV ignore_case = 0;
     SV* strip_leading = NULL;
     IV allow_extra = 0;
@@ -1177,13 +1179,13 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
     if (no_validation()) {
         if (GIMME_V != G_VOID) {
             while ((he = hv_iternext(p))) {
-
-                SvGETMAGIC(HeVAL(he));
+                hv = HeVAL(he);
+                SvGETMAGIC(hv);
 
                 /* put the parameter into return hash */
-                if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
+                if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(hv),
                 HeHASH(he))) {
-                    SvREFCNT_dec(HeVAL(he));
+                    SvREFCNT_dec(hv);
                     croak("Cannot add new key to hash");
                 }
             }
@@ -1203,13 +1205,14 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
 
     hv_iterinit(p);
     while ((he = hv_iternext(p))) {
-        SvGETMAGIC(HeVAL(he));
+        hv = HeVAL(he);
+        SvGETMAGIC(hv);
 
         /* put the parameter into return hash */
         if (GIMME_V != G_VOID) {
-            if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(HeVAL(he)),
+            if (!hv_store_ent(ret, HeSVKEY_force(he), SvREFCNT_inc(hv),
             HeHASH(he))) {
-                SvREFCNT_dec(HeVAL(he));
+                SvREFCNT_dec(hv);
                 croak("Cannot add new key to hash");
             }
         }
@@ -1218,19 +1221,20 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
            then validate it using spec */
         he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he));
         if(he1) {
-            if (SvROK(HeVAL(he1)) && SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
+            hv1 = HeVAL(he1);
+            if (SvROK(hv1) && SvTYPE(SvRV(hv1)) == SVt_PVHV) {
                 SV* buffer;
                 HV* spec;
                 IV untaint = 0;
 
-                spec = (HV*) SvRV(HeVAL(he1));
+                spec = (HV*) SvRV(hv1);
                 buffer = sv_2mortal(newSVpv("The '", 0));
                 sv_catsv(buffer, HeSVKEY_force(he));
                 sv_catpv(buffer, "' parameter (");
-                cat_string_representation(buffer, HeVAL(he));
+                cat_string_representation(buffer, hv);
                 sv_catpv(buffer, ")");
 
-                if (! validate_one_param(HeVAL(he), (SV*) p, spec, buffer, options, &untaint))
+                if (! validate_one_param(hv, (SV*) p, spec, buffer, options, &untaint))
                     return 0;
 
                 /* The value stored here is meaningless, we're just tracking
