@@ -218,7 +218,7 @@ sub validate (\@$)
         # single element, a hash reference
         if ( ref $p->[0] )
         {
-            $p = $p->[0];
+            $p = { %{ $p->[0] } };
         }
         elsif ( @$p % 2 )
         {
