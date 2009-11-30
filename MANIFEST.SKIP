@@ -45,3 +45,4 @@
 \.shipit
 
 t/pp.*
+^MYMETA.yml$
