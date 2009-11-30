@@ -1,4 +1,4 @@
-0.93
+0.93 2009-11-30
 
 - If the pure Perl version of validate() received a hash reference it would
   alter that reference directly. Reported by Paul Eckhardt. RT #51155.
