@@ -4,7 +4,7 @@ use warnings;
 use Test::More;
 
 plan skip_all => 'This test is only run for the module author'
-    unless -d '.svn' || $ENV{IS_MAINTAINER};
+    unless $ENV{AUTHOR_TESTING};
 
 eval "use Test::Pod 1.14";
 plan skip_all => "Test::Pod 1.14 required for testing POD" if $@;
