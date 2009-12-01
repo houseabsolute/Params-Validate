@@ -34,7 +34,6 @@ my $builder = Module::Build->new(
                 'https://svn.urth.org/svn/Params-Validate',
         },
     },
-    create_makefile_pl => 'traditional',
 );
 
 if ($force_pp) {

@@ -1,3 +1,10 @@
+0.94 2009-12-01
+
+- Removed the Makefile.PL entirely. If it was used then the XS code was never
+  built, because I'm using the Module::Build XS layout. Reported by jawnsy on
+  IRC.
+
+
 0.93 2009-11-30
 
 - If the pure Perl version of validate() received a hash reference it would
