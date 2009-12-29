@@ -31,7 +31,7 @@ my $builder = Module::Build->new(
             bugtracker =>
                 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate',
             repository =>
-                'https://svn.urth.org/svn/Params-Validate',
+                'http://hg.urth.org/hg/Params-Validate',
         },
     },
 );
