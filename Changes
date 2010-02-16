@@ -1,3 +1,9 @@
+0.95 2010-02-16
+
+- Skip t/29-taint-mode.t entirely, since it seems to randomly fail for people,
+  despite already being marked a todo test.
+
+
 0.94 2009-12-01
 
 - Removed the Makefile.PL entirely. If it was used then the XS code was never
