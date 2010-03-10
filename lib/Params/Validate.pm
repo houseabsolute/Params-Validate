@@ -108,7 +108,7 @@ Params::Validate - Validate method/function parameters
   {
        my %p = validate_with
                    ( params => \@_,
-                     spec   => { foo => { type SCALAR, default => 2 } },
+                     spec   => { foo => { type => SCALAR, default => 2 } },
                      normalize_keys => sub { $_[0] =~ s/^-//; lc $_[0] },
                    );
   }
