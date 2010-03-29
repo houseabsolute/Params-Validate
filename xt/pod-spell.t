@@ -23,4 +23,11 @@ local $ENV{LC_ALL} = 'C';
 all_pod_files_spelling_ok();
 
 __DATA__
+baz
+GLOBREF
+Martynov
 PayPal
+pre
+runtime
+SCALARREF
+ValidatePos
