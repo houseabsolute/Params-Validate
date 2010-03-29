@@ -20,7 +20,7 @@ my $builder = Module::Build->new(
     build_requires => {
         'ExtUtils::CBuilder' => '0',
         'Pod::Man'           => '1.14',
-        'Test::More'         => '0.34',
+        'Test::More'         => '0.88',
     },
     c_source       => 'c',
     add_to_cleanup => \@pp,
