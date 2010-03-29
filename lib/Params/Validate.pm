@@ -1,6 +1,9 @@
 package Params::Validate;
 
+use 5.006001;
+
 use strict;
+use warnings;
 
 BEGIN {
     use Exporter;
