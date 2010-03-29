@@ -479,7 +479,7 @@ call, you will probably want to remove the class/object from the
 parameter list B<before> calling C<validate()> or C<validate_pos()>.
 If your method expects named parameters, then this is necessary for
 the C<validate()> function to actually work, otherwise C<@_> will not
-be useable as a hash, because it will first have your object (or
+be usable as a hash, because it will first have your object (or
 class) B<followed> by a set of keys and values.
 
 Thus the idiomatic usage of C<validate()> in a method call will look

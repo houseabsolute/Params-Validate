@@ -139,7 +139,7 @@ specify what validation is performed.
 
 =head2 EXPORT
 
-This module exports everthing that Params::Validate does except for
+This module exports everything that Params::Validate does except for
 the C<validate> and C<validate_pos> subroutines.
 
 =head2 ATTRIBUTES
@@ -148,12 +148,12 @@ the C<validate> and C<validate_pos> subroutines.
 
 =item * Validate
 
-This attribute corresponse to the C<validate> subroutine in
+This attribute corresponds to the C<validate> subroutine in
 Params::Validate.
 
 =item * ValidatePos
 
-This attribute corresponse to the C<validate_pos> subroutine in
+This attribute corresponds to the C<validate_pos> subroutine in
 Params::Validate.
 
 =back
