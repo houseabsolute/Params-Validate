@@ -9,8 +9,6 @@ use PVTests;
 use Test::More;
 
 sub run_tests {
-    plan tests => 3;
-
     my %allowed = ( foo => 1, baz => 1 );
     eval {
         my @a = ( foo => 'foo' );
@@ -51,6 +49,8 @@ sub run_tests {
     # 0.56.
     eval { Foo->new( storage => 'InMemory', file => 'something' ); };
     is( $@, q{} );
+
+    done_testing();
 }
 
 package Foo;

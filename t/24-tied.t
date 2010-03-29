@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate validate_pos SCALAR);
-use Test::More tests => 6;
+use Test::More;
 
 {
 
@@ -114,3 +113,4 @@ SKIP:
     );
 }
 
+done_testing();

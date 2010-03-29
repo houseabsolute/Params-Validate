@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate);
-use Test::More tests => 13;
+use Test::More;
 
 {
     my @p = ( foo => 'ClassISA' );
@@ -74,6 +73,8 @@ use Test::More tests => 13;
     like( $@, qr/was not a 'Thingy'/, 'undef isa' );
 }
 
+done_testing();
+
 package ClassISA;
 
 sub isa {
@@ -86,4 +87,3 @@ sub thingy {1}
 package SubClass;
 
 use base 'ClassISA';
-

@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate validate_pos SCALAR);
-use Test::More tests => 4;
+use Test::More;
 
 {
     my @p = ( foo => 1, bar => 2 );
@@ -75,3 +74,5 @@ use Test::More tests => 4;
 
     is( $@, q{} );
 }
+
+done_testing();

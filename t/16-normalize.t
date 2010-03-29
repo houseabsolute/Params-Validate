@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate validate_with);
-use Test::More tests => 5;
+use Test::More;
 
 my $ucfirst_normalizer = sub { return ucfirst lc $_[0] };
 
@@ -69,3 +68,4 @@ like( $@, qr/normalize_keys.+a defined value/ );
 eval { sub5( foo => 5, bar => 5 ) };
 like( $@, qr/normalize_keys.+already exists/ );
 
+done_testing();

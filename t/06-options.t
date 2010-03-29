@@ -5,7 +5,7 @@ use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
 
 use PVTests;
-use Test::More tests => 4;
+use Test::More;
 
 use Params::Validate qw(:all);
 
@@ -36,3 +36,4 @@ my $e = $@;
 is( $e->{hash}, 'ref' );
 ok( eval { $e->isa('Dead'); 1; } );
 
+done_testing();

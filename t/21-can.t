@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate);
-use Test::More tests => 13;
+use Test::More;
 
 {
     my @p = ( foo => 'ClassCan' );
@@ -80,6 +79,8 @@ use Test::More tests => 13;
     like( $@, qr/does not have the method: 'thingy'/, 'undef can' );
 }
 
+done_testing();
+
 package ClassCan;
 
 sub can {
@@ -92,4 +93,3 @@ sub thingy {1}
 package SubClass;
 
 use base 'ClassCan';
-

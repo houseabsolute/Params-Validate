@@ -9,8 +9,6 @@ use PVTests;
 use Test::More;
 
 sub run_tests {
-    plan tests => 13;
-
     eval { validate_with( params => ['foo'], spec => [SCALAR], ); };
     is( $@, q{} );
 
@@ -121,6 +119,7 @@ sub run_tests {
         is( $p{foo}, 1 );
     }
 
+    done_testing();
 }
 
 1;

@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate);
-use Test::More tests => 2;
+use Test::More;
 
 {
     my @p = ( foo => 1 );
@@ -25,3 +24,5 @@ use Test::More tests => 2;
     );
 
 }
+
+done_testing();

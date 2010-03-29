@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate);
-use Test::More tests => 2;
+use Test::More;
 
 {
 
@@ -35,3 +34,5 @@ my $ovl = Overloaded->new;
 
     is( $@, q{}, 'overloaded object->foo' );
 }
+
+done_testing();

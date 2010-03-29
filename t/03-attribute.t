@@ -5,7 +5,7 @@ use File::Spec;
 use lib File::Spec->catdir( 't', 'lib' );
 
 use PVTests;
-use Test::More tests => 10;
+use Test::More;
 
 use Attribute::Params::Validate;
 use Params::Validate qw(:all);
@@ -97,3 +97,5 @@ is(
     $@, q{},
     'Call quux'
 );
+
+done_testing();

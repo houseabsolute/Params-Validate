@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate);
-use Test::More tests => 2;
+use Test::More;
 
 {
     my @w;
@@ -14,3 +13,5 @@ use Test::More tests => 2;
     ok( $@,  'validation failed' );
     ok( !@w, 'no warnings' );
 }
+
+done_testing();

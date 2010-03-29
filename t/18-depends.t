@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate validate_pos);
-use Test::More tests => 19;
+use Test::More;
 
 {
     my %spec = (
@@ -158,3 +157,5 @@ use Test::More tests => 19;
         "validate_pos() multiple depends (1.b): check error"
     );
 }
+
+done_testing();

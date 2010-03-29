@@ -9,8 +9,6 @@ use PVTests;
 use Test::More;
 
 sub run_tests {
-    plan tests => 21;
-
     {
         my %def = eval { foo() };
 
@@ -140,6 +138,8 @@ sub run_tests {
             'defaults pointing to a reference return a copy of that reference'
         );
     }
+
+    done_testing();
 }
 
 sub foo {

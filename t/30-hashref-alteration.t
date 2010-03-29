@@ -1,7 +1,6 @@
-#!/usr/bin/perl -w
-
 use strict;
-use Test::More tests => 2;
+use warnings;
+use Test::More;
 
 use Params::Validate qw( validate SCALAR );
 
@@ -48,3 +47,5 @@ sub val2 {
 
     return;
 }
+
+done_testing();

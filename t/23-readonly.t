@@ -1,6 +1,5 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use Params::Validate qw(validate validate_pos SCALAR);
 use Test::More;
@@ -11,8 +10,7 @@ BEGIN {
         plan skip_all => 'Need Readonly::XS and Readonly for this test';
     }
     else {
-        plan tests => 2;
-    }
+            }
 }
 
 {
@@ -31,3 +29,4 @@ BEGIN {
     is( $@, q{}, 'validate_pos() call succeeded with Readonly spec hashref' );
 }
 
+done_testing();
