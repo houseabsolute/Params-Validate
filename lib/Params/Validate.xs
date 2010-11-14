@@ -7,9 +7,7 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-#define NEED_eval_pv
 #define NEED_sv_2pv_nolen
-#define NEED_newCONSTSUB
 #include "ppport.h"
 
 #ifdef __GNUC__
