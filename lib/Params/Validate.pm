@@ -66,7 +66,6 @@ Params::Validate - Validate method/function parameters
 
     # takes positional params
     sub bar {
-
         # first two are mandatory, third is optional
         validate_pos( @_, 1, 1, 0 );
     }
@@ -75,15 +74,11 @@ Params::Validate - Validate method/function parameters
         validate(
             @_, {
                 foo =>
-
                     # specify a type
                     { type => ARRAYREF },
-
                 bar =>
-
                     # specify an interface
                     { can => [ 'print', 'flush', 'frobnicate' ] },
-
                 baz => {
                     type      => SCALAR,     # a scalar ...
                                              # ... that is a plain integer ...
@@ -99,9 +94,10 @@ Params::Validate - Validate method/function parameters
     sub with_defaults {
         my %p = validate(
             @_, {
-                foo => 1,                  # required
-                                           # $p{bar} will be 99 if bar is not
-                                           # given.  bar is now optional.
+                # required
+                foo => 1,
+                # $p{bar} will be 99 if bar is not given.  bar is now
+                # optional.
                 bar => { default => 99 }
             }
         );
@@ -535,7 +531,25 @@ something like this:
         );
     }
 
-=head2 
+=head2 Speeding Up Validation
+
+In most cases, the validation spec will remain the same for each call to a
+subroutine. In that case, you can speed up validation by defining the
+validation spec just once, rather than on each call to the subroutine:
+
+    my %spec = ( ... );
+    sub foo {
+        my %params = validate( @_, \%spec );
+    }
+
+You can also use the C<state> feature to do this:
+
+    use feature 'state';
+
+    sub foo {
+        state %spec = ( ... );
+        my %params = validate( @_, \%spec );
+    }
 
 =head1 "GLOBAL" OPTIONS
 
