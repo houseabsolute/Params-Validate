@@ -1,4 +1,4 @@
-0.96
+{{$NEXT}}
 
 - The XS version of the code always called Carp::confess, regardless of
   whether you provided your own on_fail callback. Reported by Scott Bolte. RT
