@@ -450,8 +450,18 @@ sub _normalize_named {
     return \%h;
 }
 
+my %Valid = map { $_ => 1 }
+    qw( callbacks can default depends isa optional regex type untaint  );
+
 sub _validate_one_param {
     my ( $value, $params, $spec, $id ) = @_;
+
+    for my $key ( keys %{$spec} ) {
+        unless ( $Valid{$key} ) {
+            $options->{on_fail}
+                ->(qq{"$key" is not an allowed validation spec key});
+        }
+    }
 
     if ( exists $spec->{type} ) {
         unless ( defined $spec->{type}

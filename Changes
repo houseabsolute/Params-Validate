@@ -7,6 +7,11 @@
 - There were a couple spots that called eval without localizing $@ first. RT
   #58087.
 
+- The parameters for each key validation (can, isa, regex) are now checked,
+  and an error is thrown if any of the keys are not valid. Basically, we
+  validate the validation spec. Based on a patch by Andreas Faafeng. RT
+  #57831.
+
 - This module now requires Perl 5.8.1.
 
 
