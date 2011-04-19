@@ -12,8 +12,6 @@ BEGIN {
 
     @ISA = 'Exporter';
 
-    $VERSION = '0.95';
-
     my %tags = (
         types => [
             qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
