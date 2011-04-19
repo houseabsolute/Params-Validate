@@ -19,20 +19,20 @@
 - Switched to version 2.0 of the Artistic License.
 
 
-0.95 2010-02-16
+0.95    2010-02-16
 
 - Skip t/29-taint-mode.t entirely, since it seems to randomly fail for people,
   despite already being marked a todo test.
 
 
-0.94 2009-12-01
+0.94    2009-12-01
 
 - Removed the Makefile.PL entirely. If it was used then the XS code was never
   built, because I'm using the Module::Build XS layout. Reported by jawnsy on
   IRC.
 
 
-0.93 2009-11-30
+0.93    2009-11-30
 
 - If the pure Perl version of validate() received a hash reference it would
   alter that reference directly. Reported by Paul Eckhardt. RT #51155.
@@ -40,7 +40,7 @@
 - Author-only tests now only run if $ENV{AUTHOR_TESTING} is true. RT #49890.
 
 
-0.92 Sep 25, 2009
+0.92    2009-09-25
 
 - Switched to Module::Build and don't try to detect a compiler. If you want to
   force a Perl-only build, run the Build.PL as "perl Build.PL --pp". Addresses
@@ -52,14 +52,14 @@
 - Require Attribute::Handlers 0.79. Reported by Olivier Mengué. RT #44066.
 
 
-0.91 May 3, 2008
+0.91    2008-05-03
 
 - The fix for handling @_'s readonly-ness introduced a refcounting
   bug. One symptom of this was a failing Log::Dispatch test. Reported
   by Andreas Koenig. RT #35608.
 
 
-0.90 May 1, 2008
+0.90    2008-05-01
 
 - Make the XS version of Params::Validate recognize regexp objects
   with Perl 5.11.0-to-be. Patch by Andreas Koenig. RT #32872.
@@ -69,7 +69,7 @@
   would be marked readonly. Reported by W J Moore. RT #34410.
 
 
-0.89 October 31, 2007
+0.89    2007-10-31
 
 - With validation turned off, the pure Perl version incorrectly
   ignored an odd number of parameters when a hash was expected (no
@@ -87,7 +87,7 @@
 - More tests are skipped on 5.6.0.
 
 
-0.88 March 7, 2007
+0.88    2007-03-07
 
 - The XS version threw an error when it attempted to do "isa" or "can"
   validation on a value that was not a string or object, such as undef
@@ -98,7 +98,7 @@
   Clark. Fixes RT #24458.
 
 
-0.87 January 18, 2007
+0.87    2007-01-18
 
 - When determining the caller of a function in the XS version, use
   Perl's caller() function rather than CopSTASHPV. The caller()
@@ -108,7 +108,7 @@
   Weisberg for pointing this out.
 
 
-0.86 August 9, 2006
+0.86    2006-08-09
 
 * I cannot get this module to compile with Perl 5.00504 any more. I
   get errors from including CORE/perl.h, so the problem may be outside
@@ -124,7 +124,7 @@
   now caught and a useful error is thrown. RT #9660.
 
 
-0.85 June 7, 2006
+0.85    2006-06-07
 
 - Compiles without warnings under gcc's -Wall. Warnings reported by
   Scott Godin.
@@ -132,7 +132,7 @@
 - Turned off inlining with HP-UX compiler. RT #19763.
 
 
-0.84 May 29, 2006
+0.84    2006-05-29
 
 - The XS version of the code used Carp::croak to report failures,
   while the Perl version used Carp::confess. The module has always
@@ -142,7 +142,7 @@
   have ExtUtils::CBuilder installed.
 
 
-0.83 May 28, 2006
+0.83    2006-05-28
 
 - Change how C compiler detection is done in the Makefile.PL so it
   does not rely on having make on the system. The new way should work
@@ -157,7 +157,7 @@
   by Duncan Salada.
 
 
-0.82 May 9, 2006
+0.82    2006-05-09
 
 - Disabled function inlining if _MSC_VER is defined. Patch from Audrey
   Tang.
@@ -168,7 +168,7 @@
   for the XS version in 0.75.
 
 
-0.81 Apr 1, 2006
+0.81    2006-04-01
 
 - Speed up no validation in XS version by short-circuiting immediately
   if validation is off. This gives a noticeable speed boost when
@@ -178,13 +178,13 @@
   version. Patch by Daisuke Maki.
 
 
-0.80 Jan 22, 2006
+0.80    2006-01-22
 
 - If a undef value was given for a parameter that had a regex in its
   spec, a warning was emitted. RT #15196.
 
 
-0.79 Jan 13, 2006
+0.79    2006-01-13
 
 - The XS version of Params::Validate did not work if a spec hash
   reference was marked Readonly using Readonly::XS.
@@ -195,13 +195,13 @@
   regions).
 
 
-0.78 Jul 19, 2005
+0.78    2005-07-19
 
 - If an overloaded object returned false in boolean context, then it
   would always fail "can" tests. Patch by Chi-Fung Fan.
 
 
-0.77 Apr 29, 2005
+0.77    2005-04-29
 
 - Neither --xs or --pm worked with the Makefile.PL the way they were
   supposed to. Reported by Doug Treder.
@@ -213,20 +213,26 @@
   This was broken since 0.75, at least.
 
 
-0.76 Nov 13, 2004 (The "Cancan some more" release)
+0.76    2004-11-13
+
+(The "Cancan some more" release)
 
 - Make sure that both the XS and Perl versions give the same error
   when checking "can" for an undefined value.
 
 
-0.75 Nov 13, 2004 (The "Cancan" release)
+0.75    2004-11-13
+
+(The "Cancan" release)
 
 - When checking if a parameter has a method, P::V now calls the ->can
   method on the parameter, rather than calling UNIVERSAL::can()
   directly. Requested by Don Armstrong.
 
 
-0.74 Apr 4, 2004 (The "I hate old Perls" release)
+0.74    2004-04-04
+
+(The "I hate old Perls" release)
 
 - Sometimes, but not always, Perl 5.00504 and 5.00503 cannot produce a
   string value for a glob (as opposed to glob reference) parameter.
@@ -235,7 +241,9 @@
   Sigh ...
 
 
-0.73 Mar 28, 2004  (The "YAPC::Taipei release party" release)
+0.73    2004-03-28
+
+(The "YAPC::Taipei release party" release)
 
 - The minimum number of arguments required was reported incorrectly by
   the XS code when a call to validate_pos() failed because too few
@@ -245,7 +253,7 @@
   if it passes its validation checks.
 
 
-0.72 Dec 3, 2003
+0.72    2003-12-03
 
 - If a normalize_keys callback returns the same normalized key for two
   different inputs, Params::Validate will die.
@@ -260,14 +268,14 @@
   Krieger.
 
 
-0.71 Dec 2, 2003
+0.71    2003-12-02
 
 - Suppressed some annoying "subroutine redefined" warnings if the pure
   Perl version ended up being loaded after attempting to load the XS
   version.
 
 
-0.70 Nov 23, 2003
+0.70    2003-11-23
 
 - Any validation call that used a callback leaked memory when using
   the XS version. This was introduced in 0.67, when callbacks started
@@ -275,7 +283,7 @@
   Reported by Eugene van der Pijll.
 
 
-0.69 Nov 3, 2003
+0.69    2003-11-03
 
 - The key normalization feature introduced in 0.66 leaked one SV*
   every time a parameter _hash_ was run through the XS version of
@@ -285,13 +293,13 @@
   Reported by Ruslan.
 
 
-0.68 Oct 21, 2003
+0.68    2003-10-21
 
 - Added spiffy new parameter dependency feature. Implemented by
   Daisuke Maki.
 
 
-0.67 Oct 10, 2003
+0.67    2003-10-10
 
 - The test count for 06-option.t was off. Reported by Christian
   Schaffner.
@@ -304,7 +312,7 @@
   This was introduced in 0.66.
 
 
-0.66 Oct 08, 2003
+0.66    2003-10-08
 
 - Skip a few more tests under Perl 5.6.0. Patch from Christian
   Schaffner.
@@ -319,7 +327,7 @@
   deprecated. Use the new "normalize" feature instead.
 
 
-0.65 Aug 07, 2003
+0.65    2003-08-07
 
 - It is now possible to turn validation on and off at runtime. To
   make this easier, it can be set via the PERL_NO_VALIDATION
@@ -327,7 +335,7 @@
   variable. Go ahead, shoot yourself in the foot with it!
 
 
-0.64 Jul 14, 2003
+0.64    2003-07-14
 
 - Fix an XS compilation error under 5.6.1:
 
@@ -335,7 +343,7 @@
  Validate.xs:381: `perl_on_error' undeclared (first use in this function)
 
 
-0.63 Jul 14, 2003
+0.63    2003-07-14
 
 - The XS version of validate_with failed if the params key contained
   an array reference containing a single hash reference. Since this
@@ -343,19 +351,19 @@
   version. Reported by Diab Jerius. Bug #2791 on rt.cpan.org.
 
 
-0.62 Jun 25, 2003
+0.62    2003-06-25
 
 - Remove a warn() statement left in from debugging. Reported by Shane
   McCarron.
 
 
-0.61 Jun 23, 2003
+0.61    2003-06-23
 
 - The last release had some debugging code left in which tried to load
   Devel::StackTrace. Reported by Iain Truskett.
 
 
-0.60 Jun 21, 2003
+0.60    2003-06-21
 
 - Fixed a weird segfault that could occur with Perl 5.6.1 when a
   user-defined on_fail callback died with an object as its argument.
@@ -369,7 +377,7 @@
 - Use XSLoader in preference to Dynaloader with Perl 5.6.0+.
 
 
-0.59 May 24, 2003
+0.59    2003-05-24
 
 - If an odd number of parameters was given to validate() in the array
   as its first argument, the error given would be different depending
@@ -382,20 +390,20 @@
   added.
 
 
-0.58 Apr 03, 2003
+0.58    2003-04-03
 
 - Fix some compiler warnings from MS Visual Studio 6. Reported by Ron
   Hill.
 
 
-0.57 Feb 28, 2003
+0.57    2003-02-28
 
 - When called from the main body of a script, the validation routines
   would cause an undefined value warning if validation failed.
   Reported by Britton Kerin and fixed by Ilya Martynov.
 
 
-0.56 Feb 24, 2003
+0.56    2003-02-24
 
 - The XS code that handled callbacks expected all callbacks to return
   an integer, instead of simply testing the returned value for truth.
@@ -404,37 +412,37 @@
   Dick for another module I wrote (Lingua::ZH::CCDICT).
 
 
-0.55 Feb 21, 2003
+0.55    2003-02-21
 
 - Fixed Params::Validate for Perl configurations where sizeof(IV) !=
   sizeof(int). Reported by Alain Barbet.
 
 
-0.54 Feb 20, 2003
+0.54    2003-02-20
 
 - Something around test 5 in 06-options.t appear to cause Perl to
   die/segfault/something under 5.6.0. These tests will be skipped
   with 5.6.0 in the future. Reported by Christian Schaffner.
 
 
-0.53 Feb 19, 2003
+0.53    2003-02-19
 
 - When testing for a compiler, use nmake on Win32. Implemented by
   Ronald Hill.
 
 
-0.52 Feb 14, 2003
+0.52    2003-02-14
 
 - Added regex validation option.
 
 
-0.51 Jan 14, 2003
+0.51    2003-01-14
 
 - Added copyright info to each source file. Added LICENSE file to
   distro.
 
 
-0.50 Jan 9, 2003
+0.50    2003-01-09
 
 - Added an XS implementation, written by Ilya Martynov. The pure Perl
   implementation is still included as a fallback for users who do not
@@ -446,7 +454,7 @@
   with earlier versions of Perl.
 
 
-0.24  Jul 19, 2002
+0.24    2002-07-19
 
 - Fix Attribute::Params::Validate docs to show that attribute
   declaration must have open paren immediately after "Validate" or
@@ -457,27 +465,27 @@
   Schwartz.
 
 
-0.23 Jul 19, 2002
+0.23    2002-07-19
 
 - Argh. In 0.22 some of the tests printed their test counts (1..x)
   after doing the tests. This works with newer versions of
   Test::Harness so I didn't notice it. Reported by Peter Asemann.
 
 
-0.22 Jul 15, 2002
+0.22    2002-07-15
 
 - The last version's tarball was a mess, and had blib and other junk
   in it. This is a nice clean one.
 
 
-0.21 Jul 14, 2002
+0.21    2002-07-14
 
 - The various validation functions are now context sensitive, and will
   return a reference in scalar context. This may be a helpful
   speedup, especially for large parameter lists.
 
 
-0.20 Jul 13, 2002
+0.20    2002-07-13
 
 - Improved the speed of both validate() and validate_pos() by about
   20-25%.
@@ -495,14 +503,14 @@
   backwards incompatibility.
 
 
-0.18 June 18, 2002
+0.18    2002-06-18
 
 - Added a new function, validate_with(), that allow you to set various
   options on a per-invocation basis, rather than on a per-package
   basis. Patch by Ken Williams.
 
 
-0.17 Jun 15, 2002
+0.17    2002-06-15
 
 - Fix a doc nit where I had a wrong code example. Reported by Britton
   Kerin.
@@ -511,7 +519,7 @@
   you to change how errors are reported by Params::Validate.
 
 
-0.16 May 11, 2002
+0.16    2002-05-11
 
 - Improve skipping of tests when run with 5.6.0. Patch by Ken
   Williams.
@@ -519,20 +527,20 @@
 - Silence an uninit value warning
 
 
-0.15 Apr 19, 2002
+0.15    2002-04-19
 
 - validate_pos would die stupidly when it received an array with an
   odd number of elements.
 
 
-0.14 Mar 14, 2002
+0.14    2002-03-14
 
 - validate_pos used exists on an array element, which only works with
   Perl 5.6.0. This release makes it work 5.00503 again. Reported by
   Jon Swartz.
 
 
-0.13 Mar 10, 2002
+0.13    2002-03-10
 
 - Apply some of the same optimizations to positional parameters. The
   speedup here seems to be about 7-8%.
@@ -540,7 +548,7 @@
 - Fix stupid bug in 04-defaults tests.
 
 
-0.12 Mar 10, 2002
+0.12    2002-03-10
 
 - Add BOOLEAN type (equivalent to UNDEF | SCALAR). Suggested by Ken
   Williams.
@@ -558,13 +566,13 @@
   parameters.
 
 
-0.11 Jan 04, 2002
+0.11    2002-01-04
 
 - Accidentally removed the set_options function (in 0.08). Though this
   will go away in the future it isn't happening quite yet.
 
 
-0.10 Jan 04, 2002
+0.10    2002-01-04
 
 - Apparently making a tarball for CPAN is beyond my limited abilities.
   0.09 was missing a file needed for tests. Also reported by Blair
@@ -574,13 +582,13 @@
   Add a message saying you can ignore them.
 
 
-0.09 Jan 04, 2002
+0.09    2002-01-04
 
 - I forgot to put the Makefile.PL in the MANIFEST. I am dumb.
   Reported by Blair Zajac.
 
 
-0.08 Jan 03, 2002
+0.08    2002-01-03
 
 - Explicitly mention that, by default, Params::Validate uses
   Carp::confess to report a validation failure. Suggested by Mark
@@ -601,7 +609,7 @@
   loaded.  If you have a problem with this, let me know.
 
 
-0.07 Sep 23, 2001
+0.07    2001-09-23
 
 - Fix problem with CPAN shell's 'r' command that
   Attribute::Params::Validate was causing with older Perl's. Reported
@@ -612,14 +620,14 @@
   submitted by Ken Williams.
 
 
-0.06 Aug 23, 2001
+0.06    2001-08-23
 
 - Require Attribute::Handlers if using Perl 5.6.0+.
 
 - fix doc nits.
 
 
-0.05 Aug 23, 2001
+0.05    2001-08-23
 
 - Added Attribute::Params::Validate - do validation via attributes!
 
@@ -629,12 +637,12 @@
   Swartz for the suggestion.
 
 
-0.04 Apr 14, 2001
+0.04    2001-04-14
 
 - Tweaks to make the code work under 5.00404
 
 
-0.03 Mar 17, 2001
+0.03    2001-03-17
 
 - Make sure all error messages contain the name of the subroutine that
   was called.
@@ -646,12 +654,12 @@
   produces a more useful error message.
 
 
-0.02 Mar 6, 2001
+0.02    2001-03-06
 
 - Fix a bug in the test suite that caused failures in 5.6.0.
 
 
-0.01 Feb 16, 2001
+0.01    2001-02-16
 
 - Original release
 
