@@ -704,7 +704,7 @@ via email at bug-params-validate@rt.cpan.org.
 
 Support questions can be sent to Dave at autarch@urth.org.
 
-The code repository is at https://svn.urth.org/svn/Params-Validate/
+The code repository is at http://hg.urth.org/hg/Params-Validate
 
 =head1 DONATIONS
 
