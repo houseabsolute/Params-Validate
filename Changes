@@ -1,3 +1,12 @@
+0.96
+
+- The XS version of the code always called Carp::confess, regardless of
+  whether you provided your own on_fail callback. Reported by Scott Bolte. RT
+  #66359.
+
+- This module now requires Perl 5.8.1.
+
+
 0.95 2010-02-16
 
 - Skip t/29-taint-mode.t entirely, since it seems to randomly fail for people,
