@@ -1,4 +1,4 @@
-use 5.006001;
+use 5.008001;
 
 use strict;
 use warnings;
@@ -16,6 +16,7 @@ my $builder = Module::Build->new(
         'Attribute::Handlers' => '0.79',
         'Test::More'          => '0',
         'Scalar::Util'        => '1.10',
+        perl                  => '5.8.1',
     },
     build_requires => {
         'ExtUtils::CBuilder' => '0',

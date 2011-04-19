@@ -77,34 +77,8 @@
                     } \
                 } STMT_END
 
-    /* These macros are used because Perl 5.6.1 (and presumably 5.6.0)
-           have problems if we try to die directly from XS code.  So instead,
-           we just set some global variables and return 0.  For 5.6.0,
-           validate(), validate_pos(), and validate_with() are thin Perl level
-           wrappers which localize these globals, call the XS sub, and then
-           check the globals afterwards. */
-
-#if (PERL_VERSION == 6)          /* 5.6.0 or 5.6.1 */
-#define FAIL(message, options) \
-    { \
-        SV* perl_error; \
-        SV* perl_on_fail; \
-        SV* on_fail; \
-        perl_error = get_sv("Params::Validate::ERROR", 0); \
-        if (! perl_error) \
-            croak("Cannot retrieve $Params::Validate::ERROR\n"); \
-        perl_on_fail = get_sv("Params::Validate::ON_FAIL", 0); \
-        if (! perl_on_fail) \
-            croak("Cannot retrieve $Params::Validate::ON_FAIL\n"); \
-        SvSetSV(perl_error, message); \
-        on_fail = get_on_fail(options); \
-        SvSetSV(perl_on_fail, on_fail); \
-        return 0; \
-    }
-#else                            /* any other version*/
 #define FAIL(message, options) \
     validation_failure(message, options);
-#endif                           /* PERL_VERSION */
 
 /* module initialization */
 static void
@@ -257,12 +231,7 @@ get_type(SV* sv) {
 
 
 /* get an article for given string */
-INLINE
-#if (PERL_VERSION >= 6)          /* Perl 5.6.0+ */
-static const char*
-#else
-static char*
-#endif
+INLINE static const char*
 article(SV* string) {
     STRLEN len;
     char* rawstr;
@@ -283,22 +252,6 @@ article(SV* string) {
 }
 
 
-#if (PERL_VERSION == 6)          /* 5.6.0 or 5.6.1 */
-static SV*
-get_on_fail(HV* options) {
-    SV** temp;
-
-    if ((temp = hv_fetch(options, "on_fail", 7, 0))) {
-        SvGETMAGIC(*temp);
-        return *temp;
-    }
-    else {
-        return &PL_sv_undef;
-    }
-}
-#endif                           /* PERL_VERSION */
-
-#if (PERL_VERSION != 6)          /* not used with 5.6.0 or 5.6.1 */
 /* raises exception either using user-defined callback or using
    built-in method */
 static void
@@ -322,7 +275,7 @@ validation_failure(SV* message, HV* options) {
         PUTBACK;
         call_sv(on_fail, G_DISCARD);
     }
-
+    
     /* by default resort to Carp::confess for error reporting */
     {
         dSP;
@@ -335,7 +288,6 @@ validation_failure(SV* message, HV* options) {
 
     return;
 }
-#endif                           /* PERL_VERSION */
 
 /* get called subroutine fully qualified name */
 static SV*
@@ -358,12 +310,6 @@ get_called(HV* options) {
         else {
             frame = 1;
         }
-
-        /* With 5.6.0 & 5.6.1 there is an extra wrapper around the
-           validation subs which we want to ignore */
-        #if (PERL_VERSION == 6)
-        frame++;
-        #endif
 
         buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
         SvTAINTED_off(buffer);
@@ -803,16 +749,11 @@ get_options(HV* options) {
     HV* ret;
     SV** temp;
     char* pkg;
-    #if (PERL_VERSION != 6)
     SV* buffer;
     SV* caller;
-    #endif
 
     ret = (HV*) sv_2mortal((SV*) newHV());
 
-    #if (PERL_VERSION == 6)
-    pkg = SvPV_nolen(get_sv("Params::Validate::CALLER", 0));
-    #else
     buffer = sv_2mortal(newSVpv("caller(0)", 0));
     SvTAINTED_off(buffer);
 
@@ -823,7 +764,7 @@ get_options(HV* options) {
     else {
         pkg = SvPV_nolen(caller);
     }
-    #endif
+
     /* get package specific options */
     OPTIONS = get_hv("Params::Validate::OPTIONS", 1);
     if ((temp = hv_fetch(OPTIONS, pkg, strlen(pkg), 0))) {
