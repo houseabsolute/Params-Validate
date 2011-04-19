@@ -47,11 +47,9 @@ BEGIN {
 
 1;
 
+# ABSTRACT: Validate method/function parameters
+
 __END__
-
-=head1 NAME
-
-Params::Validate - Validate method/function parameters
 
 =head1 SYNOPSIS
 
@@ -787,15 +785,5 @@ best.
 To donate, log into PayPal and send money to autarch@urth.org or use
 the button on this page:
 L<http://www.urth.org/~autarch/fs-donation.html>
-
-=head1 AUTHORS
-
-Dave Rolsky, <autarch@urth.org> and Ilya Martynov <ilya@martynov.org>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2004-2007 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut

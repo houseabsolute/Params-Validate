@@ -48,11 +48,9 @@ BEGIN {
 
 1;
 
+# ABSTRACT: XS implementation of Params::Validate
+
 __END__
-
-=head1 NAME
-
-Params::ValidateXS - XS implementation of Params::Validate
 
 =head1 SYNOPSIS
 
@@ -62,11 +60,5 @@ Params::ValidateXS - XS implementation of Params::Validate
 
 This is an XS implementation of Params::Validate.  See the
 Params::Validate documentation for details.
-
-=head1 COPYRIGHT
-
-Copyright (c) 2004-2007 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut

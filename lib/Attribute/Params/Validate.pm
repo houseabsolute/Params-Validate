@@ -28,7 +28,6 @@ our %EXPORT_TAGS = (
 );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'validation_options' );
 
-$VERSION = sprintf '%2d.%02d', q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
 
 sub UNIVERSAL::Validate : ATTR(CODE, INIT) {
     _wrap_sub( 'named', @_ );
@@ -88,10 +87,6 @@ EOF
 }
 
 1;
-
-=head1 NAME
-
-Attribute::Params::Validate - Validate method/function parameters using attributes
 
 =head1 SYNOPSIS
 
@@ -174,10 +169,6 @@ attribute on a single line, or Perl will complain.
 =head1 SEE ALSO
 
 Params::Validate
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
 
 =cut
 
