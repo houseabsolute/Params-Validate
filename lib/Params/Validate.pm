@@ -34,6 +34,7 @@ BEGIN {
 
     $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
+    local $@;
     eval { require Params::ValidateXS; } unless $ENV{PV_TEST_PERL};
 
     if ( $@ || $ENV{PV_TEST_PERL} ) {

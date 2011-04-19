@@ -495,7 +495,12 @@ sub _validate_one_param {
 
     if ( exists $spec->{isa} ) {
         foreach ( ref $spec->{isa} ? @{ $spec->{isa} } : $spec->{isa} ) {
-            unless ( eval { $value->isa($_) } ) {
+            unless (
+                do {
+                    local $@;
+                    eval { $value->isa($_) };
+                }
+                ) {
                 my $is = ref $value ? ref $value : 'plain scalar';
                 my $article1 = $_  =~ /^[aeiou]/i ? 'an' : 'a';
                 my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
@@ -511,7 +516,12 @@ sub _validate_one_param {
 
     if ( exists $spec->{can} ) {
         foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} ) {
-            unless ( eval { $value->can($_) } ) {
+            unless (
+                do {
+                    local $@;
+                    eval { $value->can($_) };
+                }
+                ) {
                 my $called = _get_called(1);
 
                 $options->{on_fail}
