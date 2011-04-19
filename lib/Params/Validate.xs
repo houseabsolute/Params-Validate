@@ -7,6 +7,9 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+#define NEED_eval_pv
+#define NEED_newCONSTSUB
+#define NEED_sv_2pv_flags
 #define NEED_sv_2pv_nolen
 #include "ppport.h"
 
@@ -106,7 +109,7 @@ INLINE static bool
 no_validation() {
     SV* no_v;
 
-    no_v = perl_get_sv("Params::Validate::NO_VALIDATION", 0);
+    no_v = get_sv("Params::Validate::NO_VALIDATION", 0);
     if (! no_v)
         croak("Cannot retrieve $Params::Validate::NO_VALIDATION\n");
 
