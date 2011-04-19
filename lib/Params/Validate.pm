@@ -1,6 +1,6 @@
 package Params::Validate;
 
-use 5.006001;
+use 5.008001;
 
 use strict;
 use warnings;
@@ -481,9 +481,9 @@ declared as part of your parameter specification.
 
 =head2 Specifying defaults
 
-If the C<validate()> or C<validate_pos()> functions are called in a
-list context, they will return an array or hash containing the
-original parameters plus defaults as indicated by the validation spec.
+If the C<validate()> or C<validate_pos()> functions are called in a list
+context, they will return a hash or containing the original parameters plus
+defaults as indicated by the validation spec.
 
 If the function is not called in a list context, providing a default
 in the validation spec still indicates that the parameter is optional.
@@ -496,7 +496,7 @@ Simple examples of defaults would be:
 
     my %p = validate( @_, { foo => 1, bar => { default => 99 } } );
 
-    my @p = validate( @_, 1, { default => 99 } );
+    my @p = validate_pos( @_, 1, { default => 99 } );
 
 In scalar context, a hash reference or array reference will be
 returned, as appropriate.
@@ -556,12 +556,11 @@ You can also use the C<state> feature to do this:
 
 =head1 "GLOBAL" OPTIONS
 
-Because the API for the C<validate()> and C<validate_pos()> functions
-does not make it possible to specify any options other than the the
-validation spec, it is possible to set some options as
-pseudo-'globals'.  These allow you to specify such things as whether
-or not the validation of named parameters should be case sensitive,
-for one example.
+Because the API for the C<validate()> and C<validate_pos()> functions does not
+make it possible to specify any options other than the validation spec, it is
+possible to set some options as pseudo-'globals'.  These allow you to specify
+such things as whether or not the validation of named parameters should be
+case sensitive, for one example.
 
 These options are called pseudo-'globals' because these settings are
 B<only applied to calls originating from the package that set the
@@ -619,7 +618,7 @@ example:
 
 The callback must return a defined value.
 
-If a callback is given than the deprecated "ignore_case" and
+If a callback is given then the deprecated "ignore_case" and
 "strip_leading" options are ignored.
 
 =item * allow_extra => $boolean
