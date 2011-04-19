@@ -17,11 +17,11 @@ use vars qw($VERSION);
 our @ISA = qw(Exporter);
 
 my %tags = ( types => [ qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF SCALARREF HANDLE UNDEF OBJECT ) ],
-	   );
+       );
 
 our %EXPORT_TAGS = ( 'all' => [ qw( validation_options ), map { @{ $tags{$_} } } keys %tags ],
-		     %tags,
-		   );
+             %tags,
+           );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'validation_options' );
 
 $VERSION = sprintf '%2d.%02d', q$Revision: 1.7 $ =~ /(\d+)\.(\d+)/;
@@ -49,43 +49,43 @@ sub _wrap_sub
     my $is_method = $attributes{method};
 
     {
-	no warnings 'redefine';
-	no strict 'refs';
+    no warnings 'redefine';
+    no strict 'refs';
 
-	# An unholy mixture of closure and eval.  This is done so that
-	# the code to automatically create the relevant scalars from
-	# the hash of params can create the scalars in the proper
-	# place lexically.
+    # An unholy mixture of closure and eval.  This is done so that
+    # the code to automatically create the relevant scalars from
+    # the hash of params can create the scalars in the proper
+    # place lexically.
 
-	my $code = <<"EOF";
+    my $code = <<"EOF";
 sub
 {
     package $package;
 EOF
 
-	$code .= "    my \$object = shift;\n" if $is_method;
+    $code .= "    my \$object = shift;\n" if $is_method;
 
-	if ($type eq 'named')
-	{
+    if ($type eq 'named')
+    {
             $params = {@p};
-	    $code .= "    Params::Validate::validate(\@_, \$params);\n";
-	}
-	else
-	{
-	    $code .= "    Params::Validate::validate_pos(\@_, \@p);\n";
-	}
+        $code .= "    Params::Validate::validate(\@_, \$params);\n";
+    }
+    else
+    {
+        $code .= "    Params::Validate::validate_pos(\@_, \@p);\n";
+    }
 
-	$code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
+    $code .= "    unshift \@_, \$object if \$object;\n" if $is_method;
 
-	$code .= <<"EOF";
+    $code .= <<"EOF";
     \$referent->(\@_);
 }
 EOF
 
-	my $sub = eval $code;
-	die $@ if $@;
+    my $sub = eval $code;
+    die $@ if $@;
 
-	*{$subname} = $sub;
+    *{$subname} = $sub;
     }
 }
 
