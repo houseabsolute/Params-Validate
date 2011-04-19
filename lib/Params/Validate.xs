@@ -275,9 +275,8 @@ validation_failure(SV* message, HV* options) {
         PUTBACK;
         call_sv(on_fail, G_DISCARD);
     }
-    
-    /* by default resort to Carp::confess for error reporting */
-    {
+    else {
+        /* by default resort to Carp::confess for error reporting */
         dSP;
         perl_require_pv("Carp.pm");
         PUSHMARK(SP);
