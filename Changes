@@ -12,7 +12,11 @@
   validate the validation spec. Based on a patch by Andreas Faafeng. RT
   #57831.
 
+- Lots of little pod fixes. RT #61002.
+
 - This module now requires Perl 5.8.1.
+
+- Switched to version 2.0 of the Artistic License.
 
 
 0.95 2010-02-16

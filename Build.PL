@@ -1,73 +1,25 @@
-use 5.008001;
-
 use strict;
 use warnings;
 
 use Module::Build;
 
-my $force_pp = grep { $_ eq '--pp' } @ARGV;
+warn <<'EOF';
 
-my @pp = _make_pp_tests();
+  ********************************* WARNING **********************************
 
-my $builder = Module::Build->new(
-    module_name => 'Params::Validate',
-    license     => 'perl',
-    requires    => {
-        'Attribute::Handlers' => '0.79',
-        'Test::More'          => '0',
-        'Scalar::Util'        => '1.10',
-        perl                  => '5.8.1',
-    },
-    build_requires => {
-        'ExtUtils::CBuilder' => '0',
-        'Pod::Man'           => '1.14',
-        'Test::More'         => '0.88',
-    },
-    c_source       => 'c',
-    add_to_cleanup => \@pp,
-    create_readme  => 1,
-    sign           => 1,
-    meta_merge     => {
-        resources => {
-            bugtracker =>
-                'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Params-Validate',
-            repository =>
-                'http://hg.urth.org/hg/Params-Validate',
-        },
-    },
-);
+  This module uses Dist::Zilla for development. This Build.PL will let you run
+  the tests, but you are encouraged to install Dist::Zilla and the needed
+  plugins if you intend on doing any serious hacking.
 
-if ($force_pp) {
-    $builder->build_elements(
-        [ grep { $_ ne 'xs' } @{ $builder->build_elements() } ] );
-}
+  ****************************************************************************
 
-$builder->create_build_script();
+EOF
 
-sub _make_pp_tests {
-    return unless -d '.hg' || $ENV{AUTHOR_TESTING};
-
-    require File::Slurp;
-    File::Slurp->import(qw( read_file write_file ));
-
-    opendir my $dh, 't'
-        or die "Cannot read t: $!";
-
-    my @pp;
-    foreach my $file ( grep {/^\d.+\.t$/} readdir $dh ) {
-        next if $file !~ /^\d/;
-
-        my $test = read_file("t/$file");
-
-        my $bang = $test =~ /perl (-\w+)/ ? "#!perl $1\n\n" : q{};
-        $test
-            = $bang . "BEGIN { \$ENV{PV_TEST_PERL} = 1 }\n\n$test";
-
-        my $new_file = "t/pp_$file";
-        write_file( $new_file, $test );
-
-        push @pp, $new_file;
-    }
-
-    return @pp;
-}
+Module::Build->new(
+    module_name          => 'Params::Validate',
+    dist_abstract        => 'Whatever',
+    dist_version         => 42,
+    license              => 'artistic_2',
+    c_source             => 'c',
+    recursive_test_files => 1,
+)->create_build_script();
