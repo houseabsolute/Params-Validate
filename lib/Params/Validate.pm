@@ -8,7 +8,7 @@ use warnings;
 BEGIN {
     use Exporter;
 
-    use vars qw( %OPTIONS $options );
+    use vars qw( $NO_VALIDATION %OPTIONS $options );
 
     our @ISA = 'Exporter';
 
@@ -30,7 +30,7 @@ BEGIN {
     our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
     our @EXPORT = qw( validate validate_pos );
 
-    our $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
+    $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
     my $e = do {
         local $@;
