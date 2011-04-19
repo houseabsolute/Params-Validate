@@ -7,10 +7,10 @@ use warnings;
 
 BEGIN {
     use Exporter;
-    use vars qw( $VERSION @ISA @EXPORT @EXPORT_OK
-        %EXPORT_TAGS %OPTIONS $options $NO_VALIDATION );
 
-    @ISA = 'Exporter';
+    use vars qw( %OPTIONS $options );
+
+    our @ISA = 'Exporter';
 
     my %tags = (
         types => [
@@ -19,7 +19,7 @@ BEGIN {
         ],
     );
 
-    %EXPORT_TAGS = (
+    our %EXPORT_TAGS = (
         'all' => [
             qw( validate validate_pos validation_options validate_with ),
             map { @{ $tags{$_} } } keys %tags
@@ -27,10 +27,10 @@ BEGIN {
         %tags,
     );
 
-    @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-    @EXPORT = qw( validate validate_pos );
+    our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
+    our @EXPORT = qw( validate validate_pos );
 
-    $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
+    our $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
     my $e = do {
         local $@;
