@@ -4,7 +4,12 @@ use strict;
 use warnings;
 
 require XSLoader;
-XSLoader::load( 'Params::Validate', $Params::Validate::VERSION );
+XSLoader::load(
+    'Params::Validate',
+    exists $Params::Validate::{VERSION}
+    ? do { ${ $Params::Validate::{VERSION} } }
+    : 42
+);
 
 my $default_fail = sub {
     require Carp;
