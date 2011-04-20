@@ -456,6 +456,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
     SV** temp;
     IV   i;
 
+    /*
     HE* he;
     hv_iterinit(spec);
 
@@ -478,6 +479,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
             validation_failure(buffer, options);
         }
     }
+    */
 
     /* check type */
     if ((temp = hv_fetch(spec, "type", 4, 0))) {

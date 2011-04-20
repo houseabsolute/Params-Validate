@@ -456,12 +456,12 @@ my %Valid = map { $_ => 1 }
 sub _validate_one_param {
     my ( $value, $params, $spec, $id ) = @_;
 
-    for my $key ( keys %{$spec} ) {
-        unless ( $Valid{$key} ) {
-            $options->{on_fail}
-                ->(qq{"$key" is not an allowed validation spec key});
-        }
-    }
+    # for my $key ( keys %{$spec} ) {
+    #     unless ( $Valid{$key} ) {
+    #         $options->{on_fail}
+    #             ->(qq{"$key" is not an allowed validation spec key});
+    #     }
+    # }
 
     if ( exists $spec->{type} ) {
         unless ( defined $spec->{type}
