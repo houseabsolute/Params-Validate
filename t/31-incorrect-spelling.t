@@ -1,9 +1,12 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
+
+use Test::More;
 
 use Params::Validate qw( validate validate_pos SCALAR );
-use Test::More;
+
 
 {
     my @p = ( foo => 1, bar => 2 );
