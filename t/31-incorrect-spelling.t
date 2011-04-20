@@ -3,7 +3,7 @@
 use strict;
 
 use Params::Validate qw( validate validate_pos SCALAR );
-use Test::More tests => 3;
+use Test::More;
 
 {
     my @p = ( foo => 1, bar => 2 );
@@ -53,3 +53,5 @@ use Test::More tests => 3;
 
     like( $@, qr/is not an allowed validation spec key/ );
 }
+
+done_testing();
