@@ -7,6 +7,7 @@ use Test::More;
 
 use Params::Validate qw( validate validate_pos SCALAR );
 
+plan skip_all => 'Spec validation is disabled for now';
 
 {
     my @p = ( foo => 1, bar => 2 );
