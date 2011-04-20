@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- The spec validation added in 0.96 broke MooseX::Params::Validate, so it has
+  been removed until I can work out how to make the two modules play nice.
+
+
+0.96    2011-04-19
+
 - The XS version of the code always called Carp::confess, regardless of
   whether you provided your own on_fail callback. Reported by Scott Bolte. RT
   #66359.
