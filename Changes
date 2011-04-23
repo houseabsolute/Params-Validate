@@ -1,7 +1,9 @@
 {{$NEXT}}
 
+0.98    2011-04-23
+
 - Attribute::Params::Validate's $VERSION regressed in 0.96. It now manually
-  set to 1.07.
+  set to 1.07. Reported by tokuhirom. RT #67715.
 
 
 0.97    2011-04-19
