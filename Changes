@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- Attribute::Params::Validate's $VERSION regressed in 0.96. It now manually
+  set to 1.07.
+
+
+0.97    2011-04-19
+
 - The spec validation added in 0.96 broke MooseX::Params::Validate, so it has
   been removed until I can work out how to make the two modules play nice.
 
