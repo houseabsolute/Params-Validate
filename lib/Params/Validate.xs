@@ -1,8 +1,4 @@
-/* Copyright (c) 2000-2011 Dave Rolsky
-   All rights reserved.
-   This program is free software; you can redistribute it and/or
-   modify it under the same terms as Perl itself.  See the LICENSE
-   file that comes with this distribution for more details. */
+/* Copyright (c) 2000-2011 Dave Rolsky */
 
 #include "EXTERN.h"
 #include "perl.h"
