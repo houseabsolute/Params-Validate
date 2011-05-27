@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.99    2011-05-27
+
 - The metadata file - META.{json,yml} - had references to a different distro
   because of a copy and paste error. Reported by Bernhad Graf. RT #68514.
 
