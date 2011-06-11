@@ -709,18 +709,3 @@ sub _get_called {
 }
 
 1;
-
-# ABSTRACT: pure Perl implementation of Params::Validate
-
-__END__
-
-=head1 SYNOPSIS
-
-  See Params::Validate
-
-=head1 DESCRIPTION
-
-This is a pure Perl implementation of Params::Validate.  See the
-Params::Validate documentation for details.
-
-=cut

@@ -3,14 +3,6 @@ package Params::Validate;
 use strict;
 use warnings;
 
-require XSLoader;
-XSLoader::load(
-    'Params::Validate',
-    exists $Params::Validate::{VERSION}
-    ? do { ${ $Params::Validate::{VERSION} } }
-    : 42
-);
-
 my $default_fail = sub {
     require Carp;
     Carp::confess( $_[0] );
@@ -41,10 +33,6 @@ my $default_fail = sub {
     }
 }
 
-sub _check_regex_from_xs {
-    return ( defined $_[0] ? $_[0] : '' ) =~ /$_[1]/ ? 1 : 0;
-}
-
 BEGIN {
     *validate      = \&_validate;
     *validate_pos  = \&_validate_pos;
@@ -52,18 +40,3 @@ BEGIN {
 }
 
 1;
-
-# ABSTRACT: XS implementation of Params::Validate
-
-__END__
-
-=head1 SYNOPSIS
-
-  See Params::Validate
-
-=head1 DESCRIPTION
-
-This is an XS implementation of Params::Validate.  See the
-Params::Validate documentation for details.
-
-=cut
