@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fix documentation indexing on search.cpan.org. Reported by Lutz Gehlen. RT
+  #68756.
+
+
 0.99    2011-05-27
 
 - The metadata file - META.{json,yml} - had references to a different distro
