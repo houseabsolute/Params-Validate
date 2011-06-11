@@ -31,12 +31,24 @@ my $default_fail = sub {
 
         $OPTIONS{$caller} = \%opts;
     }
+
+    require XSLoader;
+    XSLoader::load(
+        'Params::Validate',
+        exists $Params::Validate::{VERSION}
+        ? do { ${ $Params::Validate::{VERSION} } }
+        : 42
+    );
 }
 
 BEGIN {
     *validate      = \&_validate;
     *validate_pos  = \&_validate_pos;
     *validate_with = \&_validate_with;
+}
+
+sub _check_regex_from_xs {
+    return ( defined $_[0] ? $_[0] : '' ) =~ /$_[1]/ ? 1 : 0;
 }
 
 1;
