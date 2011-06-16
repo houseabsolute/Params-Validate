@@ -6,7 +6,6 @@
 #define NEED_eval_pv
 #define NEED_newCONSTSUB
 #define NEED_sv_2pv_flags
-#define NEED_sv_2pv_nolen
 #include "ppport.h"
 
 #ifdef __GNUC__
