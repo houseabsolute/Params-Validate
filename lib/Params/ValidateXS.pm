@@ -36,6 +36,7 @@ my $default_fail = sub {
     XSLoader::load(
         'Params::Validate',
         exists $Params::Validate::{VERSION}
+            && defined ${ $Params::Validate::{VERSION} }
         ? ${ $Params::Validate::{VERSION} }
         : 42
     );
