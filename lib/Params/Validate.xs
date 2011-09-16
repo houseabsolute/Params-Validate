@@ -956,7 +956,7 @@ validate_named_depends(HV* p, HV* specs, HV* options) {
         he1 = hv_fetch_ent(specs, HeSVKEY_force(he), 0, HeHASH(he));
 
         if (he1 && SvROK(HeVAL(he1)) &&
-        SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
+            SvTYPE(SvRV(HeVAL(he1))) == SVt_PVHV) {
 
             if (hv_exists((HV*) SvRV(HeVAL(he1)), "depends", 7)) {
 
