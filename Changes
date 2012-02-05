@@ -1,7 +1,8 @@
 {{$NEXT}}
 
 - The generated Build.PL detects whether or not the machine it's run on has a
-  working compiler, and disables XS automatically if it doesn't.
+  working compiler, and disables XS automatically if it doesn't. Fixes RT
+  #44719.
 
 
 1.00    2011-06-11
