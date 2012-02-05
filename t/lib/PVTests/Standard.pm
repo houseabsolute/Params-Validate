@@ -6,7 +6,7 @@ use warnings;
 use Params::Validate qw(:all);
 
 use PVTests;
-use Test::More;
+use Test::More 0.88;
 
 my $String = 'foo';
 
