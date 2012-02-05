@@ -2,10 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 
-use Test::Requires {
-    'File::Temp' => 0,
-};
-
 use Devel::Peek qw( SvREFCNT );
 use File::Temp qw( tempfile );
 use Params::Validate qw( validate SCALAR HANDLE );
