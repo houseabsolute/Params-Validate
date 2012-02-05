@@ -761,8 +761,6 @@ via email at bug-params-validate@rt.cpan.org.
 
 Support questions can be sent to Dave at autarch@urth.org.
 
-The code repository is at http://hg.urth.org/hg/Params-Validate
-
 =head1 DONATIONS
 
 If you'd like to thank me for the work I've done on this module,
