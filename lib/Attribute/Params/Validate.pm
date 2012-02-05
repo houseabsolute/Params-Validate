@@ -1,11 +1,11 @@
 package Attribute::Params::Validate;
 
 use strict;
-use warnings;    # ok to use cause Attribute::Handlers needs 5.6.0+ as well
+use warnings;
 
 use attributes;
 
-use Attribute::Handlers;
+use Attribute::Handlers 0.79;
 
 # this will all be re-exported
 use Params::Validate qw(:all);

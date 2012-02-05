@@ -3,7 +3,7 @@ package Params::Validate;
 use strict;
 use warnings;
 
-use Scalar::Util ();
+use Scalar::Util 1.10 ();
 
 # suppress subroutine redefined warnings if we tried to load the XS
 # version and failed.
