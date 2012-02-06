@@ -1,6 +1,6 @@
 package Params::Validate;
 
-BEGIN { our $IMPLEMENTATION = 'PP' }
+BEGIN { $ENV{PARAMS_VALIDATE_IMPLEMENTATION} = 'PP' }
 use Params::Validate;
 
 1;
