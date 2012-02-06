@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.02    2012-02-06
+
 - The previous release never loaded the XS implementation, even if it had been
   compiled.
 
