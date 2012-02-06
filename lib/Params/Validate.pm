@@ -6,95 +6,61 @@ use strict;
 use warnings;
 
 use Exporter;
-use Module::Runtime 0.011 qw( require_module );
-use Package::Stash;
-use Try::Tiny;
+use Module::Implementation;
+use Params::Validate::Constants;
 
-use vars qw( $NO_VALIDATION %OPTIONS $options $IMPLEMENTATION );
+use vars qw( $NO_VALIDATION %OPTIONS $options );
 
-BEGIN {
-    our @ISA = 'Exporter';
+our @ISA = 'Exporter';
 
-    my %tags = (
-        types => [
-            qw( SCALAR ARRAYREF HASHREF CODEREF GLOB GLOBREF
-                SCALARREF HANDLE BOOLEAN UNDEF OBJECT )
+my %tags = (
+    types => [
+        qw(
+            SCALAR
+            ARRAYREF
+            HASHREF
+            CODEREF
+            GLOB
+            GLOBREF
+            SCALARREF
+            HANDLE
+            BOOLEAN
+            UNDEF
+            OBJECT
+            )
+    ],
+);
+
+our %EXPORT_TAGS = (
+    'all' => [
+        qw( validate validate_pos validation_options validate_with ),
+        map { @{ $tags{$_} } } keys %tags
+    ],
+    %tags,
+);
+
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
+our @EXPORT = qw( validate validate_pos );
+
+$NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
+
+{
+    my $loader = Module::Implementation::build_loader_sub(
+        implementations => [ 'XS', 'PP' ],
+        symbols         => [
+            qw(
+                validate
+                validate_pos
+                validate_with
+                validation_options
+                set_options
+                ),
         ],
     );
 
-    our %EXPORT_TAGS = (
-        'all' => [
-            qw( validate validate_pos validation_options validate_with ),
-            map { @{ $tags{$_} } } keys %tags
-        ],
-        %tags,
-    );
+    $ENV{PARAMS_VALIDATE_IMPLEMENTATION} = 'PP' if $ENV{PV_TEST_PERL};
 
-    our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-    our @EXPORT = qw( validate validate_pos );
-
-    $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
-
-    our $IMPLEMENTATION;
-
-    $IMPLEMENTATION = $ENV{PARAMS_VALIDATE_IMPLEMENTATION}
-        if exists $ENV{PARAMS_VALIDATE_IMPLEMENTATION};
-
-    $IMPLEMENTATION = 'PP' if $ENV{PV_TEST_PERL};
-
-    my $module;
-    my $err;
-    if ($IMPLEMENTATION) {
-        die "Invalid implementation requested: $IMPLEMENTATION"
-            unless $IMPLEMENTATION =~ /^(?:XS|PP)$/;
-
-        $module = "Params::Validate::$IMPLEMENTATION";
-        # Need to untaint this variable
-        ($module) = $module =~ /^(.+)$/;
-        try {
-            require_module($module);
-        }
-        catch {
-            require Carp;
-            Carp::croak(
-                "Could not load $module: $_");
-        };
-    }
-    else {
-        for my $impl ( 'XS', 'PP' ) {
-            try {
-                $module = "Params::Validate::$impl";
-                require_module($module);
-                $IMPLEMENTATION = $impl;
-            }
-            catch {
-                warn $_ if $ENV{PV_WARN_FAILED_IMPLEMENTATION};
-                $err .= $_;
-            };
-
-            last if $IMPLEMENTATION;
-        }
-    }
-
-    if ( !$IMPLEMENTATION ) {
-        require Carp;
-        Carp::croak(
-            "Could not find a suitable Params::Validate implementation: $err"
-        );
-    }
-
-    my $this_stash = Package::Stash->new(__PACKAGE__);
-    # Under taint mode, "$module" and $module are somehow not the same
-    # thing. I love taint mode.
-    my $impl_stash = Package::Stash->new("$module");
-
-    for my $sym ( $impl_stash->list_all_symbols('CODE') ) {
-        $this_stash->add_symbol( '&' . $sym => $module->can($sym) );
-    }
-
-    sub _implementation {
-        return $IMPLEMENTATION;
-    }
+    $loader->();
 }
 
 1;

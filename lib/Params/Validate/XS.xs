@@ -683,7 +683,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
         PUSHs(value);
         PUSHs(*temp);
         PUTBACK;
-        call_pv("Params::Validate::_check_regex_from_xs", G_SCALAR);
+        call_pv("Params::Validate::XS::_check_regex_from_xs", G_SCALAR);
         SPAGAIN;
         ok = POPi;
         PUTBACK;
