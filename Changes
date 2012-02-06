@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.03    2012-02-06
+
 - This release uses Module::Implementation to handle loading the XS or pure
   Perl implementation of Params::Validate.
 
