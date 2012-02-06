@@ -8,6 +8,8 @@ my $default_fail = sub {
     Carp::confess( $_[0] );
 };
 
+$IMPLEMENTATION = 'XS';
+
 {
     my %defaults = (
         ignore_case    => 0,

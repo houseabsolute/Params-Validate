@@ -8,7 +8,7 @@ use warnings;
 BEGIN {
     use Exporter;
 
-    use vars qw( $NO_VALIDATION %OPTIONS $options );
+    use vars qw( $NO_VALIDATION %OPTIONS $options $IMPLEMENTATION );
 
     our @ISA = 'Exporter';
 
@@ -41,6 +41,10 @@ BEGIN {
     if ( $e || $ENV{PV_TEST_PERL} ) {
         require Params::ValidatePP;
     }
+}
+
+sub _implementation {
+    return $IMPLEMENTATION;
 }
 
 1;

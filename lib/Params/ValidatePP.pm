@@ -25,6 +25,8 @@ BEGIN {
     sub BOOLEAN () { 1 | 256 }
 }
 
+$IMPLEMENTATION = 'PP';
+
 # Various internals notes (for me and any future readers of this
 # monstrosity):
 #
