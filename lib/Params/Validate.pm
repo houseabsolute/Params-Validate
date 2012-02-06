@@ -42,21 +42,29 @@ BEGIN {
 
     $IMPLEMENTATION = 'PP' if $ENV{PV_TEST_PERL};
 
+    my $module;
     my $err;
     if ($IMPLEMENTATION) {
+        die "Invalid implementation requested: $IMPLEMENTATION"
+            unless $IMPLEMENTATION =~ /^(?:XS|PP)$/;
+
+        $module = "Params::Validate::$IMPLEMENTATION";
+        # Need to untaint this variable
+        ($module) = $module =~ /^(.+)$/;
         try {
-            require_module("Params::Validate::$IMPLEMENTATION");
+            require_module($module);
         }
         catch {
             require Carp;
             Carp::croak(
-                "Could not load Params::Validate::$IMPLEMENTATION: $_");
+                "Could not load $module: $_");
         };
     }
     else {
         for my $impl ( 'XS', 'PP' ) {
             try {
-                require_module("Params::Validate::$impl");
+                $module = "Params::Validate::$impl";
+                require_module($module);
                 $IMPLEMENTATION = $impl;
             }
             catch {
@@ -75,12 +83,13 @@ BEGIN {
         );
     }
 
-    my $impl       = "Params::Validate::$IMPLEMENTATION";
     my $this_stash = Package::Stash->new(__PACKAGE__);
-    my $impl_stash = Package::Stash->new($impl);
+    # Under taint mode, "$module" and $module are somehow not the same
+    # thing. I love taint mode.
+    my $impl_stash = Package::Stash->new("$module");
 
     for my $sym ( $impl_stash->list_all_symbols('CODE') ) {
-        $this_stash->add_symbol( '&' . $sym => $impl->can($sym) );
+        $this_stash->add_symbol( '&' . $sym => $module->can($sym) );
     }
 
     sub _implementation {
