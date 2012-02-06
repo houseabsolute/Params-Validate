@@ -1,11 +1,15 @@
 {{$NEXT}}
 
+- This release uses Module::Implementation to handle loading the XS or pure
+  Perl implementation of Params::Validate.
+
+
 1.02    2012-02-06
 
 - The previous release never loaded the XS implementation, even if it had been
   compiled.
 
-- With newer version of Perl, the pure Perl implementation treated regexp
+- With newer versions of Perl, the pure Perl implementation treated regexp
   objects differently than the XS implementation. They should be treated as
   belonging to the SCALARREF type for backwards compatibility.
 
