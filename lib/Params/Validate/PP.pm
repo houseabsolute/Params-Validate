@@ -576,7 +576,6 @@ sub _validate_one_param {
 }
 
 {
-
     # if it UNIVERSAL::isa the string on the left then its the type on
     # the right
     my %isas = (
@@ -585,6 +584,7 @@ sub _validate_one_param {
         'CODE'   => CODEREF,
         'GLOB'   => GLOBREF,
         'SCALAR' => SCALARREF,
+        'REGEXP' => SCALARREF,
     );
     my %simple_refs = map { $_ => 1 } keys %isas;
 
