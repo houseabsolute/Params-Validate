@@ -29,7 +29,7 @@ my $default_fail = sub {
             $opts{$_} = $defaults{$_} unless exists $opts{$_};
         }
 
-        $OPTIONS{$caller} = \%opts;
+        $Params::Validate::OPTIONS{$caller} = \%opts;
     }
 
     use XSLoader;
