@@ -60,6 +60,7 @@ BEGIN {
                 $IMPLEMENTATION = $impl;
             }
             catch {
+                warn $_ if $ENV{PV_WARN_FAILED_IMPLEMENTATION};
                 $err .= $_;
             };
 
