@@ -1,13 +1,9 @@
-package Params::Validate;
+package Params::Validate::PP;
 
 use strict;
 use warnings;
 
 use Scalar::Util 1.10 ();
-
-# suppress subroutine redefined warnings if we tried to load the XS
-# version and failed.
-no warnings 'redefine';
 
 BEGIN {
     sub SCALAR ()    {1}
@@ -25,7 +21,7 @@ BEGIN {
     sub BOOLEAN () { 1 | 256 }
 }
 
-$IMPLEMENTATION = 'PP';
+our $options;
 
 # Various internals notes (for me and any future readers of this
 # monstrosity):
@@ -51,14 +47,14 @@ $IMPLEMENTATION = 'PP';
 # first array (which should be the caller's @_), and makes it a
 # reference.  Everything after is the parameters for validation.
 sub validate_pos (\@@) {
-    return if $NO_VALIDATION && !defined wantarray;
+    return if $Params::Validate::NO_VALIDATION && !defined wantarray;
 
     my $p = shift;
 
     my @specs = @_;
 
     my @p = @$p;
-    if ($NO_VALIDATION) {
+    if ($Params::Validate::NO_VALIDATION) {
 
         # if the spec is bigger that's where we can start adding
         # defaults
@@ -212,7 +208,7 @@ sub _validate_named_depends {
 }
 
 sub validate (\@$) {
-    return if $NO_VALIDATION && !defined wantarray;
+    return if $Params::Validate::NO_VALIDATION && !defined wantarray;
 
     my $p = $_[0];
 
@@ -247,7 +243,7 @@ sub validate (\@$) {
         $p     = _normalize_named($p);
     }
 
-    if ($NO_VALIDATION) {
+    if ($Params::Validate::NO_VALIDATION) {
         return (
             wantarray
             ? (
@@ -383,13 +379,13 @@ OUTER:
 }
 
 sub validate_with {
-    return if $NO_VALIDATION && !defined wantarray;
+    return if $Params::Validate::NO_VALIDATION && !defined wantarray;
 
     my %p = @_;
 
     local $options = _get_options( ( caller(0) )[0], %p );
 
-    unless ($NO_VALIDATION) {
+    unless ($Params::Validate::NO_VALIDATION) {
         unless ( exists $options->{called} ) {
             $options->{called} = ( caller( $options->{stack_skip} ) )[3];
         }
@@ -666,7 +662,7 @@ sub _validate_one_param {
             $opts{$_} = $defaults{$_} unless exists $opts{$_};
         }
 
-        $OPTIONS{$caller} = \%opts;
+        $Params::Validate::OPTIONS{$caller} = \%opts;
     }
 
     sub _get_options {
@@ -675,9 +671,9 @@ sub _validate_one_param {
         if (@_) {
 
             return (
-                $OPTIONS{$caller}
+                $Params::Validate::OPTIONS{$caller}
                 ? {
-                    %{ $OPTIONS{$caller} },
+                    %{ $Params::Validate::OPTIONS{$caller} },
                     @_
                     }
                 : { %defaults, @_ }
@@ -685,8 +681,8 @@ sub _validate_one_param {
         }
         else {
             return (
-                exists $OPTIONS{$caller}
-                ? $OPTIONS{$caller}
+                exists $Params::Validate::OPTIONS{$caller}
+                ? $Params::Validate::OPTIONS{$caller}
                 : \%defaults
             );
         }

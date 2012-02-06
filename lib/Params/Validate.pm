@@ -5,11 +5,14 @@ use 5.008001;
 use strict;
 use warnings;
 
+use Exporter;
+use Module::Runtime 0.011 qw( require_module );
+use Package::Stash;
+use Try::Tiny;
+
+use vars qw( $NO_VALIDATION %OPTIONS $options $IMPLEMENTATION );
+
 BEGIN {
-    use Exporter;
-
-    use vars qw( $NO_VALIDATION %OPTIONS $options $IMPLEMENTATION );
-
     our @ISA = 'Exporter';
 
     my %tags = (
@@ -32,19 +35,56 @@ BEGIN {
 
     $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
-    my $e = do {
-        local $@;
-        eval { require Params::ValidateXS; } unless $ENV{PV_TEST_PERL};
-        $@;
-    };
+    our $IMPLEMENTATION;
 
-    if ( $e || $ENV{PV_TEST_PERL} ) {
-        require Params::ValidatePP;
+    $IMPLEMENTATION = $ENV{PARAMS_VALIDATE_IMPLEMENTATION}
+        if exists $ENV{PARAMS_VALIDATE_IMPLEMENTATION};
+
+    $IMPLEMENTATION = 'PP' if $ENV{PV_TEST_PERL};
+
+    my $err;
+    if ($IMPLEMENTATION) {
+        try {
+            require_module("Params::Validate::$IMPLEMENTATION");
+        }
+        catch {
+            require Carp;
+            Carp::croak(
+                "Could not load Params::Validate::$IMPLEMENTATION: $_");
+        };
     }
-}
+    else {
+        for my $impl ( 'XS', 'PP' ) {
+            try {
+                require_module("Params::Validate::$impl");
+                $IMPLEMENTATION = $impl;
+            }
+            catch {
+                $err .= $_;
+            };
 
-sub _implementation {
-    return $IMPLEMENTATION;
+            last if $IMPLEMENTATION;
+        }
+    }
+
+    if ( !$IMPLEMENTATION ) {
+        require Carp;
+        Carp::croak(
+            "Could not find a suitable Params::Validate implementation: $err"
+        );
+    }
+
+    my $impl       = "Params::Validate::$IMPLEMENTATION";
+    my $this_stash = Package::Stash->new(__PACKAGE__);
+    my $impl_stash = Package::Stash->new($impl);
+
+    for my $sym ( $impl_stash->list_all_symbols('CODE') ) {
+        $this_stash->add_symbol( '&' . $sym => $impl->can($sym) );
+    }
+
+    sub _implementation {
+        return $IMPLEMENTATION;
+    }
 }
 
 1;

@@ -1512,7 +1512,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
 }
 
 
-MODULE = Params::Validate               PACKAGE = Params::Validate
+MODULE = Params::Validate::XS    PACKAGE = Params::Validate::XS
 
 BOOT:
     bootinit();

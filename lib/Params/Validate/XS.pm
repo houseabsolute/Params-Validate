@@ -1,4 +1,4 @@
-package Params::Validate;
+package Params::Validate::XS;
 
 use strict;
 use warnings;
@@ -7,8 +7,6 @@ my $default_fail = sub {
     require Carp;
     Carp::confess( $_[0] );
 };
-
-$IMPLEMENTATION = 'XS';
 
 {
     my %defaults = (
@@ -34,20 +32,13 @@ $IMPLEMENTATION = 'XS';
         $OPTIONS{$caller} = \%opts;
     }
 
-    require XSLoader;
+    use XSLoader;
     XSLoader::load(
-        'Params::Validate',
-        exists $Params::Validate::{VERSION}
-            && defined ${ $Params::Validate::{VERSION} }
-        ? ${ $Params::Validate::{VERSION} }
-        : 42
+        __PACKAGE__,
+        exists $Params::Validate::XS::{VERSION}
+        ? ${ $Params::Validate::XS::{VERSION} }
+        : (),
     );
-}
-
-BEGIN {
-    *validate      = \&_validate;
-    *validate_pos  = \&_validate_pos;
-    *validate_with = \&_validate_with;
 }
 
 sub _check_regex_from_xs {
