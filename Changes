@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.04    2012-02-08
+
 - Use the latest Module::XSOrPP dzil plugin to generate a saner Build.PL. No
   need update if you're using an earlier version.
 
