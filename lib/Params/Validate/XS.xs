@@ -1,4 +1,4 @@
-/* Copyright (c) 2000-2011 Dave Rolsky */
+/* Copyright (c) 2000-2012 Dave Rolsky */
 
 #include "EXTERN.h"
 #include "perl.h"
