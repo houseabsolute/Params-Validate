@@ -440,11 +440,6 @@ validate_can(SV* value, SV* method, SV* id, HV* options) {
     return 1;
 }
 
-#define VALID_KEY_COUNT 9
-static char* valid_keys[VALID_KEY_COUNT] = {
-  "callbacks", "can", "default", "depends", "isa", "optional", "regex", "type", "untaint"
-};
-
 /* validates specific parameter using supplied parameter specification */
 static IV
 validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* untaint) {
