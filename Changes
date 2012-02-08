@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Use the latest Module::XSOrPP dzil plugin to generate a saner Build.PL. No
+  need update if you're using an earlier version.
+
+
 1.03    2012-02-06
 
 - This release uses Module::Implementation to handle loading the XS or pure
