@@ -997,7 +997,7 @@ validate_named_depends(HV* p, HV* specs, HV* options) {
                             sv_catpv(buffer, "' does not exist in spec: ");
                             sv_catsv(buffer, depend_name);
 
-                            croak(SvPV_nolen(buffer));
+                            croak("%s", SvPV_nolen(buffer));
                         }
                         /* if we got here, the spec was correct. we just
                          * need to issue a regular validation failure
