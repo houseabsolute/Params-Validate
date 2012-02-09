@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.05    2012-02-08
+
 - The XS code had a code path where it could pass the contents of a Perl
   variable as the first argument to the XS croak() subroutine. This subroutine
   is like printf(), and should receive a format string as its first
