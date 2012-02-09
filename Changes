@@ -1,5 +1,18 @@
 {{$NEXT}}
 
+- The XS code had a code path where it could pass the contents of a Perl
+  variable as the first argument to the XS croak() subroutine. This subroutine
+  is like printf(), and should receive a format string as its first
+  argument. According to RT #74777, this can lead to segfaults on some systems.
+
+  This could in theory be a security bug, but it's very unlikely that
+  untrusted user input could end up being passed to this croak(). It is called
+  when a spec specifies a "depend" value on another parameter. The value of
+  the "depend" parameter was passed in the first argument to croak().
+
+  Reported by Andreas Voegele.
+
+
 1.04    2012-02-08
 
 - Use the latest Module::XSOrPP dzil plugin to generate a saner Build.PL. No
