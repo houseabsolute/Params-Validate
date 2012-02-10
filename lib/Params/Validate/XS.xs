@@ -75,27 +75,6 @@
                     } \
                 } STMT_END
 
-/* module initialization */
-static void
-bootinit() {
-    HV* stash;
-
-    /* define constants */
-    stash = gv_stashpv("Params::Validate", 1);
-    newCONSTSUB(stash, "SCALAR", newSViv(SCALAR));
-    newCONSTSUB(stash, "ARRAYREF", newSViv(ARRAYREF));
-    newCONSTSUB(stash, "HASHREF", newSViv(HASHREF));
-    newCONSTSUB(stash, "CODEREF", newSViv(CODEREF));
-    newCONSTSUB(stash, "GLOB", newSViv(GLOB));
-    newCONSTSUB(stash, "GLOBREF", newSViv(GLOBREF));
-    newCONSTSUB(stash, "SCALARREF", newSViv(SCALARREF));
-    newCONSTSUB(stash, "UNKNOWN", newSViv(UNKNOWN));
-    newCONSTSUB(stash, "UNDEF", newSViv(UNDEF));
-    newCONSTSUB(stash, "OBJECT", newSViv(OBJECT));
-    newCONSTSUB(stash, "HANDLE", newSViv(HANDLE));
-    newCONSTSUB(stash, "BOOLEAN", newSViv(BOOLEAN));
-}
-
 
 INLINE static bool
 no_validation() {
@@ -1508,9 +1487,6 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
 
 
 MODULE = Params::Validate::XS    PACKAGE = Params::Validate::XS
-
-BOOT:
-    bootinit();
 
 void
 validate(p, specs)
