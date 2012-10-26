@@ -5,17 +5,19 @@ use Params::Validate qw( validate SCALAR );
 
 use Test::More;
 
-$@ = 'foo';
-v( bar => "doz" );
+{
+    $@ = 'foo';
+    v1 ( bar => 42 );
 
-is(
-    $@,
-    'foo',
-    'calling validate() does not clobber'
-);
+    is(
+        $@,
+        'foo',
+        'calling validate() does not clobber'
+    );
+}
 
 done_testing();
 
-sub v {
+sub v1 {
     validate( @_, { bar => { type => SCALAR } } );
 }
