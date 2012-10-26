@@ -566,7 +566,7 @@ You can also use the C<state> feature to do this:
     use feature 'state';
 
     sub foo {
-        state %spec = ( ... );
+        state $spec = { ... };
         my %params = validate( @_, \%spec );
     }
 
