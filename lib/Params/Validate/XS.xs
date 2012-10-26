@@ -738,40 +738,32 @@ convert_array2hash(AV* in, HV* options, HV* out) {
     return 1;
 }
 
-
 /* get current Params::Validate options */
 static HV*
 get_options(HV* options) {
     HV* OPTIONS;
     HV* ret;
-    SV** temp;
-    char* pkg;
-    SV* buffer;
-    SV* caller;
+    HE *he;
+    HV *stash;
+    SV* pkg;
+    SV *pkg_options;
 
     ret = (HV*) sv_2mortal((SV*) newHV());
 
-    buffer = sv_2mortal(newSVpv("caller(0)", 0));
-    SvTAINTED_off(buffer);
-
-    caller = eval_pv(SvPV_nolen(buffer), 1);
-    if (SvTYPE(caller) == SVt_NULL) {
-        pkg = "main";
-    }
-    else {
-        pkg = SvPV_nolen(caller);
-    }
-
     /* get package specific options */
+    stash = CopSTASH(PL_curcop);
+    pkg = sv_2mortal(newSVpv(HvNAME(stash), 0));
+
     OPTIONS = get_hv("Params::Validate::OPTIONS", 1);
-    if ((temp = hv_fetch(OPTIONS, pkg, strlen(pkg), 0))) {
-        SvGETMAGIC(*temp);
-        if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV) {
+    if ((he = hv_fetch_ent(OPTIONS, pkg, 0, 0))) {
+        pkg_options = HeVAL(he);
+        SvGETMAGIC(pkg_options);
+        if (SvROK(pkg_options) && SvTYPE(SvRV(pkg_options)) == SVt_PVHV) {
             if (options) {
-                merge_hashes((HV*) SvRV(*temp), ret);
+                merge_hashes((HV*) SvRV(pkg_options), ret);
             }
             else {
-                return (HV*) SvRV(*temp);
+                return (HV*) SvRV(pkg_options);
             }
         }
     }
