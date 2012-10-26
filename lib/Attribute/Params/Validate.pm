@@ -12,8 +12,6 @@ use Params::Validate qw(:all);
 
 require Exporter;
 
-our $VERSION = 1.07;
-
 our @ISA = qw(Exporter);
 
 my %tags = (
