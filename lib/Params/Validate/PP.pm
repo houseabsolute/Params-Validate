@@ -6,8 +6,6 @@ use warnings;
 use Params::Validate::Constants;
 use Scalar::Util 1.10 ();
 
-our $options;
-
 # Various internals notes (for me and any future readers of this
 # monstrosity):
 #
@@ -52,8 +50,7 @@ sub validate_pos (\@@) {
     }
 
     # I'm too lazy to pass these around all over the place.
-    local $options ||= _get_options( ( caller(0) )[0] )
-        unless defined $options;
+    my $options = @_ == 3 ? $_[2] : _get_options( ( caller(0) )[0] );
 
     my $min = 0;
 
@@ -82,7 +79,7 @@ sub validate_pos (\@@) {
         my $val = $options->{allow_extra} ? $min : $max;
         $minmax .= $val != 1 ? ' were' : ' was';
 
-        my $called = _get_called();
+        my $called = _get_called(0, $options);
 
         $options->{on_fail}->( "$actual parameter"
                 . ( $actual != 1 ? 's'    : '' ) . " "
@@ -98,14 +95,17 @@ sub validate_pos (\@@) {
 
         if ( $_ <= $#p ) {
             my $value = defined $p[$_] ? qq|"$p[$_]"| : 'undef';
-            _validate_one_param( $p[$_], \@p, $spec,
-                "Parameter #" . ( $_ + 1 ) . " ($value)" );
+            _validate_one_param(
+                $p[$_], \@p, $spec,
+                "Parameter #" . ( $_ + 1 ) . " ($value)",
+                $options
+            );
         }
 
         $p[$_] = $spec->{default} if $_ > $#p && exists $spec->{default};
     }
 
-    _validate_pos_depends( \@p, \@specs );
+    _validate_pos_depends( \@p, \@specs, $options );
 
     foreach (
         grep {
@@ -122,7 +122,7 @@ sub validate_pos (\@@) {
 }
 
 sub _validate_pos_depends {
-    my ( $p, $specs ) = @_;
+    my ( $p, $specs, $options ) = @_;
 
     for my $p_idx ( 0 .. $#$p ) {
         my $spec = $specs->[$p_idx];
@@ -157,7 +157,7 @@ sub _validate_pos_depends {
 }
 
 sub _validate_named_depends {
-    my ( $p, $specs ) = @_;
+    my ( $p, $specs, $options ) = @_;
 
     foreach my $pname ( keys %$p ) {
         my $spec = $specs->{$pname};
@@ -198,7 +198,7 @@ sub validate (\@$) {
     my $p = $_[0];
 
     my $specs = $_[1];
-    local $options = _get_options( ( caller(0) )[0] ) unless defined $options;
+    my $options = @_ == 3 ? $_[2] : _get_options( ( caller(0) )[0] );
 
     if ( ref $p eq 'ARRAY' ) {
 
@@ -208,7 +208,7 @@ sub validate (\@$) {
             $p = { %{ $p->[0] } };
         }
         elsif ( @$p % 2 ) {
-            my $called = _get_called();
+            my $called = _get_called(0, $options);
 
             $options->{on_fail}
                 ->(   "Odd number of parameters in call to $called "
@@ -224,8 +224,8 @@ sub validate (\@$) {
         $p     = _normalize_callback( $p,     $options->{normalize_keys} );
     }
     elsif ( $options->{ignore_case} || $options->{strip_leading} ) {
-        $specs = _normalize_named($specs);
-        $p     = _normalize_named($p);
+        $specs = _normalize_named($specs, $options);
+        $p     = _normalize_named($p, $options);
     }
 
     if ($Params::Validate::NO_VALIDATION) {
@@ -278,11 +278,11 @@ sub validate (\@$) {
         );
     }
 
-    _validate_named_depends( $p, $specs );
+    _validate_named_depends( $p, $specs, $options );
 
     unless ( $options->{allow_extra} ) {
         if ( my @unmentioned = grep { !exists $specs->{$_} } keys %$p ) {
-            my $called = _get_called();
+            my $called = _get_called(0, $options);
 
             $options->{on_fail}->( "The following parameter"
                     . ( @unmentioned > 1 ? 's were' : ' was' )
@@ -333,13 +333,16 @@ OUTER:
         # absence of the parameter.
         elsif ( ref $spec ) {
             my $value = defined $p->{$key} ? qq|"$p->{$key}"| : 'undef';
-            _validate_one_param( $p->{$key}, $p, $spec,
-                "The '$key' parameter ($value)" );
+            _validate_one_param(
+                $p->{$key}, $p, $spec,
+                "The '$key' parameter ($value)",
+                $options
+            );
         }
     }
 
     if (@missing) {
-        my $called = _get_called();
+        my $called = _get_called(0, $options);
 
         my $missing = join ', ', map {"'$_'"} @missing;
         $options->{on_fail}->( "Mandatory parameter"
@@ -368,7 +371,7 @@ sub validate_with {
 
     my %p = @_;
 
-    local $options = _get_options( ( caller(0) )[0], %p );
+    my $options = _get_options( ( caller(0) )[0], %p );
 
     unless ($Params::Validate::NO_VALIDATION) {
         unless ( exists $options->{called} ) {
@@ -377,15 +380,13 @@ sub validate_with {
 
     }
 
+    # Intentionally ignore the prototypes because we're passing options at the
+    # end.
     if ( UNIVERSAL::isa( $p{spec}, 'ARRAY' ) ) {
-        return validate_pos( @{ $p{params} }, @{ $p{spec} } );
+        return &validate_pos( @{ $p{params} }, @{ $p{spec} }, $options );
     }
     else {
-
-        # intentionally ignore the prototype because this contains
-        # either an array or hash reference, and validate() will
-        # handle either one properly
-        return &validate( $p{params}, $p{spec} );
+        return &validate( $p{params}, $p{spec}, $options );
     }
 }
 
@@ -414,9 +415,11 @@ sub _normalize_callback {
 }
 
 sub _normalize_named {
+    my $named   = shift;
+    my $options = shift;
 
     # intentional copy so we don't destroy original
-    my %h = ( ref $_[0] ) =~ /ARRAY/ ? @{ $_[0] } : %{ $_[0] };
+    my %h = ( ref $named ) =~ /ARRAY/ ? @{ $named } : %{ $named };
 
     if ( $options->{ignore_case} ) {
         $h{ lc $_ } = delete $h{$_} for keys %h;
@@ -437,7 +440,7 @@ my %Valid = map { $_ => 1 }
     qw( callbacks can default depends isa optional regex type untaint  );
 
 sub _validate_one_param {
-    my ( $value, $params, $spec, $id ) = @_;
+    my ( $value, $params, $spec, $id, $options ) = @_;
 
     # for my $key ( keys %{$spec} ) {
     #     unless ( $Valid{$key} ) {
@@ -472,7 +475,7 @@ sub _validate_one_param {
             my @allowed = _typemask_to_strings( $spec->{type} );
             my $article = $is[0] =~ /^[aeiou]/i ? 'an' : 'a';
 
-            my $called = _get_called(1);
+            my $called = _get_called(1, $options);
 
             $options->{on_fail}->( "$id to $called was $article '@is', which "
                     . "is not one of the allowed types: @allowed\n" );
@@ -498,7 +501,7 @@ sub _validate_one_param {
                 my $article1 = $_  =~ /^[aeiou]/i ? 'an' : 'a';
                 my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
 
-                my $called = _get_called(1);
+                my $called = _get_called(1, $options);
 
                 $options->{on_fail}
                     ->(   "$id to $called was not $article1 '$_' "
@@ -515,7 +518,7 @@ sub _validate_one_param {
                     eval { $value->can($_) };
                 }
                 ) {
-                my $called = _get_called(1);
+                my $called = _get_called(1, $options);
 
                 $options->{on_fail}
                     ->("$id to $called does not have the method: '$_'\n");
@@ -525,7 +528,7 @@ sub _validate_one_param {
 
     if ( $spec->{callbacks} ) {
         unless ( UNIVERSAL::isa( $spec->{callbacks}, 'HASH' ) ) {
-            my $called = _get_called(1);
+            my $called = _get_called(1, $options);
 
             $options->{on_fail}->(
                 "'callbacks' validation parameter for $called must be a hash reference\n"
@@ -534,7 +537,7 @@ sub _validate_one_param {
 
         foreach ( keys %{ $spec->{callbacks} } ) {
             unless ( UNIVERSAL::isa( $spec->{callbacks}{$_}, 'CODE' ) ) {
-                my $called = _get_called(1);
+                my $called = _get_called(1, $options);
 
                 $options->{on_fail}->(
                     "callback '$_' for $called is not a subroutine reference\n"
@@ -542,7 +545,7 @@ sub _validate_one_param {
             }
 
             unless ( $spec->{callbacks}{$_}->( $value, $params ) ) {
-                my $called = _get_called(1);
+                my $called = _get_called(1, $options);
 
                 $options->{on_fail}
                     ->("$id to $called did not pass the '$_' callback\n");
@@ -552,7 +555,7 @@ sub _validate_one_param {
 
     if ( exists $spec->{regex} ) {
         unless ( ( defined $value ? $value : '' ) =~ /$spec->{regex}/ ) {
-            my $called = _get_called(1);
+            my $called = _get_called(1, $options);
 
             $options->{on_fail}
                 ->("$id to $called did not pass regex check\n");
@@ -675,7 +678,8 @@ sub _validate_one_param {
 }
 
 sub _get_called {
-    my $extra_skip = $_[0] || 0;
+    my $extra_skip = shift || 0;
+    my $options = shift;
 
     # always add one more for this sub
     $extra_skip++;
