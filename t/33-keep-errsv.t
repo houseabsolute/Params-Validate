@@ -7,7 +7,7 @@ use Test::More;
 
 {
     $@ = 'foo';
-    v1 ( bar => 42 );
+    v( bar => 42 );
 
     is(
         $@,
@@ -18,6 +18,6 @@ use Test::More;
 
 done_testing();
 
-sub v1 {
+sub v {
     validate( @_, { bar => { type => SCALAR } } );
 }
