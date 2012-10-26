@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Params::Validate's XS implementation would overwrite $@ when validation subs
+  were called. Patch by Salvador Fandino. RT #80124.
+
+
 1.06    2012-02-10
 
 - Shut up warnings when XS is loaded on older 5.8.x Perl versions. Reported by
