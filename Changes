@@ -3,6 +3,9 @@
 - Params::Validate's XS implementation would overwrite $@ when validation subs
   were called. Patch by Salvador Fandino. RT #80124.
 
+- The use of state in the POD was broken. It only works with scalars. Reported
+  by Salvatore Bonaccorso. RT #80250.
+
 
 1.06    2012-02-10
 
