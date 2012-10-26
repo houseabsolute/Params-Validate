@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.07    2012-10-26
+
 - Params::Validate's XS implementation would overwrite $@ when validation subs
   were called. Patch by Salvador Fandino. RT #80124.
 
