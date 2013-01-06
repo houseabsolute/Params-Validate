@@ -86,6 +86,10 @@ EOF
 
 1;
 
+# ABSTRACT: Define validation through subroutine attributes
+
+__END__
+
 =head1 SYNOPSIS
 
   use Attribute::Params::Validate qw(:all);
@@ -117,7 +121,6 @@ EOF
   }
 
 =head1 DESCRIPTION
-
 
 The Attribute::Params::Validate module allows you to validate method
 or function call parameters just like Params::Validate does.  However,
