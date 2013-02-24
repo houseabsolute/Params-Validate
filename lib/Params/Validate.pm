@@ -567,7 +567,7 @@ You can also use the C<state> feature to do this:
 
     sub foo {
         state $spec = { ... };
-        my %params = validate( @_, \%spec );
+        my %params = validate( @_, $spec );
     }
 
 =head1 "GLOBAL" OPTIONS
