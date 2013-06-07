@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.08    2013-06-07
+
 - The handling of defaults in the XS version of validate_pos was broken. The
   default were simply pushed into the returned array, rather than being
   explicitly stored in the right index based on the order of the specs passed
