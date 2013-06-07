@@ -1407,7 +1407,7 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
             SvGETMAGIC(*temp);
 
             if (GIMME_V != G_VOID) {
-                av_push(ret, SvREFCNT_inc(*temp));
+                av_store(ret, i, SvREFCNT_inc(*temp));
             }
 
         }

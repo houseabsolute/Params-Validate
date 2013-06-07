@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- The handling of defaults in the XS version of validate_pos was broken. The
+  default were simply pushed into the returned array, rather than being
+  explicitly stored in the right index based on the order of the specs passed
+  to validate_pos(). RT #83780.
+
+
 1.07    2012-10-26
 
 - Params::Validate's XS implementation would overwrite $@ when validation subs
