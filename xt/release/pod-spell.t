@@ -24,14 +24,15 @@ all_pod_files_spelling_ok();
 
 __DATA__
 API
-baz
 CPAN
 GLOBREF
 Martynov
 OO
 PayPal
-pre
 Rolsky
-runtime
 SCALARREF
 ValidatePos
+baz
+onwards
+pre
+runtime
