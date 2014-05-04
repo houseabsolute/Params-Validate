@@ -1,15 +1,12 @@
 use strict;
 use warnings;
 
+use Test::Requires {
+    Readonly => 0,
+};
+
 use Params::Validate qw(validate validate_pos SCALAR);
 use Test::More;
-
-BEGIN {
-    eval "use Readonly;";
-    if ($@) {
-        plan skip_all => 'Need Readonly::XS and Readonly for this test';
-    }
-}
 
 {
     Readonly my $spec => { foo => 1 };

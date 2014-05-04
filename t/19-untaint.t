@@ -3,13 +3,12 @@
 use strict;
 use warnings;
 
+use Test::Requires {
+    'Test::Taint' => 0.02,
+};
+
 use Params::Validate qw(validate validate_pos);
 use Test::More;
-
-eval "use Test::Taint 0.02";
-if ($@) {
-    plan skip_all => 'These tests require Test::Taint 0.02+ to run';
-}
 
 taint_checking_ok('These tests are meaningless unless we are in taint mode.');
 
