@@ -1160,6 +1160,10 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
     hv_iterinit(p);
     while ((he = hv_iternext(p))) {
         hv = HeVAL(he);
+        if (!hv) {
+            continue;
+        }
+
         SvGETMAGIC(hv);
 
         /* put the parameter into return hash */
