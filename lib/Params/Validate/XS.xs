@@ -329,6 +329,10 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
     SV* buffer;
     IV ok = 1;
 
+    if (! value) {
+        return 0;
+    }
+
     SvGETMAGIC(value);
     if (SvOK(value) && (sv_isobject(value) || (SvPOK(value) && ! looks_like_number(value)))) {
         dSP;
@@ -393,6 +397,10 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
 static IV
 validate_can(SV* value, SV* method, SV* id, HV* options) {
     IV ok = 1;
+
+    if (! value) {
+        return 0;
+    }
 
     SvGETMAGIC(value);
     if (SvOK(value) && (sv_isobject(value) || (SvPOK(value) && ! looks_like_number(value)))) {
@@ -533,6 +541,10 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                 SV* package;
 
                 package = *av_fetch(array, i, 1);
+                if (! package) {
+                    return 0;
+                }
+
                 SvGETMAGIC(package);
                 if (! validate_isa(value, package, id, options)) {
                     return 0;
@@ -556,6 +568,10 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                 SV* method;
 
                 method = *av_fetch(array, i, 1);
+                if (! method) {
+                    return 0;
+                }
+
                 SvGETMAGIC(method);
 
                 if (! validate_can(value, method, id, options)) {
@@ -741,11 +757,15 @@ convert_array2hash(AV* in, HV* options, HV* out) {
         validation_failure(buffer, options);
     }
 
-    for(i = 0; i <= av_len(in); i += 2) {
+    for (i = 0; i <= av_len(in); i += 2) {
         SV* key;
         SV* value;
 
         key = *av_fetch(in, i, 1);
+        if (! key) {
+            continue;
+        }
+
         SvGETMAGIC(key);
 
         /* We need to make a copy because if the array was @_, then the
@@ -753,7 +773,10 @@ convert_array2hash(AV* in, HV* options, HV* out) {
            problems when the hash being made gets returned to the
            caller. */
         value = sv_2mortal( newSVsv( *av_fetch(in, i + 1, 1) ) );
-        SvGETMAGIC(value);
+
+        if (value) {
+            SvGETMAGIC(value);
+        }
 
         if (! hv_store_ent(out, key, SvREFCNT_inc(value), 0)) {
             SvREFCNT_dec(value);
@@ -1134,6 +1157,10 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
         if (GIMME_V != G_VOID) {
             while ((he = hv_iternext(p))) {
                 hv = HeVAL(he);
+                if (! hv) {
+                    continue;
+                }
+
                 SvGETMAGIC(hv);
 
                 /* put the parameter into return hash */
@@ -1160,7 +1187,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
     hv_iterinit(p);
     while ((he = hv_iternext(p))) {
         hv = HeVAL(he);
-        if (!hv) {
+        if (! hv) {
             continue;
         }
 
@@ -1377,7 +1404,9 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
         for (i = 0; i <= max; i++) {
             if (i <= spec_count) {
                 spec = *av_fetch(specs, i, 1);
-                SvGETMAGIC(spec);
+                if (spec) {
+                    SvGETMAGIC(spec);
+                }
                 complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
             }
 
@@ -1397,6 +1426,9 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
     /* iterate through all parameters and validate them */
     for (i = 0; i <= av_len(specs); i++) {
         spec = *av_fetch(specs, i, 1);
+        if (! spec) {
+            continue;
+        }
         SvGETMAGIC(spec);
         complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
 
@@ -1451,6 +1483,10 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
                    number of arguments required.  */
                 for (i++ ; i <= av_len(specs); i++) {
                     spec = *av_fetch(specs, i, 1);
+                    if (! spec) {
+                        continue;
+                    }
+
                     SvGETMAGIC(spec);
                     complex_spec = (SvROK(spec) && SvTYPE(SvRV(spec)) == SVt_PVHV);
                     if (! spec_says_optional(spec, complex_spec)) {
@@ -1483,9 +1519,13 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
             if (GIMME_V != G_VOID) {
                 for(i = av_len(specs) + 1; i <= av_len(p); i++) {
                     value = *av_fetch(p, i, 1);
-                    SvGETMAGIC(value);
-
-                    av_push(ret, SvREFCNT_inc(value));
+                    if (value) {
+                        SvGETMAGIC(value);
+                        av_push(ret, SvREFCNT_inc(value));
+                    }
+                    else {
+                        av_push(ret, &PL_sv_undef);
+                    }
                 }
             }
         }
@@ -1546,9 +1586,11 @@ validate(p, specs)
         SV* value;
 
         value = *av_fetch(pa, 0, 1);
-        SvGETMAGIC(value);
-        if (SvROK(value) && SvTYPE(SvRV(value)) == SVt_PVHV) {
-            ph = (HV*) SvRV(value);
+        if (value) {
+            SvGETMAGIC(value);
+            if (SvROK(value) && SvTYPE(SvRV(value)) == SVt_PVHV) {
+                ph = (HV*) SvRV(value);
+            }
         }
     }
 
