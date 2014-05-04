@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed bad example of state() in POD. Reported by Salvatore Bonaccorso. RT
+  #80250.
+
+
 1.08    2013-06-07
 
 - The handling of defaults in the XS version of validate_pos was broken. The
