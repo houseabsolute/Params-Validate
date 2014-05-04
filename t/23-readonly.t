@@ -24,11 +24,7 @@ use Test::More;
     is( $@, q{}, 'validate_pos() call succeeded with Readonly spec hashref' );
 }
 
-SKIP:
 {
-    skip 'This test causes a segfault', 1
-        if 1;
-
     Readonly my %spec => ( foo => { type => SCALAR } );
     my @p = ( foo => 'hello' );
 

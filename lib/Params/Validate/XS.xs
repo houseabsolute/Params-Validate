@@ -1014,7 +1014,7 @@ apply_defaults(HV *ret, HV *p, HV *specs, AV *missing) {
         val = HeVAL(he);
 
         /* get extended param spec if available */
-        if (SvROK(val) && SvTYPE(SvRV(val)) == SVt_PVHV) {
+        if (val && SvROK(val) && SvTYPE(SvRV(val)) == SVt_PVHV) {
             spec = (HV*) SvRV(val);
         }
         else {
