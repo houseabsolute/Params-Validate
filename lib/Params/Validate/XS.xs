@@ -285,7 +285,6 @@ get_called(HV* options) {
         }
 
         buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
-        SvTAINTED_off(buffer);
 
         caller = eval_pv(SvPV_nolen(buffer), 1);
         if (SvTYPE(caller) == SVt_NULL) {
