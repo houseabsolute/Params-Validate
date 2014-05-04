@@ -1,8 +1,5 @@
 {{$NEXT}}
 
-- Fixed bad example of state() in POD. Reported by Salvatore Bonaccorso. RT
-  #80250.
-
 - A call to validate() where the spec was a reference to a Readonly hash would
   segfault. Reported by Salvatore Bonaccorso. RT #80572.
 
@@ -15,6 +12,9 @@
 - Fixed some potential segfaults from the XS implementation including the one
   reported by Анатолий Гришаев in RT #50412. However, the XS code in general
   is pretty crufty and tends to assume that values which could be NULL aren't.
+
+- Fixed bad example of state() in POD. Reported by Salvatore Bonaccorso. RT
+  #80250.
 
 
 1.08    2013-06-07
