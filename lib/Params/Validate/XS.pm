@@ -3,8 +3,9 @@ package Params::Validate::XS;
 use strict;
 use warnings;
 
+use Carp;
+
 my $default_fail = sub {
-    require Carp;
     Carp::confess( $_[0] );
 };
 

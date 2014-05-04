@@ -35,7 +35,11 @@ sub test2 {
     return validate_pos( @_, { regex => qr/^b/ } );
 }
 
+SKIP:
 {
+    skip 'This test only passes on Perl 5.14+', 1
+        unless $] >= 5.014;
+
     my @p = 'cat';
     taint(@p);
 

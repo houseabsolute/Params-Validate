@@ -6,6 +6,12 @@
 - A call to validate() where the spec was a reference to a Readonly hash would
   segfault. Reported by Salvatore Bonaccorso. RT #80572.
 
+- When using the XS implementation, attempting to validate parameters with
+  tainted values would cause an "Insecure dependency in eval_sv() while
+  running with -T switch" exception from Perl *if the validation failed*. This
+  is fixed, but only for Perl 5.14+. Older Perls do not include the necessary
+  XS API. RT #70174.
+
 
 1.08    2013-06-07
 

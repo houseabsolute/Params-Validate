@@ -4,7 +4,6 @@
 #include "perl.h"
 #include "XSUB.h"
 #define NEED_eval_pv
-#define NEED_newCONSTSUB
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 
@@ -252,7 +251,6 @@ validation_failure(SV* message, HV* options) {
     else {
         /* by default resort to Carp::confess for error reporting */
         dSP;
-        perl_require_pv("Carp.pm");
         PUSHMARK(SP);
         XPUSHs(message);
         PUTBACK;
@@ -273,8 +271,6 @@ get_called(HV* options) {
     }
     else {
         IV frame;
-        SV* buffer;
-        SV* caller;
 
         if ((temp = hv_fetch(options, "stack_skip", 10, 0))) {
             SvGETMAGIC(*temp);
@@ -284,12 +280,43 @@ get_called(HV* options) {
             frame = 1;
         }
 
-        buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
+        SV* caller;
+#if PERL_VERSION >= 14
+        if (frame > 0) {
+            frame--;
+        }
+
+        const PERL_CONTEXT *cx = caller_cx(frame, NULL);
+
+        GV *cvgv;
+        if (cx) {
+            switch (CxTYPE(cx)) {
+            case CXt_EVAL:
+                caller = newSVpv("\"eval\"", 6);
+                break;
+            case CXt_SUB:
+                cvgv = CvGV(cx->blk_sub.cv);
+                caller = newSV(0);
+                if (cvgv && isGV(cvgv)) {
+                    gv_efullname4(caller, cvgv, NULL, 1);
+                }
+                break;
+            default:
+                caller = newSVpv("(unknown)", 9);
+                break;
+            }
+        }
+        else {
+            caller = newSVpv("(unknown)", 9);
+        }
+#else
+        SV *buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
 
         caller = eval_pv(SvPV_nolen(buffer), 1);
         if (SvTYPE(caller) == SVt_NULL) {
-            sv_setpv(caller, "N/A");
+            sv_setpv(caller, "(unknown");
         }
+#endif
 
         return caller;
     }
