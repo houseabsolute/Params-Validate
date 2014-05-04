@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.09    2014-05-04
+
 - A call to validate() where the spec was a reference to a Readonly hash would
   segfault. Reported by Salvatore Bonaccorso. RT #80572.
 
