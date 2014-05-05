@@ -763,6 +763,14 @@ expect validation to be on when they execute.  For example:
 But if you want to shoot yourself in the foot and just turn it off, go
 ahead!
 
+=head1 TAINT MODE
+
+The XS implementation of this module has some problems Under taint mode with
+version of Perl before 5.14. If validation I<fails>, then instead of getting
+the expected error message you'll get a message like "Insecure dependencey in
+eval_sv". This can be worked around by either untainting the arguments
+yourself, using the pure Perl implementation, or upgrading your Perl.
+
 =head1 LIMITATIONS
 
 Right now there is no way (short of a callback) to specify that
