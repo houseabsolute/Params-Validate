@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Require Readonly 1.03+ for testing with Readonly. AFAICT, earlier versions
+  worked very differently and this caused test failures.
+
+
 1.09    2014-05-04
 
 - A call to validate() where the spec was a reference to a Readonly hash would
