@@ -2,7 +2,8 @@ use strict;
 use warnings;
 
 use Test::Requires {
-    Readonly => 1.03,
+    Readonly       => '1.03',
+    'Scalar::Util' => '1.20',
 };
 
 use Params::Validate qw(validate validate_pos SCALAR);
