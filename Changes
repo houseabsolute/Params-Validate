@@ -1,7 +1,9 @@
 {{$NEXT}}
 
-- Require Readonly 1.03+ for testing with Readonly. AFAICT, earlier versions
-  worked very differently and this caused test failures.
+- Require Readonly 1.03+ and Scalar::Util 1.20 for testing with
+  Readonly. AFAICT, earlier versions of Readonly worked very differently,
+  and/or this is related to Scalar::Util. Either way, this test isn't that
+  important anyway. RT #95402.
 
 
 1.09    2014-05-04
