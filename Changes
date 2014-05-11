@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.10    2014-05-11
+
 - Require Readonly 1.03+ and Scalar::Util 1.20 for testing with
   Readonly. AFAICT, earlier versions of Readonly worked very differently,
   and/or this is related to Scalar::Util. Either way, this test isn't that
