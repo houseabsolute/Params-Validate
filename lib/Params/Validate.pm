@@ -767,7 +767,7 @@ ahead!
 
 The XS implementation of this module has some problems Under taint mode with
 version of Perl before 5.14. If validation I<fails>, then instead of getting
-the expected error message you'll get a message like "Insecure dependencey in
+the expected error message you'll get a message like "Insecure dependency in
 eval_sv". This can be worked around by either untainting the arguments
 yourself, using the pure Perl implementation, or upgrading your Perl.
 
