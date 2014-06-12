@@ -270,7 +270,11 @@ get_called(HV* options) {
         return *temp;
     }
     else {
+    	const PERL_CONTEXT *cx;
+        GV *cvgv;
         IV frame;
+        SV *buffer;
+        SV *caller;
 
         if ((temp = hv_fetch(options, "stack_skip", 10, 0))) {
             SvGETMAGIC(*temp);
@@ -280,15 +284,13 @@ get_called(HV* options) {
             frame = 1;
         }
 
-        SV* caller;
 #if PERL_VERSION >= 14
         if (frame > 0) {
             frame--;
         }
 
-        const PERL_CONTEXT *cx = caller_cx(frame, NULL);
+        cx = caller_cx(frame, NULL);
 
-        GV *cvgv;
         if (cx) {
             switch (CxTYPE(cx)) {
             case CXt_EVAL:
@@ -310,7 +312,7 @@ get_called(HV* options) {
             caller = newSVpv("(unknown)", 9);
         }
 #else
-        SV *buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
+        buffer = sv_2mortal(newSVpvf("(caller(%d))[3]", (int) frame));
 
         caller = eval_pv(SvPV_nolen(buffer), 1);
         if (SvTYPE(caller) == SVt_NULL) {
