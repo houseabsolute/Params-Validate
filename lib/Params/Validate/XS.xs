@@ -270,11 +270,12 @@ get_called(HV* options) {
         return *temp;
     }
     else {
-    	const PERL_CONTEXT *cx;
-        GV *cvgv;
         IV frame;
         SV *caller;
-#if PERL_VERSION < 14
+#if PERL_VERSION > 14
+    	const PERL_CONTEXT *cx;
+        GV *cvgv;
+# else
         SV *buffer;
 #endif
 
