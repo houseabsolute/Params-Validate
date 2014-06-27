@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.12    2014-06-27
+
 - Temporarily skip tests that use Readonly with Readonly 1.50+ until various
   bugs are worked out in Readonly.
 
