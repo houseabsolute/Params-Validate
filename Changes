@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Temporarily skip tests that use Readonly with Readonly 1.50+ until various
+  bugs are worked out in Readonly.
+
+
 1.11    2014-06-26
 
 - Fixes for MSVC compilation. Patch by J.R. Mash. PR #1.
