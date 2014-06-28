@@ -272,7 +272,7 @@ get_called(HV* options) {
     else {
         IV frame;
         SV *caller;
-#if PERL_VERSION > 14
+#if PERL_VERSION >= 14
     	const PERL_CONTEXT *cx;
         GV *cvgv;
 # else

@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fix my brain damage so that this code compiles with Perl 5.14.
+
+
 1.12    2014-06-27
 
 - Temporarily skip tests that use Readonly with Readonly 1.50+ until various
