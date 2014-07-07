@@ -13,9 +13,7 @@ use vars qw( $NO_VALIDATION %OPTIONS $options );
 
 our @ISA = 'Exporter';
 
-my %tags = (
-    types => [
-        qw(
+my @types = qw(
             SCALAR
             ARRAYREF
             HASHREF
@@ -27,16 +25,14 @@ my %tags = (
             BOOLEAN
             UNDEF
             OBJECT
-            )
-    ],
 );
 
 our %EXPORT_TAGS = (
     'all' => [
         qw( validate validate_pos validation_options validate_with ),
-        map { @{ $tags{$_} } } keys %tags
+        @types
     ],
-    %tags,
+    types => \@types,
 );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
