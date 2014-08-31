@@ -14,17 +14,17 @@ use vars qw( $NO_VALIDATION %OPTIONS $options );
 our @ISA = 'Exporter';
 
 my @types = qw(
-            SCALAR
-            ARRAYREF
-            HASHREF
-            CODEREF
-            GLOB
-            GLOBREF
-            SCALARREF
-            HANDLE
-            BOOLEAN
-            UNDEF
-            OBJECT
+    SCALAR
+    ARRAYREF
+    HASHREF
+    CODEREF
+    GLOB
+    GLOBREF
+    SCALARREF
+    HANDLE
+    BOOLEAN
+    UNDEF
+    OBJECT
 );
 
 our %EXPORT_TAGS = (
