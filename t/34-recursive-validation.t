@@ -28,10 +28,10 @@ use Test::More;
         # catch die signal
         local $SIG{__DIE__} = sub {
 
-            # we died from within Params::Validate (because of wrong_Arg) we call
-            # Foo::test_foo with OK args, but it'll die, because
-            # Params::ValidatePP::options is still set to the options of the Bar
-            # package, and so it won't retreive the one from Foo.
+            # we died from within Params::Validate (because of wrong_Arg) we
+            # call Foo::test_foo with OK args, but it'll die, because
+            # Params::Validate::PP::options is still set to the options of the
+            # Bar package, and so it won't retreive the one from Foo.
             Foo::test_foo( arg1 => 1, extra_arg => 2 );
         };
 
