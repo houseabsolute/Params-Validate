@@ -65,6 +65,10 @@ $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
 =head1 SYNOPSIS
 
     use Params::Validate qw(:all);
