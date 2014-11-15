@@ -1,0 +1,37 @@
+language: perl
+perl:
+    #- dev
+    - "blead"
+    - "blead-thr"
+    #- stable
+    - "5.20"
+    - "5.20-thr"
+    - "5.18"
+    - "5.18-thr"
+    - "5.16"
+    - "5.16-thr"
+    - "5.14"
+    - "5.14-thr"
+    - "5.12"
+    - "5.12-thr"
+    - "5.10"
+    - "5.10-thr"
+    - "5.8"
+    - "5.8-thr"
+env:
+  global:
+    - RELEASE_TESTING=1
+    - AUTHOR_TESTING=1
+before_install:
+  - git clone git://github.com/travis-perl/helpers ~/travis-perl-helpers
+  - source ~/travis-perl-helpers/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR
+install:
+  - cpan-install ExtUtils::MakeMaker~6.68 --deps
+script:
+  - perl Build.PL
+  - ./Build
+  - prove -br -j$(test-jobs) $(test-files)
