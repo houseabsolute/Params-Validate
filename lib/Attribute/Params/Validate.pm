@@ -98,26 +98,26 @@ __END__
   # foo is mandatory, bar is optional
   sub foo : Validate( foo => 1, bar => 0 )
   {
-      ...
+      # insert code here
   }
 
   # takes positional params
   # first two are mandatory, third is optional
   sub bar : ValidatePos( 1, 1, 0 )
   {
-      ...
+      # insert code here
   }
 
   # for some reason Perl insists that the entire attribute be on one line
   sub foo2 : Validate( foo => { type => ARRAYREF }, bar => { can => [ 'print', 'flush', 'frobnicate' ] }, baz => { type => SCALAR, callbacks => { 'numbers only' => sub { shift() =~ /^\d+$/ }, 'less than 90' => sub { shift() < 90 } } } )
   {
-      ...
+      # insert code here
   }
 
   # note that this is marked as a method.  This is very important!
   sub baz : Validate( foo => { type => ARRAYREF }, bar => { isa => 'Frobnicator' } ) method
   {
-      ...
+      # insert code here
   }
 
 =head1 DESCRIPTION
