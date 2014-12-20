@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.14    2014-12-20 (TRIAL RELEASE)
+
 - Callbacks can now die to provide a custom error message or exception
   object. Requested by multiple people. Addresses RT #95701 and will allow
   MooseX::Params::Validate to use messages provided by the type object.
