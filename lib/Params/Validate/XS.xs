@@ -605,6 +605,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                     SV* ret;
                     IV ok;
                     IV count;
+                    SV *err;
 
                     ENTER;
                     SAVETMPS;
@@ -615,7 +616,17 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                     PUSHs(sv_2mortal(newRV_inc(params)));
                     PUTBACK;
 
-                    count = call_sv(SvRV(HeVAL(he)), G_SCALAR);
+                    /* local $@ = q{}; */
+                    save_svref(&ERRSV);
+                    SvPV_set(ERRSV, "");
+
+                    /* local $SIG{__DIE__} = undef; */
+                    if (NULL != PL_diehook) {
+                        save_svref(&PL_diehook);
+                        PL_diehook = NULL;
+                    }
+
+                    count = call_sv(SvRV(HeVAL(he)), G_EVAL|G_SCALAR);
 
                     SPAGAIN;
 
@@ -626,26 +637,35 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                     SvGETMAGIC(ret);
                     ok = SvTRUE(ret);
 
+                    err = newSV(0);
+                    SvSetSV_nosteal(err, ERRSV);
+
                     PUTBACK;
                     FREETMPS;
                     LEAVE;
 
                     if (! ok) {
-                        SV* buffer;
-
-                        buffer = sv_2mortal(newSVsv(id));
-                        sv_catpv(buffer, " to ");
-                        sv_catsv(buffer, get_called(options));
-                        sv_catpv(buffer, " did not pass the '");
-                        sv_catsv(buffer, HeSVKEY_force(he));
-                        sv_catpv(buffer, "' callback\n");
-                        validation_failure(buffer, options);
+                        if (SvROK(err)) {
+                            validation_failure(err, options);
+                        }
+                        else {
+                            SV* buffer = sv_2mortal(newSVsv(id));
+                            sv_catpv(buffer, " to ");
+                            sv_catsv(buffer, get_called(options));
+                            sv_catpv(buffer, " did not pass the '");
+                            sv_catsv(buffer, HeSVKEY_force(he));
+                            sv_catpv(buffer, "' callback");
+                            if (SvLEN(err) > 0) {
+                                sv_catpv(buffer, ": ");
+                                sv_catsv(buffer, err);
+                            }
+                            sv_catpv(buffer, "\n");
+                            validation_failure(buffer, options);
+                        }
                     }
                 }
                 else {
-                    SV* buffer;
-
-                    buffer = sv_2mortal(newSVpv("callback '", 0));
+                    SV* buffer = sv_2mortal(newSVpv("callback '", 0));
                     sv_catsv(buffer, HeSVKEY_force(he));
                     sv_catpv(buffer, "' for ");
                     sv_catsv(buffer, get_called(options));

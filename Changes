@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Callbacks can now die to provide a custom error message or exception
+  object. Requested by multiple people. Addresses RT #95701 and will allow
+  MooseX::Params::Validate to use messages provided by the type object.
+
+
 1.13    2014-06-28
 
 - Fix my brain damage so that this code compiles with Perl 5.14.

@@ -495,7 +495,7 @@ sub _validate_one_param {
         foreach ( ref $spec->{isa} ? @{ $spec->{isa} } : $spec->{isa} ) {
             unless (
                 do {
-                    local $@;
+                    local $@ = q{};
                     eval { $value->isa($_) };
                 }
                 ) {
@@ -516,7 +516,7 @@ sub _validate_one_param {
         foreach ( ref $spec->{can} ? @{ $spec->{can} } : $spec->{can} ) {
             unless (
                 do {
-                    local $@;
+                    local $@ = q{};
                     eval { $value->can($_) };
                 }
                 ) {
@@ -546,11 +546,27 @@ sub _validate_one_param {
                 );
             }
 
-            unless ( $spec->{callbacks}{$_}->( $value, $params ) ) {
+            my $ok;
+            my $e = do {
+                local $@ = q{};
+                local $SIG{__DIE__} = undef;
+                $ok = eval { $spec->{callbacks}{$_}->( $value, $params ) };
+                $@;
+            };
+
+            if ( !$ok ) {
                 my $called = _get_called(1);
 
-                $options->{on_fail}
-                    ->("$id to $called did not pass the '$_' callback\n");
+                my $msg;
+                if ( ref $e ) {
+                    $msg = $e;
+                }
+                else {
+                    $msg = "$id to $called did not pass the '$_' callback";
+                    $msg .= ": $e" if length $e;
+                    $msg .= "\n";
+                }
+                $options->{on_fail}->($msg);
             }
         }
     }
