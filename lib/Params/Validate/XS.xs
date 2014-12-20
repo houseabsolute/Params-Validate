@@ -74,7 +74,6 @@
                     } \
                 } STMT_END
 
-
 INLINE static bool
 no_validation() {
     SV* no_v;
@@ -85,7 +84,6 @@ no_validation() {
 
     return SvTRUE(no_v);
 }
-
 
 /* return type string that corresponds to typemask */
 INLINE static SV*
@@ -138,7 +136,6 @@ typemask_to_string(IV mask) {
 
     return buffer;
 }
-
 
 /* compute numberic datatype for variable */
 INLINE static IV
@@ -202,7 +199,6 @@ get_type(SV* sv) {
     return UNKNOWN;
 }
 
-
 /* get an article for given string */
 INLINE static const char*
 article(SV* string) {
@@ -223,7 +219,6 @@ article(SV* string) {
 
     return "a";
 }
-
 
 /* raises exception either using user-defined callback or using
    built-in method */
@@ -327,7 +322,6 @@ get_called(HV* options) {
     }
 }
 
-
 /* $value->isa alike validation */
 static IV
 validate_isa(SV* value, SV* package, SV* id, HV* options) {
@@ -397,7 +391,6 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
 
     return 1;
 }
-
 
 static IV
 validate_can(SV* value, SV* method, SV* id, HV* options) {
@@ -594,93 +587,89 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
     /* let callbacks to do their tests */
     if ((temp = hv_fetch(spec, "callbacks", 9, 0))) {
         SvGETMAGIC(*temp);
-        if (SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV) {
-            HE* he;
-
-            hv_iterinit((HV*) SvRV(*temp));
-            while ((he = hv_iternext((HV*) SvRV(*temp)))) {
-                if (SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV) {
-                    dSP;
-
-                    SV* ret;
-                    IV ok;
-                    IV count;
-                    SV *err;
-
-                    ENTER;
-                    SAVETMPS;
-
-                    PUSHMARK(SP);
-                    EXTEND(SP, 2);
-                    PUSHs(value);
-                    PUSHs(sv_2mortal(newRV_inc(params)));
-                    PUTBACK;
-
-                    /* local $@ = q{}; */
-                    save_svref(&ERRSV);
-                    SvPV_set(ERRSV, "");
-
-                    /* local $SIG{__DIE__} = undef; */
-                    if (NULL != PL_diehook) {
-                        save_svref(&PL_diehook);
-                        PL_diehook = NULL;
-                    }
-
-                    count = call_sv(SvRV(HeVAL(he)), G_EVAL|G_SCALAR);
-
-                    SPAGAIN;
-
-                    if (! count)
-                        croak("Validation callback did not return anything");
-
-                    ret = POPs;
-                    SvGETMAGIC(ret);
-                    ok = SvTRUE(ret);
-
-                    err = newSV(0);
-                    SvSetSV_nosteal(err, ERRSV);
-
-                    PUTBACK;
-                    FREETMPS;
-                    LEAVE;
-
-                    if (! ok) {
-                        if (SvROK(err)) {
-                            validation_failure(err, options);
-                        }
-                        else {
-                            SV* buffer = sv_2mortal(newSVsv(id));
-                            sv_catpv(buffer, " to ");
-                            sv_catsv(buffer, get_called(options));
-                            sv_catpv(buffer, " did not pass the '");
-                            sv_catsv(buffer, HeSVKEY_force(he));
-                            sv_catpv(buffer, "' callback");
-                            if (SvLEN(err) > 0) {
-                                sv_catpv(buffer, ": ");
-                                sv_catsv(buffer, err);
-                            }
-                            sv_catpv(buffer, "\n");
-                            validation_failure(buffer, options);
-                        }
-                    }
-                }
-                else {
-                    SV* buffer = sv_2mortal(newSVpv("callback '", 0));
-                    sv_catsv(buffer, HeSVKEY_force(he));
-                    sv_catpv(buffer, "' for ");
-                    sv_catsv(buffer, get_called(options));
-                    sv_catpv(buffer, " is not a subroutine reference\n");
-                    validation_failure(buffer, options);
-                }
-            }
-        }
-        else {
-            SV* buffer;
-
-            buffer = sv_2mortal(newSVpv("'callbacks' validation parameter for '", 0));
+        if (!(SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV)) {
+            SV* buffer = sv_2mortal(newSVpv("'callbacks' validation parameter for '", 0));
             sv_catsv(buffer, get_called(options));
             sv_catpv(buffer, " must be a hash reference\n");
             validation_failure(buffer, options);
+        }
+
+        HE* he;
+
+        hv_iterinit((HV*) SvRV(*temp));
+        while ((he = hv_iternext((HV*) SvRV(*temp)))) {
+            SV* ret;
+            IV ok;
+            IV count;
+            SV *err;
+
+            if (!(SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV)) {
+                SV* buffer = sv_2mortal(newSVpv("callback '", 0));
+                sv_catsv(buffer, HeSVKEY_force(he));
+                sv_catpv(buffer, "' for ");
+                sv_catsv(buffer, get_called(options));
+                sv_catpv(buffer, " is not a subroutine reference\n");
+                validation_failure(buffer, options);
+            }
+
+            dSP;
+            ENTER;
+            SAVETMPS;
+
+            PUSHMARK(SP);
+            EXTEND(SP, 2);
+            PUSHs(value);
+            PUSHs(sv_2mortal(newRV_inc(params)));
+            PUTBACK;
+
+            /* local $@ = q{}; */
+            save_svref(&ERRSV);
+            SvPV_set(ERRSV, "");
+
+            /* local $SIG{__DIE__} = undef; */
+            if (NULL != PL_diehook) {
+                save_svref(&PL_diehook);
+                PL_diehook = NULL;
+            }
+
+            count = call_sv(SvRV(HeVAL(he)), G_EVAL|G_SCALAR);
+
+            SPAGAIN;
+
+            if (!count) {
+                croak("Validation callback did not return anything");
+            }
+
+            ret = POPs;
+            SvGETMAGIC(ret);
+            ok = SvTRUE(ret);
+
+            err = newSV(0);
+            SvSetSV_nosteal(err, ERRSV);
+
+            PUTBACK;
+            FREETMPS;
+            LEAVE;
+
+            if (! ok) {
+                if (SvROK(err)) {
+                    validation_failure(err, options);
+                }
+                else {
+                    SV* buffer = sv_2mortal(newSVsv(id));
+                    sv_catpv(buffer, " to ");
+                    sv_catsv(buffer, get_called(options));
+                    sv_catpv(buffer, " did not pass the '");
+                    sv_catsv(buffer, HeSVKEY_force(he));
+                    sv_catpv(buffer, "' callback");
+                    if (SvLEN(err) > 0) {
+                        sv_catpv(buffer, ": ");
+                        sv_catsv(buffer, err);
+                    }
+                    sv_catpv(buffer, "\n");
+                    validation_failure(buffer, options);
+                }
+            }
         }
     }
 
@@ -749,7 +738,6 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
     return 1;
 }
 
-
 /* merges one hash into another (not deep copy) */
 static void
 merge_hashes(HV* in, HV* out) {
@@ -764,7 +752,6 @@ merge_hashes(HV* in, HV* out) {
         }
     }
 }
-
 
 /* convert array to hash */
 static IV
@@ -848,7 +835,6 @@ get_options(HV* options) {
     return ret;
 }
 
-
 static SV*
 normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case) {
     SV* copy;
@@ -905,7 +891,6 @@ normalize_one_key(SV* key, SV* normalize_func, SV* strip_leading, IV ignore_case
     return copy;
 }
 
-
 static HV*
 normalize_hash_keys(HV* p, SV* normalize_func, SV* strip_leading, IV ignore_case) {
     SV* normalized;
@@ -935,7 +920,6 @@ normalize_hash_keys(HV* p, SV* normalize_func, SV* strip_leading, IV ignore_case
     return norm_p;
 }
 
-
 static IV
 validate_pos_depends(AV* p, AV* specs, HV* options) {
     IV p_idx;
@@ -960,19 +944,18 @@ validate_pos_depends(AV* p, AV* specs, HV* options) {
             }
 
             if (av_len(p) < SvIV(*depends) -1) {
-
                 buffer =
                     sv_2mortal(newSVpvf("Parameter #%d depends on parameter #%d, which was not given",
-                    (int) p_idx + 1,
-                    (int) SvIV(*depends)));
+                                        (int) p_idx + 1,
+                                        (int) SvIV(*depends)));
 
                 validation_failure(buffer, options);
             }
         }
     }
+
     return 1;
 }
-
 
 static IV
 validate_named_depends(HV* p, HV* specs, HV* options) {
@@ -1061,7 +1044,6 @@ validate_named_depends(HV* p, HV* specs, HV* options) {
     return 1;
 }
 
-
 void
 cat_string_representation(SV* buffer, SV* value) {
     if(SvOK(value)) {
@@ -1073,7 +1055,6 @@ cat_string_representation(SV* buffer, SV* value) {
         sv_catpv(buffer, "undef");
     }
 }
-
 
 void
 apply_defaults(HV *ret, HV *p, HV *specs, AV *missing) {
@@ -1137,7 +1118,6 @@ apply_defaults(HV *ret, HV *p, HV *specs, AV *missing) {
         }
     }
 }
-
 
 static IV
 validate(HV* p, HV* specs, HV* options, HV* ret) {
@@ -1331,7 +1311,6 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
     return 1;
 }
 
-
 static SV*
 validate_pos_failure(IV pnum, IV min, IV max, HV* options) {
     SV* buffer;
@@ -1376,7 +1355,6 @@ validate_pos_failure(IV pnum, IV min, IV max, HV* options) {
     return buffer;
 }
 
-
 /* Given a single parameter spec and a corresponding complex spec form
    of it (which must be false if the spec is not complex), return true
    says that the parameter is options.  */
@@ -1401,7 +1379,6 @@ spec_says_optional(SV* spec, IV complex_spec) {
     }
     return TRUE;
 }
-
 
 static IV
 validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
@@ -1572,7 +1549,6 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
     return 1;
 }
 
-
 MODULE = Params::Validate::XS    PACKAGE = Params::Validate::XS
 
 void
@@ -1652,12 +1628,10 @@ SV* p
         XSRETURN(0);
     }
 
-
     SvGETMAGIC(p);
     if (!SvROK(p) || !(SvTYPE(SvRV(p)) == SVt_PVAV)) {
         croak("Expecting array reference as first parameter");
     }
-
 
     specs = (AV*) sv_2mortal((SV*) newAV());
     av_extend(specs, items);
@@ -1668,16 +1642,13 @@ SV* p
         }
     }
 
-
     if (GIMME_V != G_VOID) {
         ret = (AV*) sv_2mortal((SV*) newAV());
     }
 
-
     if (! validate_pos((AV*) SvRV(p), specs, get_options(NULL), ret)) {
         XSRETURN(0);
     }
-
 
     RETURN_ARRAY(ret);
 
