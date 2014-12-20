@@ -129,7 +129,7 @@ __END__
             @_, {
                 # required
                 foo => 1,
-                # $p{bar} will be 99 if bar is not given.  bar is now
+                # $p{bar} will be 99 if bar is not given. bar is now
                 # optional.
                 bar => { default => 99 }
             }
@@ -151,7 +151,7 @@ __END__
 =head1 DESCRIPTION
 
 The Params::Validate module allows you to validate method or function
-call parameters to an arbitrary level of specificity.  At the simplest
+call parameters to an arbitrary level of specificity. At the simplest
 level, it is capable of validating the required parameters were given
 and that no unspecified additional parameters were passed in.
 
@@ -170,21 +170,21 @@ C<validate_with>, which can be used to validate any type of
 parameters, and set various options on a per-invocation basis.
 
 In addition, it can export the following constants, which are used as
-part of the type checking.  These are C<SCALAR>, C<ARRAYREF>,
+part of the type checking. These are C<SCALAR>, C<ARRAYREF>,
 C<HASHREF>, C<CODEREF>, C<GLOB>, C<GLOBREF>, and C<SCALARREF>,
-C<UNDEF>, C<OBJECT>, C<BOOLEAN>, and C<HANDLE>.  These are explained
+C<UNDEF>, C<OBJECT>, C<BOOLEAN>, and C<HANDLE>. These are explained
 in the section on L<Type Validation|Params::Validate/Type Validation>.
 
-The constants are available via the export tag C<:types>.  There is
+The constants are available via the export tag C<:types>. There is
 also an C<:all> tag which includes all of the constants as well as the
 C<validation_options()> function.
 
 =head1 PARAMETER VALIDATION
 
 The validation mechanisms provided by this module can handle both
-named or positional parameters.  For the most part, the same features
-are available for each.  The biggest difference is the way that the
-validation specification is given to the relevant subroutine.  The
+named or positional parameters. For the most part, the same features
+are available for each. The biggest difference is the way that the
+validation specification is given to the relevant subroutine. The
 other difference is in the error messages produced when validation
 checks fail.
 
@@ -217,7 +217,7 @@ For a subroutine expecting named parameters, you would do this:
     validate( @_, { foo => 1, bar => 1, baz => 0 } );
 
 This says that the "foo" and "bar" parameters are mandatory and that
-the "baz" parameter is optional.  The presence of any other
+the "baz" parameter is optional. The presence of any other
 parameters will cause an error.
 
 For a subroutine expecting positional parameters, you would do this:
@@ -231,14 +231,14 @@ can take any maximum number, you can do this:
     validate_pos( @_, 1, 1, (0) x (@_ - 2) );
 
 This will always be valid as long as at least two parameters are
-given.  A similar construct could be used for the more complex
+given. A similar construct could be used for the more complex
 validation parameters described further on.
 
 Please note that this:
 
     validate_pos( @_, 1, 1, 0, 1, 1 );
 
-makes absolutely no sense, so don't do it.  Any zeros must come at the
+makes absolutely no sense, so don't do it. Any zeros must come at the
 end of the validation specification.
 
 In addition, if you specify that a parameter can have a default, then
@@ -253,8 +253,8 @@ L<exported as constants|/EXPORT>:
 
 =item * SCALAR
 
-A scalar which is not a reference, such as C<10> or C<'hello'>.  A
-parameter that is undefined is B<not> treated as a scalar.  If you
+A scalar which is not a reference, such as C<10> or C<'hello'>. A
+parameter that is undefined is B<not> treated as a scalar. If you
 want to allow undefined values, you will have to specify C<SCALAR |
 UNDEF>.
 
@@ -272,19 +272,19 @@ A subroutine reference such as C<\&foo_sub> or C<sub { print "hello" }>.
 
 =item * GLOB
 
-This one is a bit tricky.  A glob would be something like C<*FOO>, but
-not C<\*FOO>, which is a glob reference.  It should be noted that this
+This one is a bit tricky. A glob would be something like C<*FOO>, but
+not C<\*FOO>, which is a glob reference. It should be noted that this
 trick:
 
     my $fh = do { local *FH; };
 
-makes C<$fh> a glob, not a glob reference.  On the other hand, the
-return value from C<Symbol::gensym> is a glob reference.  Either can
+makes C<$fh> a glob, not a glob reference. On the other hand, the
+return value from C<Symbol::gensym> is a glob reference. Either can
 be used as a file or directory handle.
 
 =item * GLOBREF
 
-A glob reference such as C<\*FOO>.  See the L<GLOB|GLOB> entry above
+A glob reference such as C<\*FOO>. See the L<GLOB|GLOB> entry above
 for more details.
 
 =item * SCALARREF
@@ -306,7 +306,7 @@ This is a special option, and is just a shortcut for C<UNDEF | SCALAR>.
 =item * HANDLE
 
 This option is also special, and is just a shortcut for C<GLOB |
-GLOBREF>.  However, it seems likely that most people interested in
+GLOBREF>. However, it seems likely that most people interested in
 either globs or glob references are likely to really be interested in
 whether the parameter in question could be a valid file or directory
 handle.
@@ -357,9 +357,9 @@ methods, we can do the following:
 
 =head2 Class Validation
 
-A word of warning.  When constructing your external interfaces, it is
+A word of warning. When constructing your external interfaces, it is
 probably better to specify what methods you expect an object to
-have rather than what class it should be of (or a child of).  This
+have rather than what class it should be of (or a child of). This
 will make your API much more flexible.
 
 With that said, if you want to validate that an incoming parameter
@@ -381,7 +381,7 @@ belongs to a class (or child class) or classes, do:
 =head2 Regex Validation
 
 If you want to specify that a given parameter must match a specific
-regular expression, this can be done with "regex" spec key.  For
+regular expression, this can be done with "regex" spec key. For
 example:
 
     validate(
@@ -402,10 +402,10 @@ expressions suitable for validating input.
 =head2 Callback Validation
 
 If none of the above are enough, it is possible to pass in one or more
-callbacks to validate the parameter.  The callback will be given the
-B<value> of the parameter as its first argument.  Its second argument
+callbacks to validate the parameter. The callback will be given the
+B<value> of the parameter as its first argument. Its second argument
 will be all the parameters, as a reference to either a hash or array.
-Callbacks are specified as hash reference.  The key is an id for the
+Callbacks are specified as hash reference. The key is an id for the
 callback (used in error messages) and the value is a subroutine
 reference, such as:
 
@@ -511,16 +511,16 @@ the presence of one or more other optional parameters.
     );
 
 In this case, "cc_number", "cc_expiration", and "cc_holder_name" are
-all optional.  However, if "cc_number" is provided, then
+all optional. However, if "cc_number" is provided, then
 "cc_expiration" and "cc_holder_name" must be provided as well.
 
 This allows you to group together sets of parameters that all must be
 provided together.
 
 The C<validate_pos()> version of dependencies is slightly different,
-in that you can only depend on one other parameter.  Also, if for
+in that you can only depend on one other parameter. Also, if for
 example, the second parameter 2 depends on the fourth parameter, then
-it implies a dependency on the third parameter as well.  This is
+it implies a dependency on the third parameter as well. This is
 because if the fourth parameter is required, then the user must also
 provide a third parameter so that there can be four parameters in
 total.
@@ -555,7 +555,7 @@ returned, as appropriate.
 =head2 Validation failure
 
 By default, when validation fails C<Params::Validate> calls
-C<Carp::confess()>.  This can be overridden by setting the C<on_fail>
+C<Carp::confess()>. This can be overridden by setting the C<on_fail>
 option, which is described in the L<"GLOBAL" OPTIONS|"GLOBAL" OPTIONS>
 section.
 
@@ -607,7 +607,7 @@ You can also use the C<state> feature to do this:
 
 Because the API for the C<validate()> and C<validate_pos()> functions does not
 make it possible to specify any options other than the validation spec, it is
-possible to set some options as pseudo-'globals'.  These allow you to specify
+possible to set some options as pseudo-'globals'. These allow you to specify
 such things as whether or not the validation of named parameters should be
 case sensitive, for one example.
 
@@ -644,7 +644,7 @@ parameters and the parameter spec when C<validate()> or
 C<validate_with()> are called.
 
 Any alterations made by this callback will be reflected in the
-parameter hash that is returned by the validation function.  For
+parameter hash that is returned by the validation function. For
 example:
 
     sub foo {
@@ -673,19 +673,19 @@ If a callback is given then the deprecated "ignore_case" and
 =item * allow_extra => $boolean
 
 If true, then the validation routine will allow extra parameters not
-named in the validation specification.  In the case of positional
+named in the validation specification. In the case of positional
 parameters, this allows an unlimited number of maximum parameters
-(though a minimum may still be set).  Defaults to false.
+(though a minimum may still be set). Defaults to false.
 
 =item * on_fail => $callback
 
 If given, this callback will be called whenever a validation check
-fails.  It will be called with a single parameter, which will be a
-string describing the failure.  This is useful if you wish to have
+fails. It will be called with a single parameter, which will be a
+string describing the failure. This is useful if you wish to have
 this module throw exceptions as objects rather than as strings, for
 example.
 
-This callback is expected to C<die()> internally.  If it does not, the
+This callback is expected to C<die()> internally. If it does not, the
 validation will proceed onwards, with unpredictable results.
 
 The default is to simply use the Carp module's C<confess()> function.
@@ -693,26 +693,26 @@ The default is to simply use the Carp module's C<confess()> function.
 =item * stack_skip => $number
 
 This tells Params::Validate how many stack frames to skip when finding
-a subroutine name to use in error messages.  By default, it looks one
+a subroutine name to use in error messages. By default, it looks one
 frame back, at the immediate caller to C<validate()> or
-C<validate_pos()>.  If this option is set, then the given number of
+C<validate_pos()>. If this option is set, then the given number of
 frames are skipped instead.
 
 =item * ignore_case => $boolean
 
 DEPRECATED
 
-This is only relevant when dealing with named parameters.  If it is
+This is only relevant when dealing with named parameters. If it is
 true, then the validation code will ignore the case of parameter
-names.  Defaults to false.
+names. Defaults to false.
 
 =item * strip_leading => $characters
 
 DEPRECATED
 
-This too is only relevant when dealing with named parameters.  If this
+This too is only relevant when dealing with named parameters. If this
 is given then any parameters starting with these characters will be
-considered equivalent to parameters without them entirely.  For
+considered equivalent to parameters without them entirely. For
 example, if this is specified as '-', then C<-foo> and C<foo> would be
 considered identical.
 
@@ -721,7 +721,7 @@ considered identical.
 =head1 PER-INVOCATION OPTIONS
 
 The C<validate_with()> function can be used to set the options listed
-above on a per-invocation basis.  For example:
+above on a per-invocation basis. For example:
 
     my %p = validate_with(
         params => \@_,
@@ -733,12 +733,12 @@ above on a per-invocation basis.  For example:
     );
 
 In addition to the options listed above, it is also possible to set
-the option "called", which should be a string.  This string will be
+the option "called", which should be a string. This string will be
 used in any error messages caused by a failure to meet the validation
 spec.
 
 This subroutine will validate named parameters as a hash if the "spec"
-parameter is a hash reference.  If it is an array reference, the
+parameter is a hash reference. If it is an array reference, the
 parameters are assumed to be positional.
 
     my %p = validate_with(
@@ -764,7 +764,7 @@ parameters are assumed to be positional.
 =head1 DISABLING VALIDATION
 
 If the environment variable C<PERL_NO_VALIDATION> is set to something
-true, then validation is turned off.  This may be useful if you only
+true, then validation is turned off. This may be useful if you only
 want to use this module during development but don't want the speed
 hit during production.
 
@@ -773,9 +773,9 @@ parameters are passed into a function/method that expects a hash.
 
 If you want to selectively turn validation on and off at runtime, you
 can directly set the C<$Params::Validate::NO_VALIDATION> global
-variable.  It is B<strongly> recommended that you B<localize> any
+variable. It is B<strongly> recommended that you B<localize> any
 changes to this variable, because other modules you are using may
-expect validation to be on when they execute.  For example:
+expect validation to be on when they execute. For example:
 
 
     {
@@ -808,10 +808,10 @@ yourself, using the pure Perl implementation, or upgrading your Perl.
 
 Right now there is no way (short of a callback) to specify that
 something must be of one of a list of classes, or that it must possess
-one of a list of methods.  If this is desired, it can be added in the
+one of a list of methods. If this is desired, it can be added in the
 future.
 
-Ideally, there would be only one validation function.  If someone
+Ideally, there would be only one validation function. If someone
 figures out how to do this, please let me know.
 
 =head1 SUPPORT
