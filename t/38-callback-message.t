@@ -53,6 +53,9 @@ use Params::Validate qw( validate );
 }
 
 {
+    local $TODO = 'Cannot localize $@ and $SIG{__DIE__} from XS with Perl 5.8.x'
+        unless $] >= 5.009;
+
     local $SIG{__DIE__}
         = sub { die "my error\n" unless $_[0] =~ /did not pass the/ };
     my $e = do {
