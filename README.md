@@ -4,7 +4,7 @@ Params::Validate - Validate method/function parameters
 
 # VERSION
 
-version 1.14
+version 1.15
 
 # SYNOPSIS
 
@@ -783,7 +783,7 @@ the button on this page:
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2014 by Dave Rolsky and Ilya Martynov.
+This software is Copyright (c) 2001 - 2015 by Dave Rolsky and Ilya Martynov.
 
 This is free software, licensed under:
 
