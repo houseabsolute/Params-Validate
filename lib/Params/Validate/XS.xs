@@ -81,21 +81,23 @@ void peek(SV *thing)
         load_module(PERL_LOADMOD_NOIMPORT, module, NULL);
     }
 
-    dSP;
-    ENTER;
-    SAVETMPS;
+    {
+        dSP;
+        ENTER;
+        SAVETMPS;
 
-    PUSHMARK(SP);
-    XPUSHs(thing);
-    PUTBACK;
+        PUSHMARK(SP);
+        XPUSHs(thing);
+        PUTBACK;
 
-    (void)call_pv("Devel::Peek::Dump", G_VOID);
+        (void)call_pv("Devel::Peek::Dump", G_VOID);
 
-    SPAGAIN;
+        SPAGAIN;
 
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+    }
 }
 
 INLINE static bool
@@ -259,28 +261,30 @@ validation_failure(SV* message, HV* options) {
         on_fail = NULL;
     }
 
-    dSP;
-    ENTER;
-    SAVETMPS;
-    PUSHMARK(SP);
-    mXPUSHs(message);
-    PUTBACK;
+    {
+        dSP;
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(SP);
+        mXPUSHs(message);
+        PUTBACK;
 
-    /* use user defined callback if available */
-    if (on_fail) {
-        call_sv(on_fail, G_DISCARD);
-    }
-    else {
-        /* by default resort to Carp::confess for error reporting */
-        call_pv("Carp::confess", G_DISCARD);
-    }
+        /* use user defined callback if available */
+        if (on_fail) {
+            call_sv(on_fail, G_DISCARD);
+        }
+        else {
+            /* by default resort to Carp::confess for error reporting */
+            call_pv("Carp::confess", G_DISCARD);
+        }
 
-    /* We shouldn't get here if the thing we just called dies, but it doesn't
-       hurt to be careful. */
-    SPAGAIN;
-    PUTBACK;
-    FREETMPS;
-    LEAVE;
+        /* We shouldn't get here if the thing we just called dies, but it
+           doesn't hurt to be careful. */
+        SPAGAIN;
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+    }
 
     return;
 }
