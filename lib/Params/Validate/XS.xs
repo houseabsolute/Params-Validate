@@ -3,8 +3,6 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-#define NEED_eval_pv
-#define NEED_sv_2pv_flags
 #include "ppport.h"
 
 #ifdef __GNUC__
