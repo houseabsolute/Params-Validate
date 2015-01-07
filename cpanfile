@@ -45,6 +45,7 @@ on 'develop' => sub {
   requires "Scalar::Util" => "1.20";
   requires "Test::CPAN::Changes" => "0.19";
   requires "Test::EOL" => "0";
+  requires "Test::LeakTrace" => "0.15";
   requires "Test::More" => "0.88";
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";

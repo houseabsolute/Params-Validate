@@ -4,7 +4,7 @@ Params::Validate - Validate method/function parameters
 
 # VERSION
 
-version 1.15
+version 1.16
 
 # SYNOPSIS
 
