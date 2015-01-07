@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- The changes in 1.14 introduced a memory leak any time a callback was called
+  and it did not throw an error that was a reference. This affected the
+  DateTime constructor and probably many other things. Reported by David
+  Kayal. RT #101380.
+
+
 1.15    2015-01-01
 
 - No changes from 1.14
