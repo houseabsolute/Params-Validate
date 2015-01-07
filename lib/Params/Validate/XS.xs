@@ -296,6 +296,7 @@ get_caller(HV* options) {
 
     if ((temp = hv_fetch(options, "called", 6, 0))) {
         SvGETMAGIC(*temp);
+        SvREFCNT_inc(*temp);
         return *temp;
     }
     else {
@@ -350,6 +351,11 @@ get_caller(HV* options) {
         if (SvTYPE(caller) == SVt_NULL) {
             sv_setpv(caller, "(unknown");
         }
+
+        /* This will be decremented by the code that asked for this value, but
+           we need to do this here because the return value of caller() is
+           mortal and has a refcnt of 1. */
+        SvREFCNT_inc(caller);
 #endif
 
         return caller;
