@@ -74,6 +74,32 @@
                     } \
                 } STMT_END
 
+
+static SV *module;
+void peek(SV *thing)
+{
+    if (NULL == module) {
+        module = newSVpv("Devel::Peek", 0);
+        load_module(PERL_LOADMOD_NOIMPORT, module, NULL);
+    }
+
+    dSP;
+    ENTER;
+    SAVETMPS;
+
+    PUSHMARK(SP);
+    XPUSHs(thing);
+    PUTBACK;
+
+    (void)call_pv("Devel::Peek::Dump", G_VOID);
+
+    SPAGAIN;
+
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
+}
+
 INLINE static bool
 no_validation() {
     SV* no_v;
