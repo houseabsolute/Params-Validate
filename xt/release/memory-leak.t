@@ -1,8 +1,14 @@
 use strict;
 use warnings;
 
-use Test::LeakTrace qw( no_leaks_ok );
 use Test::More;
+
+BEGIN {
+    plan skip_all => q{Test::LeakTrace doesn't install with blead (as of 5.21.8)}
+        if $] >= 5.021008;
+}
+
+use Test::LeakTrace qw( no_leaks_ok );
 
 use Params::Validate qw( validate );
 
