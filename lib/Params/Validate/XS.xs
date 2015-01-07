@@ -289,7 +289,7 @@ validation_failure(SV* message, HV* options) {
 
 /* get called subroutine fully qualified name */
 static SV*
-get_called(HV* options) {
+get_caller(HV* options) {
     SV** temp;
 
     if ((temp = hv_fetch(options, "called", 6, 0))) {
@@ -400,7 +400,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
     }
 
     if (! ok) {
-        SV *caller = get_called(options);
+        SV *caller = get_caller(options);
         SV* buffer = newSVsv(id);
         sv_catpv(buffer, " to ");
         sv_catsv(buffer, caller);
@@ -471,7 +471,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options) {
 
     if (! ok) {
         SV* buffer = newSVsv(id);
-        SV *caller = get_called(options);
+        SV *caller = get_caller(options);
         sv_catpv(buffer, " to ");
         sv_catsv(buffer, caller);
         SvREFCNT_dec(caller);
@@ -541,7 +541,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
         type = get_type(value);
         if (! (type & SvIV(*temp))) {
             SV* buffer = newSVsv(id);
-            SV *caller = get_called(options);
+            SV *caller = get_caller(options);
             SV* is;
             SV* allowed;
 
@@ -625,7 +625,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
         SvGETMAGIC(*temp);
         if (!(SvROK(*temp) && SvTYPE(SvRV(*temp)) == SVt_PVHV)) {
             SV* buffer = newSVpv("'callbacks' validation parameter for '", 0);
-            SV *caller = get_called(options);
+            SV *caller = get_caller(options);
 
             sv_catsv(buffer, caller);
             SvREFCNT_dec(caller);
@@ -642,7 +642,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
 
             if (!(SvROK(HeVAL(he)) && SvTYPE(SvRV(HeVAL(he))) == SVt_PVCV)) {
                 SV* buffer = newSVpv("callback '", 0);
-                SV *caller = get_called(options);
+                SV *caller = get_caller(options);
 
                 sv_catsv(buffer, HeSVKEY_force(he));
                 sv_catpv(buffer, "' for ");
@@ -700,7 +700,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                     }
                     else {
                         SV* buffer = newSVsv(id);
-                        SV *caller = get_called(options);
+                        SV *caller = get_caller(options);
 
                         sv_catpv(buffer, " to ");
                         sv_catsv(buffer, caller);
@@ -751,7 +751,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
 
         if (!has_regex) {
             SV* buffer = newSVpv("'regex' validation parameter for '", 0);
-            SV *caller = get_called(options);
+            SV *caller = get_caller(options);
 
             sv_catsv(buffer, caller);
             SvREFCNT_dec(caller);
@@ -771,7 +771,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
 
         if (!ok) {
             SV* buffer = newSVsv(id);
-            SV *caller = get_called(options);
+            SV *caller = get_caller(options);
 
             sv_catpv(buffer, " to ");
             sv_catsv(buffer, caller);
@@ -814,7 +814,7 @@ convert_array2hash(AV* in, HV* options, HV* out) {
     len = av_len(in);
     if (len > -1 && len % 2 != 1) {
         SV* buffer = newSVpv("Odd number of parameters in call to ", 0);
-        SV *caller = get_called(options);
+        SV *caller = get_caller(options);
 
         sv_catsv(buffer, caller);
         SvREFCNT_dec(caller);
@@ -1293,7 +1293,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
 
         if (av_len(unmentioned) > -1) {
             SV* buffer =  newSVpv("The following parameter", 0);
-            SV *caller = get_called(options);
+            SV *caller = get_caller(options);
 
             if (av_len(unmentioned) != 0) {
                 sv_catpv(buffer, "s were ");
@@ -1333,7 +1333,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
 
     if (av_len(missing) > -1) {
         SV* buffer = newSVpv("Mandatory parameter", 0);
-        SV *caller = get_called(options);
+        SV *caller = get_caller(options);
 
         if (av_len(missing) > 0) {
             sv_catpv(buffer, "s ");
@@ -1387,7 +1387,7 @@ validate_pos_failure(IV pnum, IV min, IV max, HV* options) {
     else {
         sv_catpv(buffer, " parameter was passed to ");
     }
-    sv_catsv(buffer, get_called(options));
+    sv_catsv(buffer, get_caller(options));
     sv_catpv(buffer, " but ");
     if (!allow_extra) {
         if (min != max) {
