@@ -673,6 +673,9 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                         validation_failure(buffer, options);
                     }
                 }
+                else {
+                    SvREFCNT_dec(err);
+                }
             }
         }
     }
