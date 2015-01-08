@@ -671,17 +671,11 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                 mPUSHs(newRV_inc(params));
                 PUTBACK;
 
-                #if PERL_VERSION > 8
                 /* local $@ = q{}; */
-                #  if PERL_VERSION >= 21
-                /* XXX - PL_errgv isn't part of Perl's public API. Is there a
-                   better way to do this? */
                 save_scalar(PL_errgv);
-                #  else
-                save_svref(&ERRSV);
-                #  endif
-                SvPV_set(ERRSV, "");
+                sv_setpv(ERRSV, "");
 
+                #if PERL_VERSION > 8
                 /* local $SIG{__DIE__} = undef; */
                 if (NULL != PL_diehook) {
                     save_svref(&PL_diehook);
