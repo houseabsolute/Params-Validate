@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.17    2015-01-08
+
 - More XS fixes. Simplified how we localize $@ in the XS code and fixed error
   with Perls compiled with -DDEBUGGING. Reported by Lars Dɪᴇᴄᴋᴏᴡ. RT #101416.
 
