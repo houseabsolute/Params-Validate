@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.18    2015-02-13
+
 - We no longer attempt to save and restore an existing $SIG{__DIE__} hook
   before calling a validation callback. This uses undocumented black magic
   poking at the Perl interpreter guts, which seems to cause sporadic
