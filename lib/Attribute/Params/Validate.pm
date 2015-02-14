@@ -3,6 +3,8 @@ package Attribute::Params::Validate;
 use strict;
 use warnings;
 
+our $VERSION = '1.18';
+
 use attributes;
 
 use Attribute::Handlers 0.79;
