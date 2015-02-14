@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- We no longer attempt to save and restore an existing $SIG{__DIE__} hook
+  before calling a validation callback. This uses undocumented black magic
+  poking at the Perl interpreter guts, which seems to cause sporadic
+  segfaults. Reported by David Wheeler with help from Andreas Koenig. RT
+  #102112.
+
+
 1.17    2015-01-08
 
 - More XS fixes. Simplified how we localize $@ in the XS code and fixed error

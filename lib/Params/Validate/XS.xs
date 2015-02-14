@@ -675,14 +675,6 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                 save_scalar(PL_errgv);
                 sv_setpv(ERRSV, "");
 
-                #if PERL_VERSION > 8
-                /* local $SIG{__DIE__} = undef; */
-                if (NULL != PL_diehook) {
-                    save_svref(&PL_diehook);
-                    PL_diehook = NULL;
-                }
-                #endif
-
                 count = call_sv(SvRV(HeVAL(he)), G_EVAL|G_SCALAR);
 
                 SPAGAIN;

@@ -53,35 +53,6 @@ use Params::Validate qw( validate );
 }
 
 {
-    local $TODO = 'Cannot localize $@ and $SIG{__DIE__} from XS with Perl 5.8.x'
-        unless $] >= 5.009;
-
-    local $SIG{__DIE__}
-        = sub { die "my error\n" unless $_[0] =~ /did not pass the/ };
-    my $e = do {
-        local $@ = 'true';
-        eval { validate1( pos_int => 42, string => [], ); };
-        $@;
-    };
-    like(
-        $e,
-        qr/The 'string' parameter \("ARRAY\(.+\)"\) to main::validate1 did not pass the 'string' callback: ARRAY\(.+\) is not a string/,
-        'got error for bad string (with $SIG{__DIE__} and $@ set before validate() call)'
-    );
-
-    $e = do {
-        local $@;
-        eval { die 'foo' };
-        $@;
-    };
-    is(
-        $e,
-        "my error\n",
-        '$SIG{__DIE__} is restored'
-    );
-}
-
-{
     my $e = do {
         local $@;
         eval { validate2( string => [] ); };
