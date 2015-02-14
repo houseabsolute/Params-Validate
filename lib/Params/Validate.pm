@@ -5,7 +5,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.18';
+our $VERSION = '1.19';
 
 use Exporter;
 use Module::Implementation;
