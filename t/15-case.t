@@ -54,9 +54,9 @@ BEGIN {
                     params => $arglist{$args},
                     spec   => $speclist{$spec},
                     expect => (
-                          $ignore_case ? $ok_sub
+                          $ignore_case   ? $ok_sub
                         : $args eq $spec ? $ok_sub
-                        : $nok_sub
+                        :                  $nok_sub
                     ),
                     ignore_case => $ignore_case
                     };

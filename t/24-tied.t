@@ -5,7 +5,6 @@ use Params::Validate qw(validate validate_pos SCALAR);
 use Test::More;
 
 {
-
     package Tie::SimpleArray;
     use Tie::Array;
     use base 'Tie::StdArray';
@@ -26,7 +25,8 @@ use Test::More;
 
     eval { validate( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate() call succeeded with tied params array and regular hashref spec'
     );
 }
@@ -43,7 +43,8 @@ SKIP:
 
     eval { validate( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate() call succeeded with regular params array and tied hashref spec'
     );
 }
@@ -60,7 +61,8 @@ SKIP:
 
     eval { validate( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate() call succeeded with tied params array and tied hashref spec'
     );
 }
@@ -74,7 +76,8 @@ SKIP:
 
     eval { validate_pos( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate_pos() call succeeded with tied params array and regular hashref spec'
     );
 }
@@ -91,7 +94,8 @@ SKIP:
 
     eval { validate_pos( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate_pos() call succeeded with regular params array and tied hashref spec'
     );
 }
@@ -108,7 +112,8 @@ SKIP:
 
     eval { validate_pos( @p, \%spec ) };
     warn $@ if $@;
-    is( $@, q{},
+    is(
+        $@, q{},
         'validate_pos() call succeeded with tied params array and tied hashref spec'
     );
 }

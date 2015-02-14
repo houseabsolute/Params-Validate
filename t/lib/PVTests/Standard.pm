@@ -673,12 +673,16 @@ sub run_tests {
 
         if ( eval { %{ $test->{return} } } ) {
             my %r = @r;
-            is_deeply( \%r, $test->{return},
-                "check return value for $sub - hash" );
+            is_deeply(
+                \%r, $test->{return},
+                "check return value for $sub - hash"
+            );
         }
         else {
-            is_deeply( \@r, $test->{return},
-                "check return value for $sub - array" );
+            is_deeply(
+                \@r, $test->{return},
+                "check return value for $sub - array"
+            );
         }
     }
 

@@ -29,8 +29,7 @@ done_testing();
 
 sub v {
     validate(
-        @_,
-        {
+        @_, {
             foo => { type => SCALAR | SCALARREF },
         },
     );

@@ -42,8 +42,10 @@ use Test::More;
     # positive, no depends (single, multiple)
     my @args = ( bar => 1 );
     eval { validate( @args, \%spec ) };
-    is( $@, q{},
-        "validate() multiple depends(1): no depends, single arg, positive" );
+    is(
+        $@, q{},
+        "validate() multiple depends(1): no depends, single arg, positive"
+    );
 
     @args = ( bar => 1, baz => 1 );
     eval { validate( @args, \%spec ) };
@@ -61,7 +63,8 @@ use Test::More;
     @args = ( foo => 1, bar => 1 );
     eval { validate( @args, \%spec ) };
 
-    ok( $@,
+    ok(
+        $@,
         "validate() multiple depends(4.a): with depends, negative, multiple missing"
     );
     like(
@@ -73,7 +76,8 @@ use Test::More;
     @args = ( foo => 1 );
     eval { validate( @args, \%spec ) };
 
-    ok( $@,
+    ok(
+        $@,
         "validate() multiple depends(5.a): with depends, negative, multiple missing"
     );
     like(
@@ -117,8 +121,10 @@ use Test::More;
     my @args = qw(1 1);
     eval { validate_pos( @args, @spec ) };
 
-    is( $@, q{},
-        "validate_pos() single depends (1): with depends, positive" );
+    is(
+        $@, q{},
+        "validate_pos() single depends (1): with depends, positive"
+    );
 }
 
 {
@@ -148,7 +154,8 @@ use Test::More;
     my @args = qw(1);
     eval { validate_pos( @args, @spec ) };
 
-    ok( $@,
+    ok(
+        $@,
         "validate_pos() multiple depends (1.a): with depends, bad args negative"
     );
     like(

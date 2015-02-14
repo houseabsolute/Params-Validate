@@ -45,7 +45,7 @@ sub validate_pos (\@@) {
 
         # if the spec is bigger that's where we can start adding
         # defaults
-        for ( my $x = $#p + 1 ; $x <= $#specs ; $x++ ) {
+        for ( my $x = $#p + 1; $x <= $#specs; $x++ ) {
             $p[$x] = $specs[$x]->{default}
                 if ref $specs[$x] && exists $specs[$x]->{default};
         }
@@ -348,7 +348,7 @@ OUTER:
     if (@missing) {
         my $called = _get_called();
 
-        my $missing = join ', ', map { "'$_'" } @missing;
+        my $missing = join ', ', map {"'$_'"} @missing;
         $options->{on_fail}->( "Mandatory parameter"
                 . ( @missing > 1 ? 's' : '' )
                 . " $missing missing in call to $called\n" );
@@ -502,7 +502,7 @@ sub _validate_one_param {
                 }
                 ) {
                 my $is = ref $value ? ref $value : 'plain scalar';
-                my $article1 = $_  =~ /^[aeiou]/i ? 'an' : 'a';
+                my $article1 = $_ =~ /^[aeiou]/i  ? 'an' : 'a';
                 my $article2 = $is =~ /^[aeiou]/i ? 'an' : 'a';
 
                 my $called = _get_called(1);

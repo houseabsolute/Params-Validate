@@ -5,7 +5,6 @@ use Params::Validate qw(validate);
 use Test::More;
 
 {
-
     package Overloaded;
 
     use overload 'bool' => sub {0};

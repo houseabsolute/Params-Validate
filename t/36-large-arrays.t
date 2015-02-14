@@ -11,8 +11,7 @@ use Test::More;
 
     sub v1 {
         my %p = validate(
-            @_,
-            {
+            @_, {
                 array => {
                     callbacks => {
                         'checking array contents' => sub {

@@ -157,8 +157,10 @@ sub foo {
 sub bar {
     my @params = ( 1, 2 );
 
-    return validate_pos( @params, 1, { default => 99 }, { default => 42 },
-        { default => 0 } );
+    return validate_pos(
+        @params, 1, { default => 99 }, { default => 42 },
+        { default => 0 }
+    );
 }
 
 1;

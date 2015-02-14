@@ -74,8 +74,7 @@ sub _test_args {
 
 sub validate1 {
     validate(
-        @_,
-        {
+        @_, {
             pos_int => {
                 callbacks => {
                     pos_int => sub {
@@ -98,8 +97,7 @@ sub validate1 {
 
 sub validate2 {
     validate(
-        @_,
-        {
+        @_, {
             string => {
                 callbacks => {
                     string => sub {
