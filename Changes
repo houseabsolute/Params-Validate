@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Fixed a bug with stack handling in the XS code. If a callback sub caused
+  Perl to reallocate the stack this could trigger weird errors of the form
+  "Bizarre copy of ARRAY" from Perl itself. Fixed by Noel Maddy. GH #5.
+
+
 1.19    2015-06-12
 
 - Fixed an uninitialized value warning from the pure Perl implementation under

@@ -1748,11 +1748,14 @@ validate_with(...)
                 ret = (AV*) sv_2mortal((SV*) newAV());
             }
 
-            if (! validate_pos((AV*) SvRV(params), (AV*) SvRV(spec),
-            get_options(p), ret)) {
+            PUTBACK;
+
+            if (! validate_pos((AV*) SvRV(params), (AV*) SvRV(spec), get_options(p), ret)) {
+                SPAGAIN;
                 XSRETURN(0);
             }
 
+            SPAGAIN;
             RETURN_ARRAY(ret);
         }
         else {
@@ -1802,10 +1805,14 @@ validate_with(...)
             ret = (HV*) sv_2mortal((SV*) newHV());
         }
 
+        PUTBACK;
+
         if (! validate(hv, (HV*) SvRV(spec), options, ret)) {
+            SPAGAIN;
             XSRETURN(0);
         }
 
+        SPAGAIN;
         RETURN_HASH(ret);
     }
     else {
