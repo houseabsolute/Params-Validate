@@ -4,6 +4,9 @@
   Perl to reallocate the stack this could trigger weird errors of the form
   "Bizarre copy of ARRAY" from Perl itself. Fixed by Noel Maddy. GH #5.
 
+- Fixed use of inlining in the XS code to work when "gcc -std=c89" is
+  specified. Fixed by Vincent Pit. GH #6.
+
 
 1.19    2015-06-12
 
