@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.19    2015-06-12
+
 - Fixed an uninitialized value warning from the pure Perl implementation under
   5.8.8. Reported by Jim Bacon. RT #105198.
 
