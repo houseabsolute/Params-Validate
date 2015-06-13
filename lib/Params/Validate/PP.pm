@@ -551,7 +551,7 @@ sub _validate_one_param {
             my $ok;
             my $e = do {
                 local $@ = q{};
-                local $SIG{__DIE__} = undef;
+                local $SIG{__DIE__};
                 $ok = eval { $spec->{callbacks}{$_}->( $value, $params ) };
                 $@;
             };

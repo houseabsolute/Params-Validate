@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed an uninitialized value warning from the pure Perl implementation under
+  5.8.8. Reported by Jim Bacon. RT #105198.
+
+
 1.18    2015-02-13
 
 - We no longer attempt to save and restore an existing $SIG{__DIE__} hook
