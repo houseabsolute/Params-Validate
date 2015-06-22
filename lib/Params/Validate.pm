@@ -502,8 +502,8 @@ the presence of one or more other optional parameters.
                 optional => 1,
                 depends  => [ 'cc_expiration', 'cc_holder_name' ],
             },
-            cc_expiration  { type => SCALAR, optional => 1 },
-            cc_holder_name { type => SCALAR, optional => 1 },
+            cc_expiration  => { type => SCALAR, optional => 1 },
+            cc_holder_name => { type => SCALAR, optional => 1 },
         }
     );
 
