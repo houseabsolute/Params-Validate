@@ -99,10 +99,9 @@ sub validate_pos (\@@) {
         next unless ref $spec;
 
         if ( $_ <= $#p ) {
-            my $value = defined $p[$_] ? qq|"$p[$_]"| : 'undef';
             _validate_one_param(
                 $p[$_], \@p, $spec,
-                "Parameter #" . ( $_ + 1 ) . " ($value)"
+                'Parameter #' . ( $_ + 1 ) . ' (%s)'
             );
         }
 
@@ -340,7 +339,7 @@ OUTER:
             my $value = defined $p->{$key} ? qq|"$p->{$key}"| : 'undef';
             _validate_one_param(
                 $p->{$key}, $p, $spec,
-                "The '$key' parameter ($value)"
+                qq{The '$key' parameter (%s)}
             );
         }
     }
@@ -469,7 +468,7 @@ sub _validate_one_param {
             $msg
                 .= ".\n Use the constants exported by Params::Validate to declare types.";
 
-            $options->{on_fail}->($msg);
+            $options->{on_fail}->( sprintf( $msg, _stringify($value) ) );
         }
 
         unless ( _get_type($value) & $spec->{type} ) {
@@ -481,8 +480,13 @@ sub _validate_one_param {
 
             my $called = _get_called(1);
 
-            $options->{on_fail}->( "$id to $called was $article '@is', which "
-                    . "is not one of the allowed types: @allowed\n" );
+            $options->{on_fail}->(
+                sprintf(
+                    "$id to $called was $article '@is', which "
+                        . "is not one of the allowed types: @allowed\n",
+                    _stringify($value)
+                )
+            );
         }
     }
 
@@ -507,9 +511,12 @@ sub _validate_one_param {
 
                 my $called = _get_called(1);
 
-                $options->{on_fail}
-                    ->(   "$id to $called was not $article1 '$_' "
-                        . "(it is $article2 $is)\n" );
+                $options->{on_fail}->(
+                    sprintf(
+                              "$id to $called was not $article1 '$_' "
+                            . "(it is $article2 $is)\n", _stringify($value)
+                    )
+                );
             }
         }
     }
@@ -524,8 +531,12 @@ sub _validate_one_param {
                 ) {
                 my $called = _get_called(1);
 
-                $options->{on_fail}
-                    ->("$id to $called does not have the method: '$_'\n");
+                $options->{on_fail}->(
+                    sprintf(
+                        "$id to $called does not have the method: '$_'\n",
+                        _stringify($value)
+                    )
+                );
             }
         }
     }
@@ -559,16 +570,15 @@ sub _validate_one_param {
             if ( !$ok ) {
                 my $called = _get_called(1);
 
-                my $msg;
                 if ( ref $e ) {
-                    $msg = $e;
+                    $options->{on_fail}->($e);
                 }
                 else {
-                    $msg = "$id to $called did not pass the '$_' callback";
+                    my $msg = "$id to $called did not pass the '$_' callback";
                     $msg .= ": $e" if length $e;
                     $msg .= "\n";
+                    $options->{on_fail}->( sprintf( $msg, _stringify($value) ) );
                 }
-                $options->{on_fail}->($msg);
             }
         }
     }
@@ -577,8 +587,12 @@ sub _validate_one_param {
         unless ( ( defined $value ? $value : '' ) =~ /$spec->{regex}/ ) {
             my $called = _get_called(1);
 
-            $options->{on_fail}
-                ->("$id to $called did not pass regex check\n");
+            $options->{on_fail}->(
+                sprintf(
+                    "$id to $called did not pass regex check\n",
+                    _stringify($value)
+                )
+            );
         }
     }
 }
@@ -712,6 +726,10 @@ sub _get_called {
     $called = 'N/A' unless defined $called;
 
     return $called;
+}
+
+sub _stringify {
+    return defined $_[0] ? qq{"$_[0]"} : 'undef';
 }
 
 1;

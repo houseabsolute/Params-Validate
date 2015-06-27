@@ -246,6 +246,16 @@ article(SV* string) {
     return "a";
 }
 
+char *
+string_representation(SV* value) {
+    if(SvOK(value)) {
+        return (void *)form("\"%s\"", SvPV_nolen(value));
+    }
+    else {
+        return (void *)"undef";
+    }
+}
+
 /* raises exception either using user-defined callback or using
    built-in method */
 static void
@@ -364,7 +374,7 @@ get_caller(HV* options) {
 
 /* $value->isa alike validation */
 static IV
-validate_isa(SV* value, SV* package, SV* id, HV* options) {
+validate_isa(SV* value, SV* package, char* id, HV* options) {
     IV ok = 1;
 
     if (! value) {
@@ -409,7 +419,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
 
     if (! ok) {
         SV *caller = get_caller(options);
-        SV* buffer = newSVsv(id);
+        SV* buffer = newSVpvf(id, string_representation(value));
         sv_catpv(buffer, " to ");
         sv_catsv(buffer, caller);
         SvREFCNT_dec(caller);
@@ -434,7 +444,7 @@ validate_isa(SV* value, SV* package, SV* id, HV* options) {
 }
 
 static IV
-validate_can(SV* value, SV* method, SV* id, HV* options) {
+validate_can(SV* value, SV* method, char* id, HV* options) {
     IV ok = 1;
 
     if (! value) {
@@ -478,7 +488,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options) {
     }
 
     if (! ok) {
-        SV* buffer = newSVsv(id);
+        SV* buffer = newSVpvf(id, string_representation(value));
         SV *caller = get_caller(options);
         sv_catpv(buffer, " to ");
         sv_catsv(buffer, caller);
@@ -494,7 +504,7 @@ validate_can(SV* value, SV* method, SV* id, HV* options) {
 
 /* validates specific parameter using supplied parameter specification */
 static IV
-validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* untaint) {
+validate_one_param(SV* value, SV* params, HV* spec, char* id, HV* options, IV* untaint) {
     SV** temp;
     IV   i;
 
@@ -531,7 +541,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
             && looks_like_number(*temp)
             && SvIV(*temp) > 0 ) ) {
 
-            SV* buffer = newSVsv(id);
+            SV* buffer = newSVpvf(id, string_representation(value));
             sv_catpv( buffer, " has a type specification which is not a number. It is ");
             if ( SvOK(*temp) ) {
                 sv_catpv( buffer, "a string - " );
@@ -548,7 +558,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
         SvGETMAGIC(*temp);
         type = get_type(value);
         if (! (type & SvIV(*temp))) {
-            SV* buffer = newSVsv(id);
+            SV* buffer = newSVpvf(id, string_representation(value));
             SV *caller = get_caller(options);
             SV* is;
             SV* allowed;
@@ -699,7 +709,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
                         validation_failure(err, options);
                     }
                     else {
-                        SV* buffer = newSVsv(id);
+                        SV* buffer = newSVpvf(id, string_representation(value));
                         SV *caller = get_caller(options);
 
                         sv_catpv(buffer, " to ");
@@ -770,7 +780,7 @@ validate_one_param(SV* value, SV* params, HV* spec, SV* id, HV* options, IV* unt
         PUTBACK;
 
         if (!ok) {
-            SV* buffer = newSVsv(id);
+            SV* buffer = newSVpvf(id, string_representation(value));
             SV *caller = get_caller(options);
 
             sv_catpv(buffer, " to ");
@@ -1098,18 +1108,6 @@ validate_named_depends(HV* p, HV* specs, HV* options) {
 }
 
 void
-cat_string_representation(SV* buffer, SV* value) {
-    if(SvOK(value)) {
-        sv_catpv(buffer, "\"");
-        sv_catpv(buffer, SvPV_nolen(value));
-        sv_catpv(buffer, "\"");
-    }
-    else {
-        sv_catpv(buffer, "undef");
-    }
-}
-
-void
 apply_defaults(HV *ret, HV *p, HV *specs, AV *missing) {
     HE* he;
     SV** temp;
@@ -1266,16 +1264,12 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
         if(he1) {
             hv1 = HeVAL(he1);
             if (SvROK(hv1) && SvTYPE(SvRV(hv1)) == SVt_PVHV) {
-                SV* buffer;
+                char* buffer;
                 HV* spec;
                 IV untaint = 0;
 
                 spec = (HV*) SvRV(hv1);
-                buffer = sv_2mortal(newSVpv("The '", 0));
-                sv_catsv(buffer, HeSVKEY_force(he));
-                sv_catpv(buffer, "' parameter (");
-                cat_string_representation(buffer, hv);
-                sv_catpv(buffer, ")");
+                buffer = form("The '%s' parameter (%%s)", HePV(he, PL_na));
 
                 if (! validate_one_param(hv, (SV*) p, spec, buffer, options, &untaint))
                     return 0;
@@ -1292,7 +1286,7 @@ validate(HV* p, HV* specs, HV* options, HV* ret) {
         }
 
         if (av_len(unmentioned) > -1) {
-            SV* buffer =  newSVpv("The following parameter", 0);
+            SV* buffer = newSVpv("The following parameter", 0);
             SV *caller = get_caller(options);
 
             if (av_len(unmentioned) != 0) {
@@ -1437,7 +1431,7 @@ spec_says_optional(SV* spec, IV complex_spec) {
 
 static IV
 validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
-    SV* buffer;
+    char* buffer;
     SV* value;
     SV* spec = NULL;
     SV** temp;
@@ -1503,12 +1497,9 @@ validate_pos(AV* p, AV* specs, HV* options, AV* ret) {
             if (complex_spec) {
                 IV untaint = 0;
 
-                buffer = sv_2mortal(newSVpvf("Parameter #%d (", (int) i + 1));
-                cat_string_representation(buffer, value);
-                sv_catpv(buffer, ")");
+                buffer = form("Parameter #%d (%%s)", (int)i + 1);
 
-                if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec),
-                buffer, options, &untaint)) {
+                if (! validate_one_param(value, (SV*) p, (HV*) SvRV(spec), buffer, options, &untaint)) {
                     return 0;
                 }
 

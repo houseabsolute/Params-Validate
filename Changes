@@ -7,6 +7,13 @@
 - Fixed use of inlining in the XS code to work when "gcc -std=c89" is
   specified. Fixed by Vincent Pit. GH #6.
 
+- Previously, Params::Validate would eagerly stringify all values it was
+  validating, even though this stringification was only needed for error
+  messages that are used when a parameter fails. For objects which overload
+  stringification and do real work, this added an unnecessary
+  slowdown. Stringification is now delayed until it is needed. Reported by
+  Klaus. RT #105326.
+
 
 1.19    2015-06-12
 
