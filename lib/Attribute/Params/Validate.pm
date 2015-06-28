@@ -3,7 +3,7 @@ package Attribute::Params::Validate;
 use strict;
 use warnings;
 
-our $VERSION = '1.19';
+our $VERSION = '1.20';
 
 use attributes;
 
