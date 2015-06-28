@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.20    2015-06-28
+
 - Fixed a bug with stack handling in the XS code. If a callback sub caused
   Perl to reallocate the stack this could trigger weird errors of the form
   "Bizarre copy of ARRAY" from Perl itself. Fixed by Noel Maddy. GH #5.
