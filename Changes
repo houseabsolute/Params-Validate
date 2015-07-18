@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Attribute::Params::Validate is now in its own distro, and needs a new
+  maintainer. If you would like to maintain it, please contact me.
+
+
 1.20    2015-06-28
 
 - Fixed a bug with stack handling in the XS code. If a callback sub caused
