@@ -39,7 +39,7 @@ sub baz {
             baz => {
                 type      => SCALAR,
                 callbacks => {
-                    'is num' => sub { $_[0] =~ /^\d+$/a },
+                    'is num' => sub { $_[0] =~ /^\d+$/ },
                 },
             },
         },
