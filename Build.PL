@@ -20,14 +20,14 @@ my %module_build_args = (
     "Ilya Martynov <ilya\@martynov.org>"
   ],
   "dist_name" => "Params-Validate",
-  "dist_version" => "1.21",
+  "dist_version" => "1.22",
   "license" => "artistic_2",
   "module_name" => "Params::Validate",
-  "recommends" => {},
   "recursive_test_files" => 1,
   "requires" => {
     "Carp" => 0,
     "Exporter" => 0,
+    "JSON::PP" => "2.27300",
     "Module::Implementation" => 0,
     "Scalar::Util" => "1.10",
     "XSLoader" => 0,
@@ -36,7 +36,6 @@ my %module_build_args = (
     "vars" => 0,
     "warnings" => 0
   },
-  "script_files" => [],
   "test_requires" => {
     "Devel::Peek" => 0,
     "ExtUtils::MakeMaker" => 0,
@@ -77,6 +76,7 @@ unless ( eval { Module::Build->VERSION(0.4004) } ) {
 }
 
 my $build = Module::Build->new(%module_build_args);
+
 
 my $skip_xs;
 if ( grep { $_ eq '--pp' } @ARGV ) {

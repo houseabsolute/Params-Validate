@@ -1,5 +1,6 @@
 requires "Carp" => "0";
 requires "Exporter" => "0";
+requires "JSON::PP" => "2.27300";
 requires "Module::Implementation" => "0";
 requires "Scalar::Util" => "1.10";
 requires "XSLoader" => "0";
@@ -45,8 +46,10 @@ on 'develop' => sub {
   requires "Readonly" => "1.03";
   requires "Scalar::Util" => "1.20";
   requires "Test::CPAN::Changes" => "0.19";
+  requires "Test::CPAN::Meta::JSON" => "0.16";
   requires "Test::EOL" => "0";
   requires "Test::LeakTrace" => "0.15";
+  requires "Test::Mojibake" => "0";
   requires "Test::More" => "0.96";
   requires "Test::NoTabs" => "0";
   requires "Test::Pod" => "1.41";
