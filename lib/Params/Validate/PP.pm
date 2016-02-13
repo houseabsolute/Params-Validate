@@ -723,7 +723,7 @@ sub _get_called {
         : ( caller( $options->{stack_skip} + $extra_skip ) )[3]
     );
 
-    $called = 'N/A' unless defined $called;
+    $called = '(unknown)' unless defined $called;
 
     return $called;
 }

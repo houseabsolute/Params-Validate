@@ -8,6 +8,9 @@
   setting to get a stack trace if you prefer. Reported by Slaven Rezic. RT
   #111036.
 
+- The pure Perl code now uses "(unknown)" when it cannot determine the sub
+  that failed, instead of "N/A". Reported by Slaven Rezic. RT #111036.
+
 
 1.21    2015-07-18
 
