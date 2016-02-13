@@ -718,7 +718,7 @@ validate_one_param(SV* value, SV* params, HV* spec, char* id, HV* options, IV* u
                         sv_catpv(buffer, " did not pass the '");
                         sv_catsv(buffer, HeSVKEY_force(he));
                         sv_catpv(buffer, "' callback");
-                        if (SvLEN(err) > 0) {
+                        if (SvCUR(err) > 0) {
                             sv_catpv(buffer, ": ");
                             sv_catsv(buffer, err);
                         }

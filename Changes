@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed a bug when a callback failed but did not die. The resulting error
+  message had a pointless colon in it. Reported by Slaven Rezic. RT #111036.
+
+
 1.21    2015-07-18
 
 - Attribute::Params::Validate is now in its own distro, and needs a new

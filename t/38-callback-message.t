@@ -66,6 +66,34 @@ use Params::Validate qw( validate );
     );
 }
 
+{
+    my $e = do {
+        local $@;
+        eval { validate3( string => [] ); };
+        $@;
+    };
+
+    like(
+        $e,
+        qr/\QThe 'string' parameter (\E.+?\Q) to main::validate3 did not pass the 'string' callback: Died at \E.+/,
+        'callback that dies with an empty string generates a sane error message'
+    );
+}
+
+{
+    my $e = do {
+        local $@;
+        eval { validate4( string => [] ); };
+        $@;
+    };
+
+    like(
+        $e,
+        qr/\QThe 'string' parameter (\E.+?\Q) to main::validate4 did not pass the 'string' callback\E\s+at/,
+        'callback that does not dies generates a sane error message'
+    );
+}
+
 sub _test_args {
     local $@;
     eval { validate1(@_) };
@@ -103,6 +131,35 @@ sub validate2 {
                     string => sub {
                         ( defined $_[0] && !ref $_[0] && length $_[0] )
                             or die { error => 'not a string' };
+                    },
+                },
+            },
+        }
+    );
+}
+
+sub validate3 {
+    validate(
+        @_, {
+            string => {
+                callbacks => {
+                    string => sub {
+                        ( defined $_[0] && !ref $_[0] && length $_[0] )
+                            or die;
+                    },
+                },
+            },
+        }
+    );
+}
+
+sub validate4 {
+    validate(
+        @_, {
+            string => {
+                callbacks => {
+                    string => sub {
+                        return defined $_[0] && !ref $_[0] && length $_[0];
                     },
                 },
             },
