@@ -3,6 +3,11 @@
 - Fixed a bug when a callback failed but did not die. The resulting error
   message had a pointless colon in it. Reported by Slaven Rezic. RT #111036.
 
+- Made the pure Perl version use Carp's croak rather than confess. The XS
+  version has never included a stack trace in errors. You can use the on_fail
+  setting to get a stack trace if you prefer. Reported by Slaven Rezic. RT
+  #111036.
+
 
 1.21    2015-07-18
 

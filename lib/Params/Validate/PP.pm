@@ -667,7 +667,7 @@ sub _validate_one_param {
         allow_extra   => 0,
         on_fail       => sub {
             require Carp;
-            Carp::confess( $_[0] );
+            Carp::croak( $_[0] );
         },
         stack_skip     => 1,
         normalize_keys => undef,
