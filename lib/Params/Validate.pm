@@ -793,6 +793,15 @@ expect validation to be on when they execute. For example:
 But if you want to shoot yourself in the foot and just turn it off, go
 ahead!
 
+=head1 SPECIFYING AN IMPLEMENTATION
+
+This module ships with two equivalent implementations, one in XS and one in
+pure Perl. By default, it will try to load the XS version and fall back to the
+pure Perl implementation as needed. If you want to request a specific version,
+you can set the C<PARAMS_VALIDATE_IMPLEMENTATION> environment variable to
+either C<XS> or C<PP>. If the implementation you ask for cannot be loaded,
+then this module will die when loaded.
+
 =head1 TAINT MODE
 
 The XS implementation of this module has some problems Under taint mode with
