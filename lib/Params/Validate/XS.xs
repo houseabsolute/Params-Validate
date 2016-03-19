@@ -1651,8 +1651,10 @@ validate(p, specs)
         ret = (HV*) sv_2mortal((SV*) newHV());
     }
     if (! validate(ph, (HV*) SvRV(specs), options, ret)) {
+        SPAGAIN;
         XSRETURN(0);
     }
+    SPAGAIN;
     RETURN_HASH(ret);
 
 void
@@ -1690,9 +1692,11 @@ SV* p
     }
 
     if (! validate_pos((AV*) SvRV(p), specs, get_options(NULL), ret)) {
+	SPAGAIN;
         XSRETURN(0);
     }
 
+    SPAGAIN;
     RETURN_ARRAY(ret);
 
 void
