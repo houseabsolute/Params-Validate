@@ -16,6 +16,7 @@ sub default_test {
         { type => SCALAR, optional => 1, default => 'must be second one' },
     );
 
-    is( $first, undef, '01 no default for first' );
-    is( $second, 'must be second one', '01 default for second' );
+    is( $first, undef, 'no default for first parameter' );
+    is( $second, 'must be second one',
+        'default for second parameter is applied' );
 }
