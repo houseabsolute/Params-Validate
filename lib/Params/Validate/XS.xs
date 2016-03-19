@@ -779,7 +779,7 @@ validate_one_param(SV* value, SV* params, HV* spec, char* id, HV* options, IV* u
         ok = POPi;
         PUTBACK;
 
-        if (!ok) {
+        if (! ok) {
             SV* buffer = newSVpvf(id, string_representation(value));
             SV *caller = get_caller(options);
 
@@ -1607,6 +1607,7 @@ validate(p, specs)
     AV* pa;
     HV* ph;
     HV* options;
+    IV ok;
 
     if (no_validation() && GIMME_V == G_VOID) {
         XSRETURN(0);
@@ -1650,11 +1651,15 @@ validate(p, specs)
     if (GIMME_V != G_VOID) {
         ret = (HV*) sv_2mortal((SV*) newHV());
     }
-    if (! validate(ph, (HV*) SvRV(specs), options, ret)) {
-        SPAGAIN;
+
+    PUTBACK;
+    ok = validate(ph, (HV*) SvRV(specs), options, ret);
+    SPAGAIN;
+
+    if (! ok) {
         XSRETURN(0);
     }
-    SPAGAIN;
+
     RETURN_HASH(ret);
 
 void
@@ -1668,6 +1673,7 @@ SV* p
     AV* specs;
     AV* ret = NULL;
     IV i;
+    IV ok;
 
     if (no_validation() && GIMME_V == G_VOID) {
         XSRETURN(0);
@@ -1691,12 +1697,14 @@ SV* p
         ret = (AV*) sv_2mortal((SV*) newAV());
     }
 
-    if (! validate_pos((AV*) SvRV(p), specs, get_options(NULL), ret)) {
-	SPAGAIN;
+    PUTBACK;
+    ok = validate_pos((AV*) SvRV(p), specs, get_options(NULL), ret);
+    SPAGAIN;
+
+    if (! ok) {
         XSRETURN(0);
     }
 
-    SPAGAIN;
     RETURN_ARRAY(ret);
 
 void
@@ -1708,6 +1716,7 @@ validate_with(...)
     SV* params;
     SV* spec;
     IV i;
+    IV ok;
 
     if (no_validation() && GIMME_V == G_VOID) XSRETURN(0);
 
@@ -1744,13 +1753,13 @@ validate_with(...)
             }
 
             PUTBACK;
+            ok = validate_pos((AV*) SvRV(params), (AV*) SvRV(spec), get_options(p), ret);
+            SPAGAIN;
 
-            if (! validate_pos((AV*) SvRV(params), (AV*) SvRV(spec), get_options(p), ret)) {
-                SPAGAIN;
+            if (! ok) {
                 XSRETURN(0);
             }
 
-            SPAGAIN;
             RETURN_ARRAY(ret);
         }
         else {
@@ -1801,13 +1810,13 @@ validate_with(...)
         }
 
         PUTBACK;
+        ok = validate(hv, (HV*) SvRV(spec), options, ret);
+        SPAGAIN;
 
-        if (! validate(hv, (HV*) SvRV(spec), options, ret)) {
-            SPAGAIN;
+        if (! ok) {
             XSRETURN(0);
         }
 
-        SPAGAIN;
         RETURN_HASH(ret);
     }
     else {
