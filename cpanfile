@@ -1,6 +1,5 @@
 requires "Carp" => "0";
 requires "Exporter" => "0";
-requires "JSON::PP" => "2.27300";
 requires "Module::Implementation" => "0";
 requires "Scalar::Util" => "1.10";
 requires "XSLoader" => "0";
@@ -8,10 +7,6 @@ requires "perl" => "5.008001";
 requires "strict" => "0";
 requires "vars" => "0";
 requires "warnings" => "0";
-
-on 'build' => sub {
-  requires "Module::Build" => "0.28";
-};
 
 on 'test' => sub {
   requires "Devel::Peek" => "0";
@@ -33,10 +28,15 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "Module::Build" => "0.28";
+  requires "ExtUtils::MakeMaker" => "0";
+};
+
+on 'configure' => sub {
+  suggests "JSON::PP" => "2.27300";
 };
 
 on 'develop' => sub {
+  requires "Devel::PPPort" => "3.23";
   requires "File::Spec" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
