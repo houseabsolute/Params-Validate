@@ -2,6 +2,7 @@
 .\#*
 /.build
 /.tidyall.d
+/Build.PL
 /Build
 /Debian_CPANTS.txt
 /MANIFEST
@@ -21,4 +22,5 @@
 /cover_db*
 /lib/Params/Validate/XS.c
 /lib/Params/Validate/XS.o
+/XS.bs
 /pm_to_blib
