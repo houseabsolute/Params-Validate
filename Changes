@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fixed some Perl stack corruption bugs. Based on a proposed PR from Tony Cook
+  plus some additional changes. GH #8.
+
+
 1.22    2016-02-13
 
 - Fixed a bug when a callback failed but did not die. The resulting error
