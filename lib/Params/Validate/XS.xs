@@ -1644,7 +1644,11 @@ validate(p, specs)
     if (! ph) {
         ph = (HV*) sv_2mortal((SV*) newHV());
 
-        if (! convert_array2hash(pa, options, ph) ) {
+        PUTBACK;
+        ok = convert_array2hash(pa, options, ph);
+        SPAGAIN;
+
+        if (!ok) {
             XSRETURN(0);
         }
     }
@@ -1797,7 +1801,11 @@ validate_with(...)
             if (! hv_set) {
                 hv = (HV*) sv_2mortal((SV*) newHV());
 
-                if (! convert_array2hash((AV*) SvRV(params), options, hv)) {
+                PUTBACK;
+                ok = convert_array2hash((AV*) SvRV(params), options, hv);
+                SPAGAIN;
+
+                if (!ok) {
                     XSRETURN(0);
                 }
             }
