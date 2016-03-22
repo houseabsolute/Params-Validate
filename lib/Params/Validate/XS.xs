@@ -1797,8 +1797,9 @@ validate_with(...)
             if (! hv_set) {
                 hv = (HV*) sv_2mortal((SV*) newHV());
 
-                if (! convert_array2hash((AV*) SvRV(params), options, hv))
+                if (! convert_array2hash((AV*) SvRV(params), options, hv)) {
                     XSRETURN(0);
+                }
             }
         }
         else {
