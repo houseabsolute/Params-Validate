@@ -27,7 +27,6 @@ my %module_build_args = (
   "requires" => {
     "Carp" => 0,
     "Exporter" => 0,
-    "JSON::PP" => "2.27300",
     "Module::Implementation" => 0,
     "Scalar::Util" => "1.10",
     "XSLoader" => 0,

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.23    2016-03-26
+
 - Fixed some Perl stack corruption bugs. Based on a proposed PR from Tony Cook
   plus some additional changes. GH #8.
 
