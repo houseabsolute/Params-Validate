@@ -3,7 +3,7 @@ package Params::Validate::PP;
 use strict;
 use warnings;
 
-our $VERSION = '1.23';
+our $VERSION = '1.24';
 
 use Params::Validate::Constants;
 use Scalar::Util 1.10 ();
