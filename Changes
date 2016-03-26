@@ -3,6 +3,9 @@
 - Fixed some Perl stack corruption bugs. Based on a proposed PR from Tony Cook
   plus some additional changes. GH #8.
 
+- Fixed tests with Carp 1.01 (shipped with Perl 5.8.3). Patch by Andreas
+  Koenig. RT #113318.
+
 
 1.22    2016-02-13
 

@@ -89,7 +89,7 @@ use Params::Validate qw( validate );
 
     like(
         $e,
-        qr/\QThe 'string' parameter (\E.+?\Q) to main::validate4 did not pass the 'string' callback\E\s+at/,
+        qr/\QThe 'string' parameter (\E.+?\Q) to main::validate4 did not pass the 'string' callback/,
         'callback that does not dies generates a sane error message'
     );
 }
