@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Author tests are no longer in t/. This makes running tests for non-authors
+  faster. Requested by Karen Etheridge. RT #113063.
+
+
 1.23    2016-03-26
 
 - Fixed some Perl stack corruption bugs. Based on a proposed PR from Tony Cook
