@@ -10,7 +10,7 @@ my %module_build_args = (
   "build_requires" => {
     "Module::Build" => "0.28"
   },
-  "c_source" => "c",
+  "c_source" => ".",
   "configure_requires" => {
     "Module::Build" => "0.28"
   },

@@ -13,7 +13,7 @@ around module_build_args => sub {
 
     my $args = $self->$orig(@_);
 
-    $args->{c_source} = 'c';
+    $args->{c_source} = '.';
 
     return $args;
 };
