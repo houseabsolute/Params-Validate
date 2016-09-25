@@ -785,7 +785,7 @@ button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~a
 - Tony Cook <tony@develop-help.com>
 - Vincent Pit <perl@profvince.com>
 
-# COPYRIGHT AND LICENCE
+# COPYRIGHT AND LICENSE
 
 This software is Copyright (c) 2001 - 2016 by Dave Rolsky and Ilya Martynov.
 
