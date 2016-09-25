@@ -8,10 +8,6 @@ requires "strict" => "0";
 requires "vars" => "0";
 requires "warnings" => "0";
 
-on 'build' => sub {
-  requires "Module::Build" => "0.28";
-};
-
 on 'test' => sub {
   requires "Devel::Peek" => "0";
   requires "ExtUtils::MakeMaker" => "0";
@@ -32,7 +28,7 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "Module::Build" => "0.28";
+  requires "ExtUtils::MakeMaker" => "0";
 };
 
 on 'configure' => sub {
@@ -40,6 +36,8 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
+  requires "Devel::PPPort" => "3.23";
   requires "Devel::Peek" => "0";
   requires "File::Spec" => "0";
   requires "File::Temp" => "0";
@@ -64,10 +62,12 @@ on 'develop' => sub {
   requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Pod::LinkCheck" => "0";
   requires "Test::Pod::No404s" => "0";
+  requires "Test::Portability::Files" => "0";
   requires "Test::Requires" => "0";
   requires "Test::Spelling" => "0.12";
   requires "Test::Synopsis" => "0";
   requires "Test::Taint" => "0.02";
+  requires "Test::Vars" => "0.009";
   requires "Tie::Array" => "0";
   requires "Tie::Hash" => "0";
   requires "base" => "0";
