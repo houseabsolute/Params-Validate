@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Switched to Params::Validate.
+
+
 1.24    2016-05-08
 
 - Author tests are no longer in t/. This makes running tests for non-authors
