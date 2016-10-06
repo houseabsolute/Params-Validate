@@ -20,7 +20,7 @@ my %module_build_args = (
     "Ilya Martynov <ilya\@martynov.org>"
   ],
   "dist_name" => "Params-Validate",
-  "dist_version" => "1.26",
+  "dist_version" => "1.27",
   "license" => "artistic_2",
   "module_name" => "Params::Validate",
   "recursive_test_files" => 1,
