@@ -1,8 +1,5 @@
 {{$NEXT}}
 
-- Simplify use of EUMM to use XSMULTI feature introduced in EUMM 7.12.
-
-
 1.25    2016-09-25
 
 - Switched to ExtUtils::MakeMaker.
