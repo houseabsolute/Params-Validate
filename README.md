@@ -4,7 +4,7 @@ Params::Validate - Validate method/function parameters
 
 # VERSION
 
-version 1.24
+version 1.26
 
 # SYNOPSIS
 
@@ -772,17 +772,18 @@ button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~a
 
 # AUTHORS
 
-- Dave Rolsky &lt;autarch@urth.org>
-- Ilya Martynov &lt;ilya@martynov.org>
+- Dave Rolsky <autarch@urth.org>
+- Ilya Martynov <ilya@martynov.org>
 
 # CONTRIBUTORS
 
-- Ivan Bessarabov &lt;ivan@bessarabov.ru>
-- J.R. Mash &lt;jmash.code@gmail.com>
-- Noel Maddy &lt;zhtwnpanta@gmail.com>
-- Olivier Mengué &lt;dolmen@cpan.org>
-- Tony Cook &lt;tony@develop-help.com>
-- Vincent Pit &lt;perl@profvince.com>
+- Ivan Bessarabov <ivan@bessarabov.ru>
+- J.R. Mash <jmash.code@gmail.com>
+- Karen Etheridge <ether@cpan.org>
+- Noel Maddy <zhtwnpanta@gmail.com>
+- Olivier Mengué <dolmen@cpan.org>
+- Tony Cook <tony@develop-help.com>
+- Vincent Pit <perl@profvince.com>
 
 # COPYRIGHT AND LICENSE
 

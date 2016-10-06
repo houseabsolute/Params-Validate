@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.26    2016-10-06
+
 - Reverted to Module::Build. The use of EUMM in 1.25 broke Windows builds.
 
 

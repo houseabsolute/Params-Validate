@@ -8,6 +8,10 @@ requires "strict" => "0";
 requires "vars" => "0";
 requires "warnings" => "0";
 
+on 'build' => sub {
+  requires "Module::Build" => "0.28";
+};
+
 on 'test' => sub {
   requires "Devel::Peek" => "0";
   requires "ExtUtils::MakeMaker" => "0";
@@ -28,7 +32,7 @@ on 'test' => sub {
 };
 
 on 'configure' => sub {
-  requires "ExtUtils::MakeMaker" => "0";
+  requires "Module::Build" => "0.28";
 };
 
 on 'configure' => sub {
@@ -44,6 +48,7 @@ on 'develop' => sub {
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
   requires "Module::Implementation" => "0.04";
+  requires "Parallel::ForkManager" => "1.19";
   requires "Perl::Critic" => "1.126";
   requires "Perl::Tidy" => "20160302";
   requires "Pod::Coverage::TrustPod" => "0";
