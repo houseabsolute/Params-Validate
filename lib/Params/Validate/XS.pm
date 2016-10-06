@@ -38,7 +38,9 @@ my $default_fail = sub {
     use XSLoader;
     XSLoader::load(
         __PACKAGE__,
-        $VERSION,
+        exists $Params::Validate::XS::{VERSION}
+        ? ${ $Params::Validate::XS::{VERSION} }
+        : (),
     );
 }
 
