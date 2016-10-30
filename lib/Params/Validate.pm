@@ -116,10 +116,12 @@ __END__
         validate(
             @_,
             {
-                foo => callbacks => {
-                    'is an integer' => sub {
-                        return 1 if $_[0] =~ /^-?[1-9][0-9]*$/;
-                        die "$_[0] is not a valid integer value";
+                foo => {
+                    callbacks => {
+                        'is an integer' => sub {
+                            return 1 if $_[0] =~ /^-?[1-9][0-9]*$/;
+                            die "$_[0] is not a valid integer value";
+                        },
                     },
                 }
             }
