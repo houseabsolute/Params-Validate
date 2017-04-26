@@ -65,6 +65,13 @@ my @Tests = (
         expect => q{},
     },
 
+    # sort missing params
+    {
+        sub    => 'sub3',
+        p      => [],
+        expect => qr|^Mandatory parameters 'bar', 'baz', 'brax', 'foo', 'quux' missing|,
+    },
+
     # simple types
     {
         sub => 'sub3',
