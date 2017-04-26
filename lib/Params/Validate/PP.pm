@@ -347,7 +347,7 @@ OUTER:
     if (@missing) {
         my $called = _get_called();
 
-        my $missing = join ', ', map {"'$_'"} @missing;
+        my $missing = join ', ', map {"'$_'"} sort @missing;
         $options->{on_fail}->( "Mandatory parameter"
                 . ( @missing > 1 ? 's' : '' )
                 . " $missing missing in call to $called\n" );

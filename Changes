@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- When more than one required parameter is missing, the list of missing
+  parameters in the error message is sorted by name. Patch by E. Choroba. GH
+  #14.
+
+
 1.26    2016-10-06
 
 - Reverted to Module::Build. The use of EUMM in 1.25 broke Windows builds.
