@@ -3,6 +3,12 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+#define NEED_PL_parser
+#define NEED_caller_cx
+#define NEED_eval_pv
+#define NEED_load_module
+#define NEED_sv_2pv_flags
+#define NEED_vload_module
 #include "ppport.h"
 
 #if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L))
