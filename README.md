@@ -4,7 +4,7 @@ Params::Validate - Validate method/function parameters
 
 # VERSION
 
-version 1.26
+version 1.27
 
 # SYNOPSIS
 
@@ -51,10 +51,12 @@ version 1.26
         validate(
             @_,
             {
-                foo => callbacks => {
-                    'is an integer' => sub {
-                        return 1 if $_[0] =~ /^-?[1-9][0-9]*$/;
-                        die "$_[0] is not a valid integer value";
+                foo => {
+                    callbacks => {
+                        'is an integer' => sub {
+                            return 1 if $_[0] =~ /^-?[1-9][0-9]*$/;
+                            die "$_[0] is not a valid integer value";
+                        },
                     },
                 }
             }
@@ -748,10 +750,13 @@ figures out how to do this, please let me know.
 
 # SUPPORT
 
-Bugs may be submitted through [the RT bug tracker](http://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate)
-(or [bug-params-validate@rt.cpan.org](mailto:bug-params-validate@rt.cpan.org)).
+Bugs may be submitted at [http://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate](http://rt.cpan.org/Public/Dist/Display.html?Name=Params-Validate) or via email to [bug-params-validate@rt.cpan.org](mailto:bug-params-validate@rt.cpan.org).
 
-I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
+I am also usually active on IRC as 'autarch' on `irc://irc.perl.org`.
+
+# SOURCE
+
+The source code repository for Params-Validate can be found at [https://github.com/houseabsolute/Params-Validate](https://github.com/houseabsolute/Params-Validate).
 
 # DONATIONS
 
@@ -777,6 +782,7 @@ button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~a
 
 # CONTRIBUTORS
 
+- E. Choroba <choroba@matfyz.cz>
 - Ivan Bessarabov <ivan@bessarabov.ru>
 - J.R. Mash <jmash.code@gmail.com>
 - Karen Etheridge <ether@cpan.org>
@@ -787,8 +793,11 @@ button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~a
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2001 - 2016 by Dave Rolsky and Ilya Martynov.
+This software is Copyright (c) 2001 - 2017 by Dave Rolsky and Ilya Martynov.
 
 This is free software, licensed under:
 
     The Artistic License 2.0 (GPL Compatible)
+
+The full text of the license can be found in the
+`LICENSE` file included with this distribution.
