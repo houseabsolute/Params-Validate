@@ -1,6 +1,6 @@
 {{$NEXT}}
 
-- When more than one required parameter is missing, the list of missing
+- When more than one required parameters are missing, the list of missing
   parameters in the error message is sorted by name. Patch by E. Choroba. GH
   #14.
 
