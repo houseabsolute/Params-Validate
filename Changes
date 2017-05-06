@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Removed the broken Makefile.PL that was accidentally being shipped with this
+  distro since 1.26.
+
+
 1.27    2017-04-29
 
 - When more than one required parameters are missing, the list of missing
