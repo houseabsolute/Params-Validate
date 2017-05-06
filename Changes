@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.28    2017-05-05
+
 - Removed the broken Makefile.PL that was accidentally being shipped with this
   distro since 1.26.
 
