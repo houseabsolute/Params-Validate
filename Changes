@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+- MSVC/C89 compilation fixes.
+
 1.28    2017-05-05
 
 - Removed the broken Makefile.PL that was accidentally being shipped with this
