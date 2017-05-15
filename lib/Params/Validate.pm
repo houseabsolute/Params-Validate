@@ -154,10 +154,15 @@ __END__
 
 =head1 DESCRIPTION
 
-The Params::Validate module allows you to validate method or function
-call parameters to an arbitrary level of specificity. At the simplest
-level, it is capable of validating the required parameters were given
-and that no unspecified additional parameters were passed in.
+B<< I would recommend you consider using L<Params::ValidationCompiler>
+instead. That module, despite being pure Perl, is I<significantly> faster than
+this one, at the cost of having to adopt a type system such as L<Specio>,
+L<Type::Tiny>, or the one shipped with L<Moose> >>.
+
+This module allows you to validate method or function call parameters to an
+arbitrary level of specificity. At the simplest level, it is capable of
+validating the required parameters were given and that no unspecified
+additional parameters were passed in.
 
 It is also capable of determining that a parameter is of a specific
 type, that it is an object of a certain class hierarchy, that it
