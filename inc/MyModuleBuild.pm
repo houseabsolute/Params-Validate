@@ -14,7 +14,7 @@ around module_build_args => sub {
     my $args = $self->$orig(@_);
 
     $args->{c_source} = 'c';
-    if ( $ENV{AUTHOR_TESTING} || $ENV{TRAVIS} ) {
+    if ( $ENV{TRAVIS} ) {
 
         # The declaration-after-statement warning is for constructs that break
         # old versions of MSVC.
