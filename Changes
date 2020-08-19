@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Supports pure Perl builds via the standard incantation of "perl Build.PL --pureperl_only".
+  The "--pp" flag is still supported.
+
 1.29    2017-06-11
 
 - Fixes for MSVC compilation. Patch by Andy Grundman. PR #15.
