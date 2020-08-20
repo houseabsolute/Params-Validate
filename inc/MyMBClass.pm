@@ -12,7 +12,6 @@ sub new {
     my $self = $class->SUPER::new( @_ );
 
     if ( defined ( my $pp = $self->args( 'pp' ) ) ) {
-        $self->args( 'pureperl_only', $pp );
         $self->pureperl_only($pp);
     }
 
