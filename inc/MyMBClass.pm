@@ -3,7 +3,7 @@ package MyMBClass;
 use strict;
 use warnings;
 
-use parent 'Module::Build';
+use base 'Module::Build';
 
 sub new {
     my $class = shift;
