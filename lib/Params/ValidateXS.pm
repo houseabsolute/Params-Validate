@@ -1,4 +1,4 @@
-package # hide from PAUSE
+package    # hide from PAUSE
     Params::Validate;
 
 our $VERSION = '1.30';

@@ -38,7 +38,7 @@ our %EXPORT_TAGS = (
 );
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} }, 'set_options' );
-our @EXPORT = qw( validate validate_pos );
+our @EXPORT    = qw( validate validate_pos );
 
 $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
 
