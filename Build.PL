@@ -21,7 +21,7 @@ my %module_build_args = (
     "Ilya Martynov <ilya\@martynov.org>"
   ],
   "dist_name" => "Params-Validate",
-  "dist_version" => "1.31",
+  "dist_version" => "1.32",
   "get_options" => {
     "pp" => {}
   },
