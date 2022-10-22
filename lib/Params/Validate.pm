@@ -52,7 +52,7 @@ $NO_VALIDATION = $ENV{PERL_NO_VALIDATION};
                 validate_with
                 validation_options
                 set_options
-                ),
+            ),
         ],
     );
 
