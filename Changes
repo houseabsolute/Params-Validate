@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.31    2022-10-22
+
 - Require Devel::PPPort 3.68+ for compatibility with Perls <= 5.8.5. Patch by
   Graham Knop. PR #25.
 
